@@ -1,0 +1,23 @@
+version: '3'
+services:
+  infraPermissions:
+    image: kanbanista:latest
+    command: yarn develop
+    ports:
+      - 3000:3000
+    environment:
+      - SLACK_SIGNING_SECRET=26033c893517faca679b57cea9d6e1f2
+      - SLACK_BOT_TOKEN=xoxb-3389729784-1448821915409-BvtOrRHPbTYfM1DHccDgWDAj
+      - MONGO_DB_HOST=mongo
+      - MONGO_DB_USER=username
+      - MONGO_DB_PASSWORD=password
+    volumes:
+      - ./src/:/node/src
+  mongo:
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=username
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=kanbanista
+    ports:
+      - 27017:27017
