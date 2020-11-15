@@ -1,0 +1,169 @@
+@mixin flex {
+  display: flex;
+}
+
+@mixin justify-align-center {
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-col {
+  @include flex;
+  @include justify-align-center;
+  flex-direction: column;
+}
+
+@mixin flex-row {
+  @include flex;
+  @include justify-align-center;
+  flex-direction: row;
+}
+
+@mixin for-phone-only {
+  @media (max-width: 599px) {
+    @content;
+  }
+}
+@mixin for-tablet-portrait-up {
+  @media (min-width: 600px) {
+    @content;
+  }
+}
+@mixin for-tablet-landscape-up {
+  @media (min-width: 900px) {
+    @content;
+  }
+}
+@mixin for-desktop-up {
+  @media (min-width: 1200px) {
+    @content;
+  }
+}
+@mixin for-big-desktop-up {
+  @media (min-width: 1800px) {
+    @content;
+  }
+}
+
+// .header-title {
+//   font-size: 2rem;
+
+// @include for-phone-only {
+//   font-size: 1rem;
+// }
+// }
+
+/// MAIN HERO
+
+.main-container {
+  @include flex-col;
+
+  margin: 0;
+  padding: 0;
+}
+
+.circle-overlay {
+  position: absolute;
+
+  width: 3500px;
+  height: 3500px;
+
+  border-radius: 1650px;
+
+  top: -2700px;
+
+  z-index: -1;
+
+  background-color: #444e73;
+
+  padding-bottom: 400px;
+}
+
+.hero-container {
+  @include flex-col;
+
+  padding-top: 3em;
+
+  width: 100%;
+
+  padding-bottom: 2em;
+
+  background-color: #444e73;
+}
+
+.hero-title {
+  // line-height: 68px;
+  // font-size: 38px;
+  max-width: 850px;
+  text-align: center;
+  color: white;
+  margin-bottom: 1em;
+
+  font-size: 3rem;
+
+  @include for-phone-only {
+    font-size: 2rem;
+    color: "black";
+
+    // line-height: 4rem;
+  }
+
+  @include for-desktop-up {
+    font-size: 2.5rem;
+    color: "red";
+  }
+
+  @include for-big-desktop-up {
+    font-size: 3rem;
+  }
+}
+
+.hero-subtitle {
+  font-weight: 500;
+  margin-top: 5px;
+  font-size: 18px;
+  text-align: center;
+  color: white;
+
+  margin-bottom: 1em;
+}
+
+.slack-image-container {
+  @include flex-row;
+
+  z-index: 99;
+  margin-top: -350px;
+  margin-bottom: 4em;
+
+  visibility: visible;
+
+  @include for-phone-only {
+    visibility: hidden;
+  }
+
+  @include for-desktop-up {
+    visibility: visible;
+  }
+
+  @include for-big-desktop-up {
+    visibility: visible;
+  }
+}
+
+/// OVERVIEW
+.overview-container {
+  @include flex-row;
+
+  padding-bottom: 4em;
+}
+
+.overview-text-container {
+  // @include flex-col;
+  @include flex;
+  flex-direction: column;
+  align-content: center;
+
+  max-width: 700px;
+
+  margin-right: 5em;
+}

@@ -1,0 +1,30 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy_api:
+    runs-on: ubuntu-latest
+    name: Build, Push and Deploy Helm Chart
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Build
+        run: make build
+      - name: Push
+        run: make push
+      - name: Deploy
+        uses: ./.github/actions/helm
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        with:
+          args: upgrade --install scrumbarista-api ./infra/scrumbarista --namespace scrumbarista --set containers.scrumbaristaApi.image.tag=${{ github.sha }} --wait

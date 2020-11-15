@@ -1,20 +1,20 @@
-import { Document, Schema, model } from 'mongoose';
+import { Document, Schema, model } from "mongoose";
 
 export interface StandupInterface {
-  name: string,
-  channelID: string,
-  time: string,
-  questions: string,
-  days: string[]
+  name: string;
+  channelID: string;
+  time: string;
+  questions: string;
+  days: string[];
 }
 
 /// Standup Object
 export interface IStandup extends Document {
-  name: string,
-  channelID: string,
-  time: string,
-  questions: string,
-  days: string[]
+  name: string;
+  channelID: string;
+  time: string;
+  questions: string;
+  days: string[];
 }
 export const StandupSchema = new Schema({
   name: String,
@@ -23,8 +23,16 @@ export const StandupSchema = new Schema({
   questions: String,
   days: {
     type: [String],
-    enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    enum: [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ],
     required: true,
-  }
+  },
 });
-export const Standup = model<IStandup>('Standup', StandupSchema);
+export const Standup = model<IStandup>("Standup", StandupSchema);

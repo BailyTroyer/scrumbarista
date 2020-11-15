@@ -4,8 +4,8 @@
 # Globals
 # ============================================================================
 
-DOCKER_IMAGE:=294290347293.dkr.ecr.us-east-1.amazonaws.com/kanbanista
-CONTAINER_IMAGE:=kanbanista
+DOCKER_IMAGE:=294290347293.dkr.ecr.us-east-1.amazonaws.com/scrumbarista
+CONTAINER_IMAGE:=scrumbarista
 VERSION:=$(shell git log -1 --pretty=format:"%H")
 .DEFAULT_GOAL:=build
 

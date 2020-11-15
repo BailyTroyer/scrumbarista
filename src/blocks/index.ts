@@ -1,3 +1,3 @@
-export * from './standup'
-export * from './checkin'
-export * from './kanbanista'
+export * from "./standup";
+export * from "./checkin";
+export * from "./scrumbarista";

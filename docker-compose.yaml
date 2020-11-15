@@ -1,7 +1,7 @@
-version: '3'
+version: "3"
 services:
-  infraPermissions:
-    image: kanbanista:latest
+  scrumbarista:
+    image: scrumbarista:latest
     command: yarn develop
     ports:
       - 3000:3000
@@ -18,6 +18,6 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=username
       - MONGO_INITDB_ROOT_PASSWORD=password
-      - MONGO_INITDB_DATABASE=kanbanista
+      - MONGO_INITDB_DATABASE=scrumbarista
     ports:
       - 27017:27017
