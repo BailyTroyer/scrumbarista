@@ -1,0 +1,14 @@
+{
+  "editor.codeActionsOnSave": { "source.fixAll.eslint": true },
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  "eslint.alwaysShowStatus": true,
+  "files.autoSave": "onFocusChange",
+  "eslint.workingDirectories": [
+    "api",
+    "app",
+    "bolt",
+    "marketing"
+  ]
+}
