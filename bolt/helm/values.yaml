@@ -1,0 +1,30 @@
+meta:
+  provider: aws
+  region: us-east-1
+  clusterName: useast1.dev.baily.io
+  name: bolt
+  namespace: scrumbarista
+  environment: development
+containers:
+  bolt:
+    name: bolt
+    image:
+      repository: 418118555604.dkr.ecr.us-east-1.amazonaws.com/scrumbarista-bolt
+      tag: latest
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    env:
+    - name: SLACK_SIGNING_SECRET
+      value: ff9be4e29c27c1a5e087b68c8048d56e
+    - name: SLACK_BOT_TOKEN
+      value: xoxb-1704809032615-2750821186736-KnE2POv1jeQh4Wch78XOLjSv
+    - name: PORT
+      value: "8080"
+    port: 8080
+    replicas: 1
+    host: scrumbarista-bolt.useast1.dev.baily.io

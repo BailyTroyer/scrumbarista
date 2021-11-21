@@ -1,0 +1,23 @@
+meta:
+  provider: aws
+  region: us-east-1
+  clusterName: useast1.dev.baily.io
+  name: app
+  namespace: scrumbarista
+  environment: development
+containers:
+  app:
+    name: app
+    image:
+      repository: 418118555604.dkr.ecr.us-east-1.amazonaws.com/scrumbarista-app
+      tag: latest
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    port: 3000
+    replicas: 1
+    host: scrumbarista-app.useast1.dev.baily.io

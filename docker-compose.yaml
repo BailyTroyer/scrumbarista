@@ -1,0 +1,45 @@
+version: "3.7"
+services:
+  api:
+    platform: linux/amd64
+    build: ./api
+    command: yarn start:dev
+    volumes:
+      - ./api/src:/app/src
+    ports:
+      - 8000:8000
+  app:
+    platform: linux/amd64
+    build: ./app
+    command: yarn dev
+    volumes:
+      - ./app/pages:/app/pages
+      - ./app/components:/app/components
+      - ./app/.env.local:/app/.env.local
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
+  bolt:
+    platform: linux/amd64
+    build: ./bolt
+    command: yarn start:dev
+    volumes:
+      - ./bolt/src:/bolt/src
+    environment:
+      - SLACK_SIGNING_SECRET=ff9be4e29c27c1a5e087b68c8048d56e
+      - SLACK_BOT_TOKEN=xoxb-1704809032615-2750821186736-KnE2POv1jeQh4Wch78XOLjSv
+      - PORT=8080
+    ports:
+      - 8080:8080
+    depends_on:
+      - api
+  marketing:
+    platform: linux/amd64
+    build: ./marketing
+    command: yarn dev
+    volumes:
+      - ./marketing/pages:/app/pages
+      - ./marketing/components:/app/components
+    ports:
+      - 4000:3000
