@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "sinon": "^12.0.1"
+  }
+}

@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`The Scrumbarista BoltJS App /scrumbarista slash command returns the valid attachments 1`] = `
+Array [
+  Object {
+    "attachments": Array [
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*Manage*
+invoked with \\"/standup\\"
+Opens a dialog to manage a Stand-up",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "#ECB22E",
+      },
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*Checkin*
+invoked with \\"/checkin\\"
+Opens a dialog to checkin and fulfull the daily Stand-up. Otherwise you will get a message in your DM at the alloted time",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "#41BC88",
+      },
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*need more information?*
+too bad :wink:, we're not at that point yet...",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "#E4E4E4",
+      },
+    ],
+    "channel": "C01LQPT2LMD",
+    "token": "xoxb-1704809032615-2750821186736-T8Elda9RiWzavrCrpvR4IbWU",
+    "user": "U01MVCH5TUY",
+  },
+]
+`;

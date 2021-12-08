@@ -1,7 +1,7 @@
-import { Box, Heading } from '@chakra-ui/layout';
-import { Center, Spinner, Alert, AlertIcon } from '@chakra-ui/react';
-import type { NextPage } from 'next';
-import useSWR from 'swr';
+import { Box, Heading } from "@chakra-ui/layout";
+import { Center, Spinner, Alert, AlertIcon } from "@chakra-ui/react";
+import type { NextPage } from "next";
+import useSWR from "swr";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 

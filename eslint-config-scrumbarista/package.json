@@ -1,0 +1,24 @@
+{
+  "name": "eslint-config-scrumbarista",
+  "version": "1.0.0",
+  "description": "making scrumbarista code easier to read and manage",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "scrumbarista"
+  ],
+  "author": "@BailyTroyer",
+  "license": "ISC",
+  "peerDependencies": {
+    "eslint": "^7.23.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-prettier": "^4.0.0"
+  },
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint-config-prettier": "^8.3.0"
+  }
+}

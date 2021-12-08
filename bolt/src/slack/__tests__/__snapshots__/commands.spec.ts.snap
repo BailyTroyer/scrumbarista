@@ -1,0 +1,107 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`The commands handlers checkinCommand opens the checkin model 1`] = `
+Array [
+  Object {
+    "trigger_id": "trigger",
+    "view": Object {
+      "blocks": Array [],
+      "callback_id": "checkin",
+      "private_metadata": "{\\"channelID\\":\\"C01LQPT2LMD\\"}",
+      "submit": Object {
+        "text": "Submit",
+        "type": "plain_text",
+      },
+      "title": Object {
+        "text": "Manual Checkin",
+        "type": "plain_text",
+      },
+      "type": "modal",
+    },
+  },
+]
+`;
+
+exports[`The commands handlers checkinCommand posts an ephemeral message when no standup exists 1`] = `
+Array [
+  Object {
+    "channel": "channel",
+    "text": "There's no standup in this channel. Feel free to create one with /standup",
+    "user": "user",
+  },
+]
+`;
+
+exports[`The commands handlers scrumbaristaCommand posts an ephemeral message 1`] = `
+Array [
+  Object {
+    "attachments": Array [
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*Manage*
+invoked with \\"/standup\\"
+Opens a dialog to manage a Stand-up",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "#ECB22E",
+      },
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*Checkin*
+invoked with \\"/checkin\\"
+Opens a dialog to checkin and fulfull the daily Stand-up. Otherwise you will get a message in your DM at the alloted time",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "#41BC88",
+      },
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*need more information?*
+too bad :wink:, we're not at that point yet...",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "#E4E4E4",
+      },
+    ],
+    "channel": "channel",
+    "user": "user",
+  },
+]
+`;
+
+exports[`The commands handlers standupCommand opens a view with the proper standup information 1`] = `
+Array [
+  Object {
+    "trigger_id": "trigger",
+    "view": Object {
+      "blocks": Array [],
+      "callback_id": "standup",
+      "private_metadata": "{}",
+      "submit": Object {
+        "text": "Submit",
+        "type": "plain_text",
+      },
+      "title": Object {
+        "text": "Configure Standup",
+        "type": "plain_text",
+      },
+      "type": "modal",
+    },
+  },
+]
+`;
