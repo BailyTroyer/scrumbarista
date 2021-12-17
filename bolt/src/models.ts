@@ -8,12 +8,22 @@ export enum Day {
   SUNDAY = "sunday",
 }
 
-export type Standup = {
-  id: string;
+export type NewStandup = {
   name: string;
   channelId: string;
   questions: string;
   days: Day[];
+};
+
+export type Standup = NewStandup & {
+  id: string;
+};
+
+export const newEmptyStandup: NewStandup = {
+  name: "",
+  channelId: "",
+  questions: "",
+  days: [],
 };
 
 export type Checkin = {

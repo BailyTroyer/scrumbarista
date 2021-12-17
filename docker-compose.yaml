@@ -12,19 +12,21 @@ services:
       MYSQL_DATABASE: scrumbarista
       MYSQL_USER: username
       MYSQL_PASSWORD: password
-  # api:
-  #   platform: linux/amd64
-  #   image: api
-  #   # build: ./api
-  #   command: yarn start:dev
-  #   volumes:
-  #     - ./api/src:/app/src
-  #     - ./api/test:/app/test
-  #     - ./api/nest-cli.json:/app/nest-cli.json
-  #   ports:
-  #     - 8000:8000
-  #   # depends_on:
-  #   #   - db
+  api:
+    platform: linux/amd64
+    # image: api
+    build: ./api
+    command: yarn start:dev
+    volumes:
+      - ./api/src:/app/src
+      - ./api/test:/app/test
+      - ./api/nest-cli.json:/app/nest-cli.json
+    environment:
+      - DB=db
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
   # app:
   #   platform: linux/amd64
   #   build: ./app

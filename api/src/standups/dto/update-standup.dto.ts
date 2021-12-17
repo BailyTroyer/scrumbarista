@@ -1,11 +1,20 @@
 import { PartialType } from "@nestjs/mapped-types";
+import { IsString, IsOptional, ArrayUnique, IsEnum } from "class-validator";
 
-import { Day } from "../entities/standup.entity";
+import { DayOfWeek } from "../entities/day.entity";
 import { CreateStandupDto } from "./create-standup.dto";
 
 export class UpdateStandupDto extends PartialType(CreateStandupDto) {
+  @IsOptional()
+  @IsString()
   name?: string;
-  channelId?: string;
+
+  @IsOptional()
+  @IsString()
   questions?: string;
-  days?: Day[];
+
+  @IsOptional()
+  @ArrayUnique()
+  @IsEnum(DayOfWeek, { each: true })
+  days?: DayOfWeek[];
 }

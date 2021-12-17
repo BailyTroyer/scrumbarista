@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseInterceptors,
+  UseFilters,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UpdateResult } from "typeorm";
@@ -25,6 +26,7 @@ export class CheckinsController {
   constructor(private readonly checkinsService: CheckinsService) {}
 
   @Post(":channelId/checkins")
+  @UseFilters(EntityNotFoundExceptionFilter)
   @ApiOperation({ summary: "create checkin" })
   @ApiResponse({ status: 201, description: "checkin created" })
   create(
@@ -35,6 +37,7 @@ export class CheckinsController {
   }
 
   @Get(":channelId/checkins")
+  @UseFilters(EntityNotFoundExceptionFilter)
   @ApiOperation({ summary: "list checkins" })
   @ApiResponse({ status: 200 })
   findAll(
@@ -46,6 +49,7 @@ export class CheckinsController {
   }
 
   @Get(":channelId/checkins/:checkinId")
+  @UseFilters(EntityNotFoundExceptionFilter)
   @ApiOperation({ summary: "fetch checkin by Id" })
   @ApiResponse({ status: 200 })
   findOne(
@@ -56,6 +60,7 @@ export class CheckinsController {
   }
 
   @Patch(":channelId/checkins/:checkinId")
+  @UseFilters(EntityNotFoundExceptionFilter)
   update(
     @Param("channelId") channelId: string,
     @Param("checkinId") checkinId: string,
@@ -65,6 +70,7 @@ export class CheckinsController {
   }
 
   @Delete(":channelId/checkins/:checkinId")
+  @UseFilters(EntityNotFoundExceptionFilter)
   remove(@Param("checkinId") checkinId: string): Promise<void> {
     return this.checkinsService.remove(checkinId);
   }

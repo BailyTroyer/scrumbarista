@@ -1,0 +1,115 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`The views handlers checkinView creates new checkin and posts message in standup channel 1`] = `
+Array [
+  Object {
+    "include_locale": true,
+    "user": "userId",
+  },
+]
+`;
+
+exports[`The views handlers checkinView creates new checkin and posts message in standup channel 2`] = `
+Array [
+  Object {
+    "attachments": Array [
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*name*
+12/16/2021",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "#41BC88",
+      },
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*questions*
+name",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "E4E4E4",
+      },
+    ],
+    "channel": "channel",
+    "ts": "",
+  },
+]
+`;
+
+exports[`The views handlers checkinView updates pre-existing checkin and posts message in standup channel 1`] = `
+Array [
+  Object {
+    "include_locale": true,
+    "user": "userId",
+  },
+]
+`;
+
+exports[`The views handlers checkinView updates pre-existing checkin and posts message in standup channel 2`] = `
+Array [
+  Object {
+    "attachments": Array [
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*name*
+12/16/2021",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "#41BC88",
+      },
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*questions*
+name",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "E4E4E4",
+      },
+    ],
+    "channel": "channel",
+    "icon_url": "image",
+    "text": "",
+    "username": "name",
+  },
+]
+`;
+
+exports[`The views handlers standupView posts an emphemeral message when unable to update standup 1`] = `
+Array [
+  Object {
+    "channel": "",
+    "text": "I was unable to update name",
+    "user": "userId",
+  },
+]
+`;
+
+exports[`The views handlers standupView posts an ephemeral message when standup is successfully configured 1`] = `
+Array [
+  Object {
+    "channel": "",
+    "text": "I've updated name",
+    "user": "userId",
+  },
+]
+`;

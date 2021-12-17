@@ -1,6 +1,5 @@
 import { server } from "./mocks/server";
 
-
 // beforeAll(() => server.listen({ onUnhandledRequest: "bypass" }));
 // Establish API mocking before all tests.
 beforeAll(() => server.listen());

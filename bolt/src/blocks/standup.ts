@@ -1,23 +1,19 @@
-import { Day, Standup } from "src/models";
+import { PlainTextOption, View } from "@slack/types";
 
-export const createStandup = (standup: Standup, channelId: string) => {
-  if (standup === null) {
-    standup = {
-      id: '',
-      name: "",
-      channelId,
-      // time: "10:00",
-      questions: "",
-      days: [Day.MONDAY],
-    };
-  }
+import { Day, Standup } from "../models";
 
-  const days = standup.days.map((d) => ({
+const capitalize = (s) => {
+  if (typeof s !== "string") return "";
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
+export const standupBlocks = (standup: Standup): View => {
+  const days: PlainTextOption[] = standup.days.map((d) => ({
     text: {
       type: "plain_text",
-      text: d,
+      text: capitalize(d.toString()),
     },
-    value: d,
+    value: capitalize(d.toString()),
   }));
 
   return {
@@ -51,7 +47,7 @@ export const createStandup = (standup: Standup, channelId: string) => {
         block_id: "time",
         element: {
           type: "timepicker",
-          initial_time: "CHANGE TIME HERE BAILY",
+          initial_time: "16:20",
           placeholder: {
             type: "plain_text",
             text: "Select time",
@@ -79,7 +75,7 @@ export const createStandup = (standup: Standup, channelId: string) => {
             type: "plain_text",
             text: "Select items",
           },
-          initial_options: days,
+          ...(days.length > 0 ? { initial_options: days } : null),
           options: [
             {
               text: {
@@ -162,6 +158,6 @@ export const createStandup = (standup: Standup, channelId: string) => {
       type: "plain_text",
       text: "Submit",
     },
-    private_metadata: JSON.stringify({ channelID: standup.channelId }),
+    private_metadata: JSON.stringify({ channelId: standup.channelId }),
   };
 };

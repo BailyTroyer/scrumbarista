@@ -4,7 +4,7 @@ import * as request from "supertest";
 import { getConnection, getRepository, Repository } from "typeorm";
 
 import { AppModule } from "../app.module";
-import { Day, Standup } from "./entities/standup.entity";
+import { Standup } from "./entities/standup.entity";
 
 describe("StandupController", () => {
   let app: INestApplication;
@@ -27,19 +27,19 @@ describe("StandupController", () => {
   });
 
   describe("GET /standups", () => {
-    it("returns empty list when no standups defined", () => {
+    it("returns an empty list when no standups are defined", () => {
       return request(app.getHttpServer())
         .get("/standups")
         .expect(200)
         .expect([]);
     });
 
-    it("returns standup list when previous standups exist", async () => {
+    it("returns a standup list when previous standups exist", async () => {
       await standupRepository.save({
         name: "test-standup",
         channelId: "channel",
         questions: "questions",
-        days: [Day.MONDAY],
+        days: [],
       });
 
       return request(app.getHttpServer())
@@ -54,18 +54,32 @@ describe("StandupController", () => {
           },
         ]);
     });
+  });
 
-    it("returns standup by channelID", async () => {
+  describe("GET /standups/:channelId", () => {
+    it("returns a standup by channelId", async () => {
       await standupRepository.save({
         name: "unique-standup-by-channel",
         channelId: "channelId",
         questions: "questions",
-        days: [Day.MONDAY],
+        days: [],
       });
 
       return request(app.getHttpServer())
         .get("/standups/channelId")
         .expect(200)
+        .expect({
+          channelId: "channelId",
+          name: "unique-standup-by-channel",
+          questions: "questions",
+          days: "monday",
+        });
+    });
+
+    it("returns a 404 when no standup exists in the channel", () => {
+      return request(app.getHttpServer())
+        .get("/standups/does-not-exist")
+        .expect(404)
         .expect({
           channelId: "channelId",
           name: "unique-standup-by-channel",
@@ -102,7 +116,7 @@ describe("StandupController", () => {
         name: "unique-standup-by-channel",
         channelId: "channelId",
         questions: "questions",
-        days: [Day.MONDAY],
+        days: [],
       });
 
       return request(app.getHttpServer())
@@ -119,7 +133,7 @@ describe("StandupController", () => {
         name: "to-be-deleted",
         channelId: "channelId",
         questions: "questions",
-        days: [Day.MONDAY],
+        days: [],
       });
 
       return request(app.getHttpServer())

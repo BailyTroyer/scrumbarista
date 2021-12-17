@@ -42,7 +42,7 @@ export class CheckinsService {
 
   findOne(channelId: string, checkinId: string): Promise<Checkin> {
     return this.checkinsRepository.findOneOrFail({
-      id: checkinId,
+      id: channelId,
       standup: { channelId },
     });
   }

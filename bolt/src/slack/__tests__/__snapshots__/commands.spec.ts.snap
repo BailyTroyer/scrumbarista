@@ -7,7 +7,7 @@ Array [
     "view": Object {
       "blocks": Array [],
       "callback_id": "checkin",
-      "private_metadata": "{\\"channelID\\":\\"C01LQPT2LMD\\"}",
+      "private_metadata": "{\\"channelId\\":\\"C01LQPT2LMD\\"}",
       "submit": Object {
         "text": "Submit",
         "type": "plain_text",
@@ -84,14 +84,312 @@ too bad :wink:, we're not at that point yet...",
 ]
 `;
 
-exports[`The commands handlers standupCommand opens a view with the proper standup information 1`] = `
+exports[`The commands handlers standupCommand creates a standup when one doesn't exist for channel 1`] = `
 Array [
   Object {
     "trigger_id": "trigger",
     "view": Object {
-      "blocks": Array [],
+      "blocks": Array [
+        Object {
+          "block_id": "name",
+          "element": Object {
+            "action_id": "name",
+            "initial_value": "name",
+            "placeholder": Object {
+              "text": "Enter a name for the stand-up",
+              "type": "plain_text",
+            },
+            "type": "plain_text_input",
+          },
+          "label": Object {
+            "emoji": true,
+            "text": "Name",
+            "type": "plain_text",
+          },
+          "type": "input",
+        },
+        Object {
+          "block_id": "time",
+          "element": Object {
+            "action_id": "time",
+            "initial_time": "16:20",
+            "placeholder": Object {
+              "emoji": true,
+              "text": "Select time",
+              "type": "plain_text",
+            },
+            "type": "timepicker",
+          },
+          "label": Object {
+            "emoji": true,
+            "text": "Time",
+            "type": "plain_text",
+          },
+          "type": "input",
+        },
+        Object {
+          "accessory": Object {
+            "action_id": "days",
+            "initial_options": Array [
+              Object {
+                "text": Object {
+                  "text": "Monday",
+                  "type": "plain_text",
+                },
+                "value": "Monday",
+              },
+            ],
+            "options": Array [
+              Object {
+                "text": Object {
+                  "text": "Monday",
+                  "type": "plain_text",
+                },
+                "value": "Monday",
+              },
+              Object {
+                "text": Object {
+                  "text": "Tuesday",
+                  "type": "plain_text",
+                },
+                "value": "Tuesday",
+              },
+              Object {
+                "text": Object {
+                  "text": "Wednesday",
+                  "type": "plain_text",
+                },
+                "value": "Wednesday",
+              },
+              Object {
+                "text": Object {
+                  "text": "Thursday",
+                  "type": "plain_text",
+                },
+                "value": "Thursday",
+              },
+              Object {
+                "text": Object {
+                  "text": "Friday",
+                  "type": "plain_text",
+                },
+                "value": "Friday",
+              },
+              Object {
+                "text": Object {
+                  "text": "Saturday",
+                  "type": "plain_text",
+                },
+                "value": "Saturday",
+              },
+              Object {
+                "text": Object {
+                  "text": "Sunday",
+                  "type": "plain_text",
+                },
+                "value": "Sunday",
+              },
+            ],
+            "placeholder": Object {
+              "text": "Select items",
+              "type": "plain_text",
+            },
+            "type": "multi_static_select",
+          },
+          "block_id": "days",
+          "text": Object {
+            "text": "Pick Stand-Up Days",
+            "type": "mrkdwn",
+          },
+          "type": "section",
+        },
+        Object {
+          "block_id": "questions",
+          "element": Object {
+            "action_id": "questions",
+            "initial_value": "questions",
+            "multiline": true,
+            "type": "plain_text_input",
+          },
+          "label": Object {
+            "emoji": true,
+            "text": "Questions",
+            "type": "plain_text",
+          },
+          "type": "input",
+        },
+        Object {
+          "elements": Array [
+            Object {
+              "text": "Enter the stand-up questions, separated by linebreak",
+              "type": "plain_text",
+            },
+          ],
+          "type": "context",
+        },
+      ],
       "callback_id": "standup",
-      "private_metadata": "{}",
+      "private_metadata": "{\\"channelId\\":\\"C01LQPT2LMD\\"}",
+      "submit": Object {
+        "text": "Submit",
+        "type": "plain_text",
+      },
+      "title": Object {
+        "text": "Configure Standup",
+        "type": "plain_text",
+      },
+      "type": "modal",
+    },
+  },
+]
+`;
+
+exports[`The commands handlers standupCommand uses a pre-existing standup to create modal 1`] = `
+Array [
+  Object {
+    "trigger_id": "trigger",
+    "view": Object {
+      "blocks": Array [
+        Object {
+          "block_id": "name",
+          "element": Object {
+            "action_id": "name",
+            "initial_value": "name",
+            "placeholder": Object {
+              "text": "Enter a name for the stand-up",
+              "type": "plain_text",
+            },
+            "type": "plain_text_input",
+          },
+          "label": Object {
+            "emoji": true,
+            "text": "Name",
+            "type": "plain_text",
+          },
+          "type": "input",
+        },
+        Object {
+          "block_id": "time",
+          "element": Object {
+            "action_id": "time",
+            "initial_time": "16:20",
+            "placeholder": Object {
+              "emoji": true,
+              "text": "Select time",
+              "type": "plain_text",
+            },
+            "type": "timepicker",
+          },
+          "label": Object {
+            "emoji": true,
+            "text": "Time",
+            "type": "plain_text",
+          },
+          "type": "input",
+        },
+        Object {
+          "accessory": Object {
+            "action_id": "days",
+            "initial_options": Array [
+              Object {
+                "text": Object {
+                  "text": "Monday",
+                  "type": "plain_text",
+                },
+                "value": "Monday",
+              },
+            ],
+            "options": Array [
+              Object {
+                "text": Object {
+                  "text": "Monday",
+                  "type": "plain_text",
+                },
+                "value": "Monday",
+              },
+              Object {
+                "text": Object {
+                  "text": "Tuesday",
+                  "type": "plain_text",
+                },
+                "value": "Tuesday",
+              },
+              Object {
+                "text": Object {
+                  "text": "Wednesday",
+                  "type": "plain_text",
+                },
+                "value": "Wednesday",
+              },
+              Object {
+                "text": Object {
+                  "text": "Thursday",
+                  "type": "plain_text",
+                },
+                "value": "Thursday",
+              },
+              Object {
+                "text": Object {
+                  "text": "Friday",
+                  "type": "plain_text",
+                },
+                "value": "Friday",
+              },
+              Object {
+                "text": Object {
+                  "text": "Saturday",
+                  "type": "plain_text",
+                },
+                "value": "Saturday",
+              },
+              Object {
+                "text": Object {
+                  "text": "Sunday",
+                  "type": "plain_text",
+                },
+                "value": "Sunday",
+              },
+            ],
+            "placeholder": Object {
+              "text": "Select items",
+              "type": "plain_text",
+            },
+            "type": "multi_static_select",
+          },
+          "block_id": "days",
+          "text": Object {
+            "text": "Pick Stand-Up Days",
+            "type": "mrkdwn",
+          },
+          "type": "section",
+        },
+        Object {
+          "block_id": "questions",
+          "element": Object {
+            "action_id": "questions",
+            "initial_value": "questions",
+            "multiline": true,
+            "type": "plain_text_input",
+          },
+          "label": Object {
+            "emoji": true,
+            "text": "Questions",
+            "type": "plain_text",
+          },
+          "type": "input",
+        },
+        Object {
+          "elements": Array [
+            Object {
+              "text": "Enter the stand-up questions, separated by linebreak",
+              "type": "plain_text",
+            },
+          ],
+          "type": "context",
+        },
+      ],
+      "callback_id": "standup",
+      "private_metadata": "{\\"channelId\\":\\"C01LQPT2LMD\\"}",
       "submit": Object {
         "text": "Submit",
         "type": "plain_text",

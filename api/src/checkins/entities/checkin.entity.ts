@@ -22,8 +22,6 @@ export class Checkin {
   @Column()
   postMessageTs: string;
 
-  @ManyToOne(() => Standup, (standup) => standup.checkins, {
-    onDelete: "CASCADE",
-  })
+  @ManyToOne(() => Standup, (standup) => standup.checkins)
   standup: Standup;
 }

@@ -1,32 +1,22 @@
 import { Entity, Column, OneToMany } from "typeorm";
 
 import { Checkin } from "../../checkins/entities/checkin.entity";
+import { Day } from "./day.entity";
 
-export enum Day {
-  MONDAY = "monday",
-  TUESDAY = "tuesday",
-  WEDNESDAY = "wednesday",
-  THURSDAY = "thursday",
-  FRIDAY = "friday",
-  SATURDAY = "saturday",
-  SUNDAY = "sunday",
-}
+// Channels are a single source of truth
 
 @Entity()
 export class Standup {
-  @Column({ unique: true, primary: true })
+  @Column({ primary: true, default: "" })
   channelId: string;
 
-  @Column({ unique: true })
+  @Column({ default: "" })
   name: string;
 
-  @Column()
+  @Column({ default: "" })
   questions: string;
 
-  @Column({
-    type: "enum",
-    enum: Day,
-  })
+  @OneToMany(() => Day, (day) => day.standup, { cascade: true, eager: true })
   days: Day[];
 
   @OneToMany(() => Checkin, (checkin) => checkin.standup, { cascade: true })

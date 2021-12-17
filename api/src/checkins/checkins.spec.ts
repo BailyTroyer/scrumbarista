@@ -4,7 +4,8 @@ import * as request from "supertest";
 import { getConnection, getRepository, Repository } from "typeorm";
 
 import { AppModule } from "../app.module";
-import { Standup, Day } from "../standups/entities/standup.entity";
+import { Day } from "../standups/entities/day.entity";
+import { Standup } from "../standups/entities/standup.entity";
 import { Checkin } from "./entities/checkin.entity";
 
 describe("CheckinController", () => {
@@ -17,7 +18,7 @@ describe("CheckinController", () => {
       name: "test-standup",
       channelId: "channelId",
       questions: "questions",
-      days: [Day.MONDAY],
+      days: [],
     });
 
     const checkin = await checkinRepository.save({
@@ -54,7 +55,7 @@ describe("CheckinController", () => {
         name: "test-standup",
         channelId: "channelId",
         questions: "questions",
-        days: [Day.MONDAY],
+        days: [],
       });
 
       return request(app.getHttpServer())
