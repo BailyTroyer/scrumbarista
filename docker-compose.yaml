@@ -16,7 +16,7 @@ services:
     platform: linux/amd64
     # image: api
     build: ./api
-    command: yarn start:dev
+    command: npm run start:dev
     volumes:
       - ./api/src:/app/src
       - ./api/test:/app/test
@@ -30,7 +30,7 @@ services:
   # app:
   #   platform: linux/amd64
   #   build: ./app
-  #   command: yarn dev
+  #   command: npm run dev
   #   volumes:
   #     - ./app/pages:/app/pages
   #     - ./app/components:/app/components
@@ -42,7 +42,7 @@ services:
   # bolt:
   #   platform: linux/amd64
   #   build: ./bolt
-  #   command: yarn start:dev
+  #   command: npm run start:dev
   #   volumes:
   #     - ./bolt/src:/bolt/src
   #   environment:
@@ -56,7 +56,7 @@ services:
   # marketing:
   #   platform: linux/amd64
   #   build: ./marketing
-  #   command: yarn dev
+  #   command: npm run dev
   #   volumes:
   #     - ./marketing/pages:/app/pages
   #     - ./marketing/components:/app/components

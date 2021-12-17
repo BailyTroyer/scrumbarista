@@ -3,14 +3,11 @@ FROM node:lts
 WORKDIR /app
 
 # Install dependencies
-COPY ./package.json /app
-COPY ./yarn.lock /app
-
-RUN yarn install
+COPY ./package*.json /app
+RUN npm i
 
 COPY ./src /app/src
 COPY ./tsconfig* /app
 
-RUN yarn build
-
-CMD [ "yarn", "start:prod" ]
+RUN npm run build
+CMD [ "npm", "run", "start:prod" ]
