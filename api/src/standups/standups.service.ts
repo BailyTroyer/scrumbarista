@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, UpdateResult } from "typeorm";
+import { Repository } from "typeorm";
 
 import { CreateStandupDto } from "./dto/create-standup.dto";
 import { UpdateStandupDto } from "./dto/update-standup.dto";
-import { Day, DayOfWeek } from "./entities/day.entity";
+import { Day } from "./entities/day.entity";
 import { Standup } from "./entities/standup.entity";
 
 @Injectable()
@@ -30,9 +30,25 @@ export class StandupsService {
     return this.standupsRepository.save(standup);
   }
 
-  findAll(params: { skip?: number; take?: number }): Promise<Standup[]> {
-    const { skip, take } = params;
-    return this.standupsRepository.find({ skip, take });
+  findAll(params: {
+    skip?: number;
+    take?: number;
+    day?: string;
+  }): Promise<Standup[]> {
+    const { skip, take, day } = params;
+
+    return this.standupsRepository.find({
+      skip,
+      take,
+      relations: ["days"],
+      where: day
+        ? (qb) => {
+            qb.where("day IN (:day)", {
+              day,
+            });
+          }
+        : null,
+    });
   }
 
   findOne(channelId: string): Promise<Standup> {
@@ -43,8 +59,6 @@ export class StandupsService {
     channelId: string,
     { days, ...updateStandupDto }: UpdateStandupDto
   ): Promise<Standup> {
-    console.log("Updating standup: ", channelId);
-
     const standup = await this.findOne(channelId);
 
     await this.daysRepository.delete({ standup });
@@ -52,8 +66,6 @@ export class StandupsService {
     standup.days = await this.daysRepository.create(
       days.map((day) => ({ day }))
     );
-
-    console.log("created days: ", standup.days);
 
     standup.questions = updateStandupDto.questions;
     standup.name = updateStandupDto.name;

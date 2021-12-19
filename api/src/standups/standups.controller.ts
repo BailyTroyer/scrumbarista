@@ -40,11 +40,12 @@ export class StandupsController {
   @ApiResponse({ status: 200 })
   async findAll(
     @Query("offset") skip = 0,
-    @Query("limit") take = 25
+    @Query("limit") take = 25,
+    @Query("day") day: string
   ): Promise<StandupDto[]> {
     return plainToClass(
       StandupDto,
-      await this.standupsService.findAll({ take, skip })
+      await this.standupsService.findAll({ take, skip, day })
     );
   }
 
@@ -53,10 +54,6 @@ export class StandupsController {
   @ApiOperation({ summary: "fetch standup by Id" })
   @ApiResponse({ status: 200 })
   async findOne(@Param("channelId") channelId: string): Promise<StandupDto> {
-    console.log(
-      "FOUND STANDUP: ",
-      await this.standupsService.findOne(channelId)
-    );
     return plainToClass(
       StandupDto,
       await this.standupsService.findOne(channelId)

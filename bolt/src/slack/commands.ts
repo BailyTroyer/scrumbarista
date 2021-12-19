@@ -64,7 +64,78 @@ export const checkinCommand: Middleware<SlackCommandMiddlewareArgs> = async ({
   } else {
     await client.views.open({
       trigger_id,
-      view: createCheckin(standup),
+      view: createCheckin(standup, checkin),
     });
   }
+};
+
+/**
+ * Generates a random ordering of all users in the specified channel
+ */
+export const randomOrderCommand: Middleware<SlackCommandMiddlewareArgs> =
+  async ({ ack, command: { channel_id: channel, user_id: user }, client }) => {
+    await ack();
+
+    // Get users in channel
+    const members = await client.conversations.members({ channel });
+
+    // For each user get their real name
+    const users = await Promise.all(
+      members.members.map(
+        async (user) => (await client.users.info({ user })).user.name
+      )
+    );
+
+    await client.chat.postEphemeral({
+      channel,
+      text: users.join(","),
+      user,
+    });
+  };
+
+/**
+ * Generates a random user based on the specified slack channel user list
+ */
+export const randomPersonCommand: Middleware<SlackCommandMiddlewareArgs> =
+  async ({ ack, command: { channel_id: channel, user_id: user }, client }) => {
+    await ack();
+
+    // Get users in channel
+    const members = await client.conversations.members({ channel });
+
+    // Fetch user list
+    const memberList = members.members;
+
+    // Get random index in array
+    const randomUser =
+      memberList[Math.floor(Math.random() * memberList.length)];
+
+    // Fetch real name (not userId)
+    const name = await (
+      await client.users.info({ user: randomUser })
+    ).user.name;
+
+    await client.chat.postEphemeral({
+      channel,
+      text: name,
+      user,
+    });
+  };
+
+/**
+ * Fetches a random "Interesting thing of the week" to do
+ */
+export const itotwCommand: Middleware<SlackCommandMiddlewareArgs> = async ({
+  ack,
+}) => {
+  await ack();
+};
+
+/**
+ * Saves a new "Interesting thing of the week" idea for later use
+ */
+export const saveItotwCommand: Middleware<SlackCommandMiddlewareArgs> = async ({
+  ack,
+}) => {
+  await ack();
 };

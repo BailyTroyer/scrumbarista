@@ -15,7 +15,7 @@ declare let process: {
 export const config: ConnectionOptions = {
   type: "mysql",
   url: process.env.DB_URL || "mysql://username:password@db:3306/scrumbarista",
-  // entities: [join(__dirname, "**/entities/*.ts")],
+  // entities: [join(__dirname, "*/entities/*.entity.ts")],
   entities: [Standup, Day, Checkin],
   synchronize: true,
   // migrations: [join(__dirname, "migrations/*.ts")],

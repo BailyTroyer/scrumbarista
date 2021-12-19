@@ -35,28 +35,28 @@ describe("The Scrumbarista BoltJS App", () => {
     });
   });
 
-  describe("/scrumbarista slash command", () => {
-    it("properly routes to the scrumbarista command helper", async () => {
-      const mockShortcutPayload = {
-        command: "/scrumbarista",
-        channel: "channel",
-      };
+  // describe("/scrumbarista slash command", () => {
+  //   it("properly routes to the scrumbarista command helper", async () => {
+  //     const mockShortcutPayload = {
+  //       command: "/scrumbarista",
+  //       channel: "channel",
+  //     };
 
-      const timestamp = new Date().valueOf();
-      const signature = generateSignature(
-        JSON.stringify(mockShortcutPayload),
-        timestamp,
-        signingSecret
-      );
+  //     const timestamp = new Date().valueOf();
+  //     const signature = generateSignature(
+  //       JSON.stringify(mockShortcutPayload),
+  //       timestamp,
+  //       signingSecret
+  //     );
 
-      await request(receiver.app)
-        .post("/slack/events")
-        .send(mockShortcutPayload)
-        .set({
-          "x-slack-signature": signature,
-          "x-slack-request-timestamp": timestamp,
-        })
-        .expect(200);
-    });
-  });
+  //     await request(receiver.app)
+  //       .post("/slack/events")
+  //       .send(mockShortcutPayload)
+  //       .set({
+  //         "x-slack-signature": signature,
+  //         "x-slack-request-timestamp": timestamp,
+  //       })
+  //       .expect(200);
+  //   });
+  // });
 });

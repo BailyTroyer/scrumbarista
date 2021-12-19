@@ -149,6 +149,16 @@ describe("The commands handlers", () => {
       const open = jest.fn();
       const postEphemeral = jest.fn();
 
+      server.use(
+        rest.get("http://localhost:8000/standups/channel", (req, res, ctx) =>
+          res(ctx.status(400))
+        ),
+        rest.get(
+          "http://localhost:8000/standups/channel/checkins",
+          (req, res, ctx) => res(ctx.status(400))
+        )
+      );
+
       await checkinCommand({
         ack: jest.fn(),
         command: {

@@ -1,5 +1,14 @@
 import { server } from "./mocks/server";
 
+beforeAll(() => {
+  jest.useFakeTimers("modern");
+  jest.setSystemTime(new Date(1998, 4, 9));
+});
+
+afterAll(() => {
+  jest.useRealTimers();
+});
+
 // beforeAll(() => server.listen({ onUnhandledRequest: "bypass" }));
 // Establish API mocking before all tests.
 beforeAll(() => server.listen());

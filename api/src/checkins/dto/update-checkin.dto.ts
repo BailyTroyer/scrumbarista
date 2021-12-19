@@ -1,4 +1,11 @@
+import { IsNotEmpty, IsString } from "class-validator";
+
 export class UpdateCheckinDto {
-  answers?: string;
-  postMessageTs?: string;
+  @IsString()
+  @IsNotEmpty()
+  answers: string;
+
+  @IsString()
+  @IsNotEmpty()
+  postMessageTs: string;
 }

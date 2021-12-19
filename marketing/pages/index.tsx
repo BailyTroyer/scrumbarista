@@ -1,9 +1,9 @@
-import { Flex } from '@chakra-ui/layout';
-import type { NextPage } from 'next';
+import { Flex } from "@chakra-ui/layout";
+import type { NextPage } from "next";
 
-import Footer from '../components/Footer';
-import Hero from '../components/Hero';
-import WithSubnavigation from '../components/Navbar';
+import Footer from "../components/Footer";
+import Hero from "../components/Hero";
+import WithSubnavigation from "../components/Navbar";
 
 const Home: NextPage = () => {
   return (

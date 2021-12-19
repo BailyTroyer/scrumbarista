@@ -24,4 +24,7 @@ export class Checkin {
 
   @ManyToOne(() => Standup, (standup) => standup.checkins)
   standup: Standup;
+
+  @Column()
+  userId: string;
 }

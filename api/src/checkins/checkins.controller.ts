@@ -11,13 +11,13 @@ import {
   UseFilters,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { UpdateResult } from "typeorm";
+import { plainToClass } from "class-transformer";
 
 import { EntityNotFoundExceptionFilter } from "../filters/entity-not-found-exception.filter";
 import { CheckinsService } from "./checkins.service";
+import { CheckinDto } from "./dto/checkin.dto";
 import { CreateCheckinDto } from "./dto/create-checkin.dto";
 import { UpdateCheckinDto } from "./dto/update-checkin.dto";
-import { Checkin } from "./entities/checkin.entity";
 
 @ApiTags("checkins")
 @Controller("/standups")
@@ -29,44 +29,63 @@ export class CheckinsController {
   @UseFilters(EntityNotFoundExceptionFilter)
   @ApiOperation({ summary: "create checkin" })
   @ApiResponse({ status: 201, description: "checkin created" })
-  create(
+  async create(
     @Param("channelId") channelId: string,
     @Body() createCheckinDto: CreateCheckinDto
-  ): Promise<CreateCheckinDto & Checkin> {
-    return this.checkinsService.create(channelId, createCheckinDto);
+  ): Promise<CheckinDto> {
+    return plainToClass(
+      CheckinDto,
+      await this.checkinsService.create(channelId, createCheckinDto)
+    );
   }
 
   @Get(":channelId/checkins")
   @UseFilters(EntityNotFoundExceptionFilter)
   @ApiOperation({ summary: "list checkins" })
   @ApiResponse({ status: 200 })
-  findAll(
+  async findAll(
     @Param("channelId") channelId: string,
     @Query("offset") skip = 0,
-    @Query("limit") take = 25
-  ): Promise<Checkin[]> {
-    return this.checkinsService.findAll(channelId, { take, skip });
+    @Query("limit") take = 25,
+    @Query("userId") userId: string,
+    @Query("date") date: string
+  ): Promise<CheckinDto[]> {
+    return plainToClass(
+      CheckinDto,
+      await this.checkinsService.findAll(channelId, {
+        take,
+        skip,
+        userId,
+        date,
+      })
+    );
   }
 
   @Get(":channelId/checkins/:checkinId")
   @UseFilters(EntityNotFoundExceptionFilter)
   @ApiOperation({ summary: "fetch checkin by Id" })
   @ApiResponse({ status: 200 })
-  findOne(
+  async findOne(
     @Param("channelId") channelId: string,
     @Param("checkinId") checkinId: string
-  ): Promise<Checkin> {
-    return this.checkinsService.findOne(channelId, checkinId);
+  ): Promise<CheckinDto> {
+    return plainToClass(
+      CheckinDto,
+      await this.checkinsService.findOne(channelId, checkinId)
+    );
   }
 
   @Patch(":channelId/checkins/:checkinId")
   @UseFilters(EntityNotFoundExceptionFilter)
-  update(
+  async update(
     @Param("channelId") channelId: string,
     @Param("checkinId") checkinId: string,
     @Body() updateCheckinDto: UpdateCheckinDto
-  ): Promise<UpdateResult> {
-    return this.checkinsService.update(channelId, checkinId, updateCheckinDto);
+  ): Promise<CheckinDto> {
+    return plainToClass(
+      CheckinDto,
+      await this.checkinsService.update(channelId, checkinId, updateCheckinDto)
+    );
   }
 
   @Delete(":channelId/checkins/:checkinId")

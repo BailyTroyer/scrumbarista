@@ -19,6 +19,9 @@
   },
   "dependencies": {
     "@slack/bolt": "^3.8.1",
+    "body-parser": "^1.19.1",
+    "cors": "^2.8.5",
+    "lodash": "^4.17.21",
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {

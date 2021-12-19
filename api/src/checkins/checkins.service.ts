@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, UpdateResult } from "typeorm";
+import { startOfDay, endOfDay, parseISO } from "date-fns";
+import { Between, Repository, UpdateResult } from "typeorm";
 
 import { StandupsService } from "../standups/standups.service";
 import { CreateCheckinDto } from "./dto/create-checkin.dto";
@@ -30,11 +31,27 @@ export class CheckinsService {
 
   findAll(
     channelId: string,
-    params: { skip?: number; take?: number }
+    params: { skip?: number; take?: number; userId?: string; date?: string }
   ): Promise<Checkin[]> {
-    const { skip, take } = params;
+    const { skip, take, userId, date } = params;
+
+    // Conditionally add date/userId if passed
+    let filters = {};
+    if (userId) filters = { ...filters, userId };
+    if (date)
+      filters = {
+        ...filters,
+        createdDate: Between(
+          startOfDay(parseISO(date)),
+          endOfDay(parseISO(date))
+        ),
+      };
+
     return this.checkinsRepository.find({
-      where: { standup: { channelId } },
+      where: {
+        standup: { channelId },
+        ...filters,
+      },
       skip,
       take,
     });
@@ -42,7 +59,7 @@ export class CheckinsService {
 
   findOne(channelId: string, checkinId: string): Promise<Checkin> {
     return this.checkinsRepository.findOneOrFail({
-      id: channelId,
+      id: checkinId,
       standup: { channelId },
     });
   }

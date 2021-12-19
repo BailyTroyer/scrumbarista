@@ -5,7 +5,23 @@ Array [
   Object {
     "trigger_id": "trigger",
     "view": Object {
-      "blocks": Array [],
+      "blocks": Array [
+        Object {
+          "block_id": "0",
+          "element": Object {
+            "action_id": "0",
+            "initial_value": "answers",
+            "multiline": true,
+            "type": "plain_text_input",
+          },
+          "label": Object {
+            "emoji": true,
+            "text": "questions",
+            "type": "plain_text",
+          },
+          "type": "input",
+        },
+      ],
       "callback_id": "checkin",
       "private_metadata": "{\\"channelId\\":\\"C01LQPT2LMD\\"}",
       "submit": Object {
