@@ -61,11 +61,12 @@ export class StandupsService {
   ): Promise<Standup> {
     const standup = await this.findOne(channelId);
 
-    await this.daysRepository.delete({ standup });
-
-    standup.days = await this.daysRepository.create(
-      days.map((day) => ({ day }))
-    );
+    if (days) {
+      await this.daysRepository.delete({ standup });
+      standup.days = await this.daysRepository.save(
+        days.map((day) => ({ day }))
+      );
+    }
 
     standup.questions = updateStandupDto.questions;
     standup.name = updateStandupDto.name;

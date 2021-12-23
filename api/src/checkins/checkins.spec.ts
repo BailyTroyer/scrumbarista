@@ -1,12 +1,17 @@
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
-import { getConnection, getRepository, Repository } from "typeorm";
+import { Connection, getConnection, getRepository, Repository } from "typeorm";
 
 import { AppModule } from "../app.module";
-import { Day } from "../standups/entities/day.entity";
 import { Standup } from "../standups/entities/standup.entity";
 import { Checkin } from "./entities/checkin.entity";
+
+const uuid =
+  /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/;
+
+const date =
+  /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/;
 
 describe("CheckinController", () => {
   let app: INestApplication;
@@ -24,6 +29,7 @@ describe("CheckinController", () => {
     const checkin = await checkinRepository.save({
       answers: "answers",
       postMessageTs: "postMessageTs",
+      userId: "user",
     });
 
     standup.checkins = [checkin];
@@ -32,7 +38,7 @@ describe("CheckinController", () => {
     return [checkin, standup];
   };
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -45,7 +51,12 @@ describe("CheckinController", () => {
     checkinRepository = getRepository(Checkin);
   });
 
+  beforeEach(async () => {
+    await app.get(Connection).synchronize(true);
+  });
+
   afterAll(async () => {
+    await app.get(Connection).close();
     await app.close();
   });
 
@@ -97,12 +108,19 @@ describe("CheckinController", () => {
         .send({
           answers: "new-answers",
           postMessageTs: "post-message-ts",
+          userId: "user",
         })
         .expect(201)
-        .expect((res) => {
-          expect(res.body.answers).toBe("new-answers");
-          expect(res.body.postMessageTs).toBe("post-message-ts");
-        });
+        .expect(({ body }) =>
+          expect(body).toEqual({
+            id: expect.stringMatching(uuid),
+            createdDate: expect.stringMatching(date),
+            answers: "new-answers",
+            postMessageTs: "post-message-ts",
+            userId: "user",
+            channelId: "channelId",
+          })
+        );
     });
   });
 
@@ -113,8 +131,7 @@ describe("CheckinController", () => {
       return request(app.getHttpServer())
         .patch(`/standups/channelId/checkins/${checkin.id}`)
         .send({ answers: "new-answers" })
-        .expect(200)
-        .expect({ generatedMaps: [], raw: [], affected: 1 });
+        .expect(200);
     });
   });
 
@@ -123,7 +140,7 @@ describe("CheckinController", () => {
       const [checkin] = await createStandupWithCheckin();
 
       return request(app.getHttpServer())
-        .delete(`/standups/channelId/checkins/${checkin.id}`)
+        .delete(`/standups/checkins/${checkin.id}`)
         .expect(200);
     });
   });

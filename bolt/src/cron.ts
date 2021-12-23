@@ -1,7 +1,7 @@
-import { App, AppInitializationError } from "@slack/bolt";
+import { App } from "@slack/bolt";
 
 import { Standup } from "./models";
-import { addCheckin, getCheckin, listStandups } from "./services/api";
+import { addCheckin, getCheckins, listStandups } from "./services/api";
 
 const token = process.env.SLACK_BOT_TOKEN;
 const signingSecret = process.env.SLACK_SIGNING_SECRET;
@@ -22,7 +22,7 @@ const checkAndPingUsers = async () => {
   const d = new Date();
   const dayName = days[d.getDay()];
 
-  const standups = await listStandups();
+  const standups = await listStandups(dayName);
 
   standups.forEach(
     async ({ channelId: channel, name, ...standup }: Standup) => {
@@ -34,10 +34,11 @@ const checkAndPingUsers = async () => {
         token,
         channel,
       })) as any;
-      users.members.forEach(async (user: string) => {
-        const checkin = getCheckin(channel, user, date);
 
-        if (checkin) {
+      users.members.forEach(async (user: string) => {
+        const checkins = await getCheckins(channel, user, date);
+
+        if (checkins.length > 1) {
           await app.client.chat.postMessage({
             token,
             channel: user,
@@ -45,8 +46,8 @@ const checkAndPingUsers = async () => {
           });
         } else {
           // send reminder message & create empty checkin for later completion
-          const checkin = { answers: "", postMessageTs: "" };
-          addCheckin(user, channel, checkin, date);
+          const checkin = { answers: "", postMessageTs: "", userId: user };
+          const createdCheckin = await addCheckin(channel, checkin);
 
           await app.client.chat.postMessage({
             token,

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { startOfDay, endOfDay, parseISO } from "date-fns";
+import { startOfDay, endOfDay } from "date-fns";
 import { Between, Repository, UpdateResult } from "typeorm";
 
 import { StandupsService } from "../standups/standups.service";
@@ -15,6 +15,19 @@ export class CheckinsService {
     private checkinsRepository: Repository<Checkin>,
     private readonly standupsService: StandupsService
   ) {}
+
+  search(userId: string, date: string): Promise<Checkin> {
+    return this.checkinsRepository.findOneOrFail({
+      where: {
+        userId,
+        createdDate: Between(
+          startOfDay(new Date(date)),
+          endOfDay(new Date(date))
+        ),
+      },
+      relations: ["standup"],
+    });
+  }
 
   async create(
     channelId: string,
@@ -42,8 +55,8 @@ export class CheckinsService {
       filters = {
         ...filters,
         createdDate: Between(
-          startOfDay(parseISO(date)),
-          endOfDay(parseISO(date))
+          startOfDay(new Date(date)),
+          endOfDay(new Date(date))
         ),
       };
 
@@ -52,6 +65,7 @@ export class CheckinsService {
         standup: { channelId },
         ...filters,
       },
+      relations: ["standup"],
       skip,
       take,
     });
@@ -59,8 +73,11 @@ export class CheckinsService {
 
   findOne(channelId: string, checkinId: string): Promise<Checkin> {
     return this.checkinsRepository.findOneOrFail({
-      id: checkinId,
-      standup: { channelId },
+      where: {
+        id: checkinId,
+        standup: { channelId },
+      },
+      relations: ["standup"],
     });
   }
 

@@ -20,9 +20,9 @@ containers:
         memory: 256Mi
     env:
     - name: SLACK_SIGNING_SECRET
-      value: ff9be4e29c27c1a5e087b68c8048d56e
+      value: REPLACE_ME
     - name: SLACK_BOT_TOKEN
-      value: xoxb-1704809032615-2750821186736-KnE2POv1jeQh4Wch78XOLjSv
+      value: REPLACE_ME
     - name: PORT
       value: "8080"
     port: 8080

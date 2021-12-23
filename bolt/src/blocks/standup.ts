@@ -1,20 +1,24 @@
 import { PlainTextOption, View } from "@slack/types";
 
-import { Day, Standup } from "../models";
+import { Standup } from "../models";
 
 const capitalize = (s) => {
   if (typeof s !== "string") return "";
   return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
-export const standupBlocks = (standup: Standup): View => {
-  const days: PlainTextOption[] = standup.days.map((d) => ({
-    text: {
-      type: "plain_text",
-      text: capitalize(d.toString()),
-    },
-    value: capitalize(d.toString()),
-  }));
+export const standupBlocks = (
+  standup: Standup | null,
+  channelId: string
+): View => {
+  const days: PlainTextOption[] =
+    standup?.days.map((d) => ({
+      text: {
+        type: "plain_text",
+        text: capitalize(d.toString()),
+      },
+      value: d.toString(),
+    })) || [];
 
   return {
     type: "modal",
@@ -34,7 +38,7 @@ export const standupBlocks = (standup: Standup): View => {
             type: "plain_text",
             text: "Enter a name for the stand-up",
           },
-          initial_value: standup.name || "",
+          initial_value: standup?.name || "",
         },
         label: {
           type: "plain_text",
@@ -82,49 +86,49 @@ export const standupBlocks = (standup: Standup): View => {
                 type: "plain_text",
                 text: "Monday",
               },
-              value: "Monday",
+              value: "monday",
             },
             {
               text: {
                 type: "plain_text",
                 text: "Tuesday",
               },
-              value: "Tuesday",
+              value: "tuesday",
             },
             {
               text: {
                 type: "plain_text",
                 text: "Wednesday",
               },
-              value: "Wednesday",
+              value: "wednesday",
             },
             {
               text: {
                 type: "plain_text",
                 text: "Thursday",
               },
-              value: "Thursday",
+              value: "thursday",
             },
             {
               text: {
                 type: "plain_text",
                 text: "Friday",
               },
-              value: "Friday",
+              value: "friday",
             },
             {
               text: {
                 type: "plain_text",
                 text: "Saturday",
               },
-              value: "Saturday",
+              value: "saturday",
             },
             {
               text: {
                 type: "plain_text",
                 text: "Sunday",
               },
-              value: "Sunday",
+              value: "sunday",
             },
           ],
         },
@@ -135,7 +139,7 @@ export const standupBlocks = (standup: Standup): View => {
         element: {
           type: "plain_text_input",
           multiline: true,
-          initial_value: standup.questions,
+          initial_value: standup?.questions || "",
           action_id: "questions",
         },
         label: {
@@ -158,6 +162,6 @@ export const standupBlocks = (standup: Standup): View => {
       type: "plain_text",
       text: "Submit",
     },
-    private_metadata: JSON.stringify({ channelId: standup.channelId }),
+    private_metadata: JSON.stringify({ channelId }),
   };
 };

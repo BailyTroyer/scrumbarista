@@ -8,7 +8,7 @@ import { StandupsModule } from "./standups/standups.module";
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(ormConfig),
+    TypeOrmModule.forRoot({ ...ormConfig, keepConnectionAlive: true }),
     HealthModule,
     StandupsModule,
     CheckinsModule,

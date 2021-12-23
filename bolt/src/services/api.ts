@@ -19,11 +19,11 @@ const API_URL = process.env.API_URL || "http://localhost:8000";
  * @param date the date the checkin was created.
  * @async
  */
-export const getCheckin = async (
+export const getCheckins = async (
   channelId: string,
   userId: string,
   date: string
-): Promise<Checkin | null> => {
+): Promise<Checkin[] | null> => {
   const response = await fetch(
     `${API_URL}/standups/${channelId}/checkins?userId=${userId}&date=${date}`
   ).catch(() => null);
@@ -40,8 +40,11 @@ export const getCheckin = async (
  * @param standup the standup to append the checkin to.
  * @param checkin the checkin being authored.
  */
-export const createCheckin = (standup: Standup, checkin?: Checkin): View => {
-  const answers = checkin?.answers.split("\n") || [];
+export const createCheckin = (
+  standup: Standup,
+  checkin: Checkin | null
+): View => {
+  const answers = checkin?.answers?.split("\n") || [];
   const questions = standup.questions.split("\n");
 
   const blocks = questions.map((question: string, i: number) => ({
@@ -128,33 +131,74 @@ export const createStandup = async (
 };
 
 export const addCheckin = async (
-  userId: string,
   channelId: string,
-  checkin: CreateCheckinDTO,
-  date: string
+  checkin: CreateCheckinDTO
 ) => {
-  const response = await fetch(
-    `${API_URL}/standups/${channelId}/checkins?userId=${userId}&date=${date}`,
-    {
-      method: "POST",
-      body: JSON.stringify(checkin),
-    }
-  ).catch(() => null);
-  return response?.json();
+  const response = await fetch(`${API_URL}/standups/${channelId}/checkins`, {
+    method: "POST",
+    body: JSON.stringify(checkin),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).catch(() => null);
+
+  if (response.ok) {
+    return response?.json();
+  }
+
+  return null;
 };
 
 export const updateCheckin = async (
-  userId: string,
   channelId: string,
   checkin: CreateCheckinDTO,
-  date: string
+  checkinId: string
 ) => {
   const response = await fetch(
-    `${API_URL}/standups/${channelId}/checkins?userId=${userId}&date=${date}`,
+    `${API_URL}/standups/${channelId}/checkins/${checkinId}`,
     {
       method: "PATCH",
       body: JSON.stringify(checkin),
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
   ).catch(() => null);
-  return response?.json();
+
+  if (response.ok) {
+    return response?.json();
+  }
+
+  return null;
+};
+
+export const updateStandup = async (channelId: string, standup: NewStandup) => {
+  const response = await fetch(`${API_URL}/standups/${channelId}`, {
+    method: "PATCH",
+    body: JSON.stringify(standup),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).catch(() => null);
+
+  if (response.ok) {
+    return response?.json();
+  }
+
+  return null;
+};
+
+export const searchForCheckin = async (
+  userId: string,
+  date: string
+): Promise<(Checkin & { channelId: string }) | null> => {
+  const response = await fetch(
+    `${API_URL}/standups/checkins/search?userId=${userId}&date=${date}`
+  ).catch(() => null);
+
+  if (response?.ok) {
+    return response?.json();
+  }
+
+  return null;
 };

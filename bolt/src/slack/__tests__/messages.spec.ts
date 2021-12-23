@@ -29,6 +29,7 @@ describe("The messages handlers", () => {
       expect(postMessage).not.toBeCalled();
       expect(info).not.toBeCalled();
     });
+
     it("posts reply when no checkin exists", async () => {
       const say = jest.fn();
 
@@ -49,11 +50,12 @@ describe("The messages handlers", () => {
         ]
       `);
     });
+
     it("posts default message when already completed checkin for the day", async () => {
       const say = jest.fn();
 
       server.use(
-        rest.get("http://localhost:8000/standups/channel", (req, res, ctx) =>
+        rest.get("http://localhost:8000/standups/channelId", (req, res, ctx) =>
           res(
             ctx.json({
               id: "id",
@@ -65,7 +67,79 @@ describe("The messages handlers", () => {
           )
         ),
         rest.get(
+          "http://localhost:8000/standups/checkins/search",
+          (req, res, ctx) =>
+            res(
+              ctx.json({
+                createdDate: new Date(),
+                answers: "answers",
+                postMessageTs: "messageTs",
+                channelId: "channelId",
+              })
+            )
+        ),
+        rest.get(
           "http://localhost:8000/standups/channel/checkins",
+          (req, res, ctx) =>
+            res(
+              ctx.json([
+                {
+                  createdDate: new Date(),
+                  answers: "answers",
+                  postMessageTs: "messageTs",
+                },
+              ])
+            )
+        )
+      );
+
+      await dmMessage({
+        say,
+        message: {
+          channel_type: "im",
+          channel: "channel",
+          text: "hello, world!",
+          user: "userId",
+          ts: "messageTs",
+        },
+      } as any);
+
+      expect(say.mock.calls[0]).toMatchInlineSnapshot(`
+        Array [
+          "Looks like you've already finished today's standup. Congrats!",
+        ]
+      `);
+    });
+    it("asks next question in current day's standup", async () => {
+      const say = jest.fn();
+
+      server.use(
+        rest.get("http://localhost:8000/standups/channelId", (req, res, ctx) =>
+          res(
+            ctx.json({
+              id: "id",
+              name: "name",
+              channelId: "channelId",
+              questions: "question1\nquestion2\nquestion3",
+              days: ["monday"],
+            })
+          )
+        ),
+        rest.get(
+          "http://localhost:8000/standups/checkins/search",
+          (req, res, ctx) =>
+            res(
+              ctx.json({
+                createdDate: new Date(),
+                answers: "",
+                postMessageTs: "messageTs",
+                channelId: "channelId",
+                id: "id",
+              })
+            )
+        ),
+        rest.patch(
+          "http://localhost:8000/standups/channelId/checkins/id",
           (req, res, ctx) =>
             res(
               ctx.json({
@@ -90,55 +164,11 @@ describe("The messages handlers", () => {
 
       expect(say.mock.calls[0]).toMatchInlineSnapshot(`
         Array [
-          "Did you know, that you can share feedback with us and at the same time see what we're working on? @todo change this message",
+          "question2",
         ]
       `);
     });
-    it("asks next question in current day's standup", async () => {
-      const say = jest.fn();
 
-      server.use(
-        rest.get("http://localhost:8000/standups/channel", (req, res, ctx) =>
-          res(
-            ctx.json({
-              id: "id",
-              name: "name",
-              channelId: "C01LQPT2LMD",
-              questions: "question1\nquestion2\nquestion3",
-              days: ["monday"],
-            })
-          )
-        ),
-        rest.get(
-          "http://localhost:8000/standups/channel/checkins",
-          (req, res, ctx) =>
-            res(
-              ctx.json({
-                createdDate: new Date(),
-                answers: "",
-                postMessageTs: "messageTs",
-              })
-            )
-        )
-      );
-
-      await dmMessage({
-        say,
-        message: {
-          channel_type: "im",
-          channel: "channel",
-          text: "hello, world!",
-          user: "userId",
-          ts: "messageTs",
-        },
-      } as any);
-
-      expect(say.mock.calls[0]).toMatchInlineSnapshot(`
-        Array [
-          "question1",
-        ]
-      `);
-    });
     it("says all done when submitted last answer to day's standup", async () => {
       const say = jest.fn();
       const info = jest.fn().mockReturnValue({
@@ -152,24 +182,37 @@ describe("The messages handlers", () => {
       const postMessage = jest.fn();
 
       server.use(
-        rest.get("http://localhost:8000/standups/channel", (req, res, ctx) =>
+        rest.get("http://localhost:8000/standups/channelId", (req, res, ctx) =>
           res(
             ctx.json({
               id: "id",
               name: "name",
-              channelId: "C01LQPT2LMD",
+              channelId: "channelId",
               questions: "question1\nquestion2\nquestion3",
               days: ["monday"],
             })
           )
         ),
         rest.get(
-          "http://localhost:8000/standups/channel/checkins",
+          "http://localhost:8000/standups/checkins/search",
           (req, res, ctx) =>
             res(
               ctx.json({
                 createdDate: new Date(),
                 answers: "answer1\nanswer2",
+                postMessageTs: "messageTs",
+                channelId: "channelId",
+                id: "id",
+              })
+            )
+        ),
+        rest.patch(
+          "http://localhost:8000/standups/channelId/checkins/id",
+          (req, res, ctx) =>
+            res(
+              ctx.json({
+                createdDate: new Date(),
+                answers: "answer1\nanswer2\nanswer3",
                 postMessageTs: "messageTs",
               })
             )

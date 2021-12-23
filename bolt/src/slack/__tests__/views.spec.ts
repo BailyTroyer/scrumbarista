@@ -51,6 +51,7 @@ describe("The views handlers", () => {
 
       expect(postEphemeral.mock.calls[0]).toMatchSnapshot();
     });
+
     it("posts an emphemeral message when unable to update standup", async () => {
       const postEphemeral = jest.fn();
 
@@ -90,9 +91,10 @@ describe("The views handlers", () => {
       expect(postEphemeral.mock.calls[0]).toMatchSnapshot();
     });
   });
+
   describe("checkinView", () => {
     it("creates new checkin and posts message in standup channel", async () => {
-      const update = jest.fn().mockReturnValue({
+      const postMessage = jest.fn().mockReturnValue({
         ts: "messageTs",
       });
       const info = jest.fn().mockReturnValue({
@@ -156,7 +158,7 @@ describe("The views handlers", () => {
         },
         client: {
           chat: {
-            update,
+            postMessage,
           },
           users: {
             info,
@@ -165,10 +167,11 @@ describe("The views handlers", () => {
       } as any);
 
       expect(info.mock.calls[0]).toMatchSnapshot();
-      expect(update.mock.calls[0]).toMatchSnapshot();
+      expect(postMessage.mock.calls[0]).toMatchSnapshot();
     });
+
     it("updates pre-existing checkin and posts message in standup channel", async () => {
-      const postMessage = jest.fn().mockReturnValue({
+      const update = jest.fn().mockReturnValue({
         ts: "messageTs",
       });
       const info = jest.fn().mockReturnValue({
@@ -193,8 +196,8 @@ describe("The views handlers", () => {
             })
           )
         ),
-        rest.post(
-          "http://localhost:8000/standups/channel/checkins",
+        rest.patch(
+          "http://localhost:8000/standups/channel/checkins/id",
           (req, res, ctx) =>
             res(
               ctx.json({
@@ -208,11 +211,14 @@ describe("The views handlers", () => {
           "http://localhost:8000/standups/channel/checkins",
           (req, res, ctx) =>
             res(
-              ctx.json({
-                createdDate: new Date(),
-                answers: "answers",
-                postMessageTs: "messageTs",
-              })
+              ctx.json([
+                {
+                  id: "id",
+                  createdDate: new Date(),
+                  answers: "answers",
+                  postMessageTs: "messageTs",
+                },
+              ])
             )
         )
       );
@@ -239,7 +245,7 @@ describe("The views handlers", () => {
         },
         client: {
           chat: {
-            postMessage,
+            update,
           },
           users: {
             info,
@@ -248,7 +254,7 @@ describe("The views handlers", () => {
       } as any);
 
       expect(info.mock.calls[0]).toMatchSnapshot();
-      expect(postMessage.mock.calls[0]).toMatchSnapshot();
+      expect(update.mock.calls[0]).toMatchSnapshot();
     });
   });
 });

@@ -21,31 +21,13 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { signOut, useSession } from "next-auth/react";
-
-const Links = ["Your Standups", "Help"];
-
-const NavLink = ({ children }: { children: ReactNode }) => (
-  <Link
-    px={2}
-    py={1}
-    rounded={"md"}
-    _hover={{
-      textDecoration: "none",
-      bg: useColorModeValue("gray.200", "gray.700"),
-    }}
-    href={"#"}
-  >
-    {children}
-  </Link>
-);
+import NextLink from "next/link";
 
 interface Props {
   children: ReactNode;
 }
 
 const Navbar: FC<Props> = ({ children }: Props) => {
-  // const [user] = useRecoilState(slackUser);
-
   const { data } = useSession();
 
   const defaultImage = `https://avatars.dicebear.com/api/miniavs/${data?.name}.svg`;
@@ -57,18 +39,15 @@ const Navbar: FC<Props> = ({ children }: Props) => {
       <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <HStack spacing={8} alignItems={"center"}>
-            <NavLink>
-              <Heading>☕</Heading>
-            </NavLink>
-            <HStack
-              as={"nav"}
-              spacing={4}
-              display={{ base: "none", md: "flex" }}
-            >
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
-              ))}
-            </HStack>
+            <NextLink href="/home" passHref>
+              <Link
+                _hover={{
+                  textDecoration: "none",
+                }}
+              >
+                <Heading>☕</Heading>
+              </Link>
+            </NextLink>
           </HStack>
 
           <Flex alignItems={"center"}>

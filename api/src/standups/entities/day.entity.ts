@@ -19,7 +19,7 @@ export class Day {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @ManyToOne(() => Standup, (standup) => standup.days)
+  @ManyToOne(() => Standup, (standup) => standup.days, { onDelete: "CASCADE" })
   standup: Standup;
 
   @Column({

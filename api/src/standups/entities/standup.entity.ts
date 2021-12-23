@@ -16,9 +16,9 @@ export class Standup {
   @Column({ default: "" })
   questions: string;
 
-  @OneToMany(() => Day, (day) => day.standup, { cascade: true, eager: true })
+  @OneToMany(() => Day, (day) => day.standup, { eager: true })
   days: Day[];
 
-  @OneToMany(() => Checkin, (checkin) => checkin.standup, { cascade: true })
+  @OneToMany(() => Checkin, (checkin) => checkin.standup)
   checkins: Checkin[];
 }

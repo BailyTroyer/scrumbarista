@@ -9,8 +9,10 @@ import { Day, NewStandup } from "../models";
 import {
   addCheckin,
   createStandup,
-  getCheckin,
+  getCheckins,
   getStandup,
+  updateCheckin,
+  updateStandup,
 } from "../services/api";
 
 export const standupView: Middleware<
@@ -26,12 +28,12 @@ export const standupView: Middleware<
   await ack();
 
   const selectedValues = view.state.values;
-
   const name: string = selectedValues.name.name.value;
   const channelId: string = JSON.parse(view.private_metadata).channelId;
 
-  // missing time attribute
-  const standup: NewStandup = {
+  // check if standup already exists
+  const standup = await getStandup(channelId);
+  const newStandup: NewStandup = {
     name,
     channelId,
     questions: String(selectedValues.questions.questions.value),
@@ -40,19 +42,23 @@ export const standupView: Middleware<
     ) as Day[],
   };
 
-  const createdStandup = await createStandup(standup);
-
-  if (!createdStandup) {
+  if (standup) {
+    const updatedStandup = await updateStandup(channelId, newStandup);
     await client.chat.postEphemeral({
       channel: channelId,
       user: userId,
-      text: `I was unable to update ${name}`,
+      text: updatedStandup
+        ? `I've updated ${updatedStandup.name}`
+        : `I was unable to update ${standup.name}`,
     });
   } else {
+    const createdStandup = await createStandup(newStandup);
     await client.chat.postEphemeral({
       channel: channelId,
       user: userId,
-      text: `I've updated ${createdStandup.name}`,
+      text: createdStandup
+        ? `I've created ${createdStandup.name}`
+        : `I was unable to create ${newStandup.name}`,
     });
   }
 };
@@ -75,7 +81,6 @@ export const checkinView: Middleware<
   const standup = await getStandup(JSON.parse(view.private_metadata).channelId);
 
   // if standup DNE post ephemeral message no standup
-
   const questions = standup.questions.split("\n");
   const answers = Object.keys(selectedValues).map(
     (k) => selectedValues[k][k].value
@@ -89,10 +94,10 @@ export const checkinView: Middleware<
     include_locale: true,
   });
 
-  const checkin = await getCheckin(channel, userId, date);
+  const checkins = (await getCheckins(channel, userId, date)) || [];
 
-  if (!checkin) {
-    const updateStandupMessage = await client.chat.update({
+  if (checkins.length === 0) {
+    const updateStandupMessage = await client.chat.postMessage({
       channel,
       attachments: [
         {
@@ -104,39 +109,42 @@ export const checkinView: Middleware<
           blocks: [sectionBlock(`*${question}*\n${answers[index]}`)],
         })),
       ],
-      ts: "",
-    });
-
-    const checkin = {
-      answers: answers.join("\n"),
-      postMessageTs: updateStandupMessage.ts as string,
-    };
-
-    // add checkin
-    addCheckin(user.user.id, channel, checkin, date);
-  } else {
-    const standupMessage = await client.chat.postMessage({
-      channel,
-      attachments: [
-        {
-          color: "#41BC88",
-          blocks: [sectionBlock(`*${standup.name}*\n${date}`)],
-        },
-        ...questions.map((question: string, index: number) => ({
-          color: "E4E4E4",
-          blocks: [sectionBlock(`*${question}*\n${answers[index]}`)],
-        })),
-      ],
-      text: "",
       username: user.user.profile.real_name,
       icon_url: user.user.profile.image_192,
     });
 
-    const checkin = {
+    const createCheckinDto = {
       answers: answers.join("\n"),
-      postMessageTs: standupMessage.ts as string,
+      postMessageTs: updateStandupMessage.ts,
+      userId: user.user.id,
     };
 
-    addCheckin(user.user.id, channel, checkin, date);
+    // add checkin
+    await addCheckin(channel, createCheckinDto);
+  } else {
+    const standupMessage = await client.chat.update({
+      channel,
+      attachments: [
+        {
+          color: "#41BC88",
+          blocks: [sectionBlock(`*${standup.name}*\n${date}`)],
+        },
+        ...questions.map((question: string, index: number) => ({
+          color: "E4E4E4",
+          blocks: [sectionBlock(`*${question}*\n${answers[index]}`)],
+        })),
+      ],
+      username: user.user.profile.real_name,
+      icon_url: user.user.profile.image_192,
+      ts: checkins[0].postMessageTs,
+    });
+
+    const updateCheckinDto = {
+      answers: answers.join("\n"),
+      postMessageTs: standupMessage.ts,
+    };
+
+    // update checkin
+    await updateCheckin(channel, updateCheckinDto, checkins[0].id);
   }
 };

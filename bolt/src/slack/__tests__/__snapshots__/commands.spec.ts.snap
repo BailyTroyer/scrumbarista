@@ -10,7 +10,7 @@ Array [
           "block_id": "0",
           "element": Object {
             "action_id": "0",
-            "initial_value": "answers",
+            "initial_value": "",
             "multiline": true,
             "type": "plain_text_input",
           },
@@ -152,7 +152,7 @@ Array [
                   "text": "Monday",
                   "type": "plain_text",
                 },
-                "value": "Monday",
+                "value": "monday",
               },
             ],
             "options": Array [
@@ -161,49 +161,49 @@ Array [
                   "text": "Monday",
                   "type": "plain_text",
                 },
-                "value": "Monday",
+                "value": "monday",
               },
               Object {
                 "text": Object {
                   "text": "Tuesday",
                   "type": "plain_text",
                 },
-                "value": "Tuesday",
+                "value": "tuesday",
               },
               Object {
                 "text": Object {
                   "text": "Wednesday",
                   "type": "plain_text",
                 },
-                "value": "Wednesday",
+                "value": "wednesday",
               },
               Object {
                 "text": Object {
                   "text": "Thursday",
                   "type": "plain_text",
                 },
-                "value": "Thursday",
+                "value": "thursday",
               },
               Object {
                 "text": Object {
                   "text": "Friday",
                   "type": "plain_text",
                 },
-                "value": "Friday",
+                "value": "friday",
               },
               Object {
                 "text": Object {
                   "text": "Saturday",
                   "type": "plain_text",
                 },
-                "value": "Saturday",
+                "value": "saturday",
               },
               Object {
                 "text": Object {
                   "text": "Sunday",
                   "type": "plain_text",
                 },
-                "value": "Sunday",
+                "value": "sunday",
               },
             ],
             "placeholder": Object {
@@ -245,7 +245,7 @@ Array [
         },
       ],
       "callback_id": "standup",
-      "private_metadata": "{\\"channelId\\":\\"C01LQPT2LMD\\"}",
+      "private_metadata": "{\\"channelId\\":\\"channel\\"}",
       "submit": Object {
         "text": "Submit",
         "type": "plain_text",
@@ -270,7 +270,7 @@ Array [
           "block_id": "name",
           "element": Object {
             "action_id": "name",
-            "initial_value": "name",
+            "initial_value": "",
             "placeholder": Object {
               "text": "Enter a name for the stand-up",
               "type": "plain_text",
@@ -306,64 +306,55 @@ Array [
         Object {
           "accessory": Object {
             "action_id": "days",
-            "initial_options": Array [
-              Object {
-                "text": Object {
-                  "text": "Monday",
-                  "type": "plain_text",
-                },
-                "value": "Monday",
-              },
-            ],
             "options": Array [
               Object {
                 "text": Object {
                   "text": "Monday",
                   "type": "plain_text",
                 },
-                "value": "Monday",
+                "value": "monday",
               },
               Object {
                 "text": Object {
                   "text": "Tuesday",
                   "type": "plain_text",
                 },
-                "value": "Tuesday",
+                "value": "tuesday",
               },
               Object {
                 "text": Object {
                   "text": "Wednesday",
                   "type": "plain_text",
                 },
-                "value": "Wednesday",
+                "value": "wednesday",
               },
               Object {
                 "text": Object {
                   "text": "Thursday",
                   "type": "plain_text",
                 },
-                "value": "Thursday",
+                "value": "thursday",
               },
               Object {
                 "text": Object {
                   "text": "Friday",
                   "type": "plain_text",
                 },
-                "value": "Friday",
+                "value": "friday",
               },
               Object {
                 "text": Object {
                   "text": "Saturday",
                   "type": "plain_text",
                 },
-                "value": "Saturday",
+                "value": "saturday",
               },
               Object {
                 "text": Object {
                   "text": "Sunday",
                   "type": "plain_text",
                 },
-                "value": "Sunday",
+                "value": "sunday",
               },
             ],
             "placeholder": Object {
@@ -383,7 +374,7 @@ Array [
           "block_id": "questions",
           "element": Object {
             "action_id": "questions",
-            "initial_value": "questions",
+            "initial_value": "",
             "multiline": true,
             "type": "plain_text_input",
           },
@@ -405,7 +396,7 @@ Array [
         },
       ],
       "callback_id": "standup",
-      "private_metadata": "{\\"channelId\\":\\"C01LQPT2LMD\\"}",
+      "private_metadata": "{\\"channelId\\":\\"channel\\"}",
       "submit": Object {
         "text": "Submit",
         "type": "plain_text",

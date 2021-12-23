@@ -9,6 +9,8 @@ COPY ./package*.json /app
 RUN npm i
 
 COPY ./pages /app/pages
+COPY ./components /app/components
+COPY ./types /app/types
 COPY ./public /app/public
 COPY ./tsconfig* /app/
 COPY ./next* /app/

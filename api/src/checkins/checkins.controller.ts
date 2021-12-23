@@ -25,6 +25,20 @@ import { UpdateCheckinDto } from "./dto/update-checkin.dto";
 export class CheckinsController {
   constructor(private readonly checkinsService: CheckinsService) {}
 
+  @Get("/checkins/search")
+  @UseFilters(EntityNotFoundExceptionFilter)
+  @ApiOperation({ summary: "create checkin" })
+  @ApiResponse({ status: 201, description: "checkin created" })
+  async search(
+    @Query("userId") userId: string,
+    @Query("date") date: string
+  ): Promise<CheckinDto> {
+    return plainToClass(
+      CheckinDto,
+      await this.checkinsService.search(userId, date)
+    );
+  }
+
   @Post(":channelId/checkins")
   @UseFilters(EntityNotFoundExceptionFilter)
   @ApiOperation({ summary: "create checkin" })
@@ -88,7 +102,7 @@ export class CheckinsController {
     );
   }
 
-  @Delete(":channelId/checkins/:checkinId")
+  @Delete("/checkins/:checkinId")
   @UseFilters(EntityNotFoundExceptionFilter)
   remove(@Param("checkinId") checkinId: string): Promise<void> {
     return this.checkinsService.remove(checkinId);

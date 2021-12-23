@@ -1,10 +1,9 @@
 import { Middleware, SlackEventMiddlewareArgs } from "@slack/bolt";
 
 import { sectionBlock } from "../blocks";
-import { getCheckin, getStandup, updateCheckin } from "../services/api";
+import { getStandup, searchForCheckin, updateCheckin } from "../services/api";
 
 interface SlackMessage {
-  channel: string;
   text: string;
   user: string;
   ts: string;
@@ -12,21 +11,16 @@ interface SlackMessage {
 
 export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
   async ({ say, message, client }) => {
-    const { channel, text, user, ts } = message as SlackMessage;
+    const { text, user, ts } = message as SlackMessage;
 
     // only care about DMs
     if (message.channel_type !== "im") return;
 
     // check for checkin with user ID
-    // if already exists && the # answers == # questions then do nothing
-    // else push the next answer on the answers
     const date = new Date().toLocaleDateString();
 
-    const preExistingCheckin = await getCheckin(channel, "CHANGE_ME", date);
-    const standup = await getStandup(message.channel);
-
-    console.log("preExistingCheckin: ", preExistingCheckin);
-    console.log("preExistingStandup: ", standup);
+    const preExistingCheckin = await searchForCheckin(user, date);
+    const standup = await getStandup(preExistingCheckin?.channelId);
 
     // cronjob creates partial checkin which we complete here
     if (!preExistingCheckin) {
@@ -39,14 +33,10 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
       .split("\n")
       .filter((x) => x !== "");
 
-    console.log("ANSWERS: ", answers);
-
     if (answers.length === questions.length) {
       // user already answered everything. Send generic feedback message
 
-      say(
-        "Did you know, that you can share feedback with us and at the same time see what we're working on? @todo change this message"
-      );
+      say("Looks like you've already finished today's standup. Congrats!");
     } else {
       answers.push(text);
 
@@ -56,11 +46,15 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
       };
 
       // add checkin
-      await updateCheckin(user, channel, checkin, date);
+      const updatedCheckin = await updateCheckin(
+        preExistingCheckin.channelId,
+        checkin,
+        preExistingCheckin.id
+      );
 
       if (answers.length !== questions.length) {
         // return with questions[preExistingAnswers.length]
-        say(questions[answers.length - 1]);
+        say(questions[answers.length]);
       } else {
         // if answers length == questions length then say standup is done
         const userInfo = await client.users.info({
@@ -68,8 +62,8 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
           include_locale: true,
         });
 
-        await client.chat.postMessage({
-          channel,
+        const postedMessage = await client.chat.postMessage({
+          channel: preExistingCheckin.channelId,
           attachments: [
             {
               color: "#41BC88",

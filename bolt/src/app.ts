@@ -14,7 +14,7 @@ import {
   standupCommand,
 } from "./slack/commands";
 import { dmMessage } from "./slack/messages";
-import { checkinView } from "./slack/views";
+import { checkinView, standupView } from "./slack/views";
 
 declare let process: {
   env: {
@@ -110,7 +110,8 @@ app.command("/scrumbarista", scrumbaristaCommand);
 app.command("/standup", standupCommand);
 app.command("/checkin", checkinCommand);
 app.view("checkin", checkinView);
-app.message("hi", dmMessage);
+app.view("standup", standupView);
+app.message(/^.*/, dmMessage);
 
 // easter-eggs
 app.command("/random-order", randomOrderCommand);

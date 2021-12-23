@@ -18,6 +18,9 @@ containers:
       requests:
         cpu: 250m
         memory: 256Mi
+    env:
+    - name: DB_URL
+      value: mysql://admin:yN6m3pQFvizW12KW6RNr@db:3306/scrumbarista
     port: 8000
     replicas: 1
     host: scrumbarista-api.useast1.dev.baily.io

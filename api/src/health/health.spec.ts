@@ -1,13 +1,14 @@
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
+import { Connection } from "typeorm";
 
 import { AppModule } from "../app.module";
 
 describe("HealthController", () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -17,6 +18,7 @@ describe("HealthController", () => {
   });
 
   afterAll(async () => {
+    await app.get(Connection).close();
     await app.close();
   });
 

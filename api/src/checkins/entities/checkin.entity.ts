@@ -16,13 +16,15 @@ export class Checkin {
   @CreateDateColumn()
   createdDate: Date;
 
-  @Column()
+  @Column({ default: "" })
   answers: string;
 
-  @Column()
+  @Column({ default: "" })
   postMessageTs: string;
 
-  @ManyToOne(() => Standup, (standup) => standup.checkins)
+  @ManyToOne(() => Standup, (standup) => standup.checkins, {
+    onDelete: "CASCADE",
+  })
   standup: Standup;
 
   @Column()

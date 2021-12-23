@@ -30,6 +30,7 @@ export type Checkin = {
   createdDate: Date;
   answers: string;
   postMessageTs: string;
+  id: string;
 };
 
 export type CreateCheckinDTO = {

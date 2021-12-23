@@ -2,13 +2,7 @@ import { Middleware, SlackCommandMiddlewareArgs } from "@slack/bolt";
 
 import { scrumbaristaAttachments } from "../blocks";
 import { standupBlocks } from "../blocks/standup";
-import { newEmptyStandup, Standup } from "../models";
-import {
-  createCheckin,
-  createStandup,
-  getCheckin,
-  getStandup,
-} from "../services/api";
+import { createCheckin, getCheckins, getStandup } from "../services/api";
 
 export const scrumbaristaCommand: Middleware<SlackCommandMiddlewareArgs> =
   async ({ ack, command: { channel_id: channel, user_id: user }, client }) => {
@@ -22,24 +16,15 @@ export const scrumbaristaCommand: Middleware<SlackCommandMiddlewareArgs> =
 
 export const standupCommand: Middleware<SlackCommandMiddlewareArgs> = async ({
   ack,
-  command: { channel_id: channelId, trigger_id, channel_name, user_id },
+  command: { channel_id: channelId, trigger_id },
   client,
 }) => {
   await ack();
 
-  let standup = await getStandup(channelId);
-
-  if (!standup) {
-    standup = await createStandup({
-      ...newEmptyStandup,
-      name: channel_name,
-      channelId,
-    });
-  }
-
+  const standup = await getStandup(channelId);
   await client.views.open({
     trigger_id,
-    view: standupBlocks(standup),
+    view: standupBlocks(standup, channelId),
   });
 };
 
@@ -52,7 +37,7 @@ export const checkinCommand: Middleware<SlackCommandMiddlewareArgs> = async ({
   // look for pre-existing checkin
   const date = new Date().toLocaleDateString();
 
-  const checkin = await getCheckin(channel, user, date);
+  const checkins = await getCheckins(channel, user, date);
   const standup = await getStandup(channel);
 
   if (!standup) {
@@ -64,7 +49,7 @@ export const checkinCommand: Middleware<SlackCommandMiddlewareArgs> = async ({
   } else {
     await client.views.open({
       trigger_id,
-      view: createCheckin(standup, checkin),
+      view: createCheckin(standup, checkins[0]),
     });
   }
 };
