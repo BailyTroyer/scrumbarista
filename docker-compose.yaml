@@ -1,17 +1,35 @@
 version: "3.7"
 services:
+  db:
+    platform: linux/amd64
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: scrumbarista
+      MYSQL_USER: username
+      MYSQL_PASSWORD: password
   api:
     platform: linux/amd64
     build: ./api
-    command: yarn start:dev
+    command: npm run start:dev
     volumes:
       - ./api/src:/app/src
+      - ./api/test:/app/test
+      - ./api/nest-cli.json:/app/nest-cli.json
+    environment:
+      - DB_URL=db
     ports:
       - 8000:8000
+    depends_on:
+      - db
   app:
     platform: linux/amd64
     build: ./app
-    command: yarn dev
+    command: npm run dev
     volumes:
       - ./app/pages:/app/pages
       - ./app/components:/app/components
@@ -23,23 +41,14 @@ services:
   bolt:
     platform: linux/amd64
     build: ./bolt
-    command: yarn start:dev
+    command: npm run start:dev
     volumes:
       - ./bolt/src:/bolt/src
     environment:
-      - SLACK_SIGNING_SECRET=ff9be4e29c27c1a5e087b68c8048d56e
-      - SLACK_BOT_TOKEN=xoxb-1704809032615-2750821186736-KnE2POv1jeQh4Wch78XOLjSv
+      - SLACK_SIGNING_SECRET=REPLACE_ME
+      - SLACK_BOT_TOKEN=REPLACE_ME
       - PORT=8080
     ports:
       - 8080:8080
     depends_on:
       - api
-  marketing:
-    platform: linux/amd64
-    build: ./marketing
-    command: yarn dev
-    volumes:
-      - ./marketing/pages:/app/pages
-      - ./marketing/components:/app/components
-    ports:
-      - 4000:3000

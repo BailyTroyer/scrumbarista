@@ -1,0 +1,74 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`The messages handlers dm catch all says all done when submitted last answer to day's standup 2`] = `
+Array [
+  Object {
+    "include_locale": true,
+    "user": "userId",
+  },
+]
+`;
+
+exports[`The messages handlers dm catch all says all done when submitted last answer to day's standup 3`] = `
+Array [
+  Object {
+    "attachments": Array [
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*name*
+5/9/1998",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "#41BC88",
+      },
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*question1*
+answer1",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "E4E4E4",
+      },
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*question2*
+answer2",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "E4E4E4",
+      },
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
+              "text": "*question3*
+hello, world!",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "E4E4E4",
+      },
+    ],
+    "channel": "channelId",
+    "icon_url": "image",
+    "username": "name",
+  },
+]
+`;
