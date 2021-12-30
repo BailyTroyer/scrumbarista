@@ -7,3 +7,14 @@ export const weekDays = [
   "saturday",
   "sunday",
 ];
+
+export const colors = [
+  "teal",
+  "purple",
+  "yellow",
+  "red",
+  "blue",
+  "cyan",
+  "orange",
+  "pink",
+];

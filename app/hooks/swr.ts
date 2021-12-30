@@ -37,9 +37,12 @@ export interface StandupResponse {
   channelId: string;
   questions: string;
   days: string[];
+  users: { name: string; email: string; image: string }[];
+  startTime: string;
+  active: string;
 }
 
-export const useStandup = (channelId: string) => {
+export const useStandup = (channelId: string | string[] | undefined) => {
   const { data, error } = useSWR<StandupResponse>(
     channelId ? `${API_URL}/standups/${channelId}` : null,
     channelId ? fetcher : null
@@ -47,6 +50,27 @@ export const useStandup = (channelId: string) => {
 
   return {
     standup: data || null,
+    isLoading: !error && !data,
+    error: error || null,
+  };
+};
+
+export interface CheckinResponse {
+  id: string;
+  createdDate: string;
+  answers: string;
+  userId: string;
+  channelId: string;
+}
+
+export const useCheckins = (channelId: string | string[] | undefined) => {
+  const { data, error } = useSWR<CheckinResponse[]>(
+    channelId ? `${API_URL}/standups/${channelId}/checkins` : null,
+    channelId ? fetcher : null
+  );
+
+  return {
+    checkins: data || [],
     isLoading: !error && !data,
     error: error || null,
   };

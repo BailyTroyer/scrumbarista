@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-
-import { ChevronRightIcon, EditIcon, SettingsIcon } from "@chakra-ui/icons";
+import { ChevronRightIcon, SettingsIcon } from "@chakra-ui/icons";
 import { Box } from "@chakra-ui/layout";
 import {
   Grid,
@@ -17,73 +15,51 @@ import {
   Breadcrumb,
   BreadcrumbLink,
   BreadcrumbItem,
-  Divider,
   Flex,
   Skeleton,
   Button,
-  useDisclosure,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import NextImage from "next/image";
 import { useRouter } from "next/router";
-import useSWR from "swr";
 
+import CheckinCard from "components/CheckinCard";
 import Link from "components/Link";
 import StandupDetailCard from "components/StandupDetailCard";
+import { useCheckins, useStandup } from "hooks/swr";
 import useDaysToString, { toRegularTime } from "hooks/useDaysString";
+import { colors } from "utils/constants";
 
-const colors = [
-  "teal",
-  "purple",
-  "yellow",
-  "red",
-  "blue",
-  "cyan",
-  "orange",
-  "pink",
-];
+const EmptyCheckinsDisplay = () => (
+  <Flex
+    flexDir={"column"}
+    alignItems={"center"}
+    justifyContent={"center"}
+    mt={20}
+    mb={10}
+  >
+    <Box>
+      <NextImage src="/empty.svg" height={250} width={250} />
+    </Box>
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-const slackAuthFetcher = (url: string) => fetch(url).then((res) => res.json());
-
-interface StandupResponse {
-  name: string;
-  channelId: string;
-  questions: string;
-  days: string[];
-  users: { name: string; email: string; image: string }[];
-  startTime: string;
-  active: string;
-}
-
-interface CheckinResponse {
-  id: string;
-  createdDate: string;
-  answers: string;
-  userId: string;
-  channelId: string;
-}
+    <Heading size="md" color="gray.700" mt={8}>
+      Let's Make Some Data
+    </Heading>
+    <Text fontSize="md" color="gray.900" textAlign={"center"} mt={2} w="60%">
+      There's no data to display yet — but your Timeline board will light up as
+      soon as one of the participants reports!
+    </Text>
+  </Flex>
+);
 
 const Standup: NextPage = () => {
   const router = useRouter();
   const { channelId } = router.query;
 
-  const { data } = useSWR<StandupResponse>(
-    channelId ? `${API_URL}/standups/${channelId}` : null,
-    channelId ? slackAuthFetcher : null
-  );
+  const { standup, isLoading: standupLoading } = useStandup(channelId);
+  const { checkins } = useCheckins(channelId);
 
-  const { data: checkins, error: checkinsError } = useSWR<CheckinResponse[]>(
-    channelId ? `${API_URL}/standups/${channelId}/checkins` : null,
-    channelId ? slackAuthFetcher : null
-  );
-
-  const colorCardBg = useColorModeValue("white", "gray.800");
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const daysString = useDaysToString(data?.days || []);
+  const daysString = useDaysToString(standup?.days || []);
 
   const MetaGrid = () => (
     <Grid
@@ -98,10 +74,10 @@ const Standup: NextPage = () => {
           href={`/standups/${channelId}/manage/schedule`}
           title="Schedule"
         >
-          <Skeleton width={"xl"} isLoaded={data !== undefined}>
+          <Skeleton width={"xl"} isLoaded={!standupLoading}>
             <Text fontSize="md" color="gray.500">
-              Weekly {daysString} at {toRegularTime(data?.startTime || "")}, in
-              user's local timezone
+              Weekly {daysString} at {toRegularTime(standup?.startTime || "")},
+              in user's local timezone
             </Text>
           </Skeleton>
         </StandupDetailCard>
@@ -112,13 +88,13 @@ const Standup: NextPage = () => {
           title="Questions"
         >
           <Text fontSize="md" color="gray.500">
-            {data === undefined &&
+            {standupLoading &&
               [0, 1, 2, 3].map((index) => (
                 <Skeleton key={index} w="xs" h={4} my={5} />
               ))}
 
-            {data?.questions
-              .split("\n")
+            {standup?.questions
+              ?.split("\n")
               .map((question: string, index: number) => (
                 <HStack my={3}>
                   <Circle size="10px" bg={`${colors[index]}.300`} />
@@ -136,12 +112,12 @@ const Standup: NextPage = () => {
           title="Participants"
         >
           <HStack>
-            {data === undefined &&
+            {standupLoading &&
               [0, 1].map((index) => (
                 <Skeleton key={index} boxSize={"75"} borderRadius={"full"} />
               ))}
 
-            {data?.users.map((user) => (
+            {standup?.users?.map((user) => (
               <WrapItem>
                 <Tooltip label={user.name} openDelay={500}>
                   <Image
@@ -161,7 +137,7 @@ const Standup: NextPage = () => {
           href={`/standups/${channelId}/manage/basic`}
           title="Broadcast Channels"
         >
-          <Skeleton isLoaded={data !== undefined} borderRadius="2xl">
+          <Skeleton isLoaded={!standupLoading} borderRadius="2xl">
             <Box
               borderRadius="2xl"
               border="1px"
@@ -190,27 +166,22 @@ const Standup: NextPage = () => {
               </BreadcrumbItem>
 
               <BreadcrumbItem>
-                <Text>{data?.name} Standup</Text>
+                <Text>{standup?.name} Standup</Text>
               </BreadcrumbItem>
             </Breadcrumb>
-            <Skeleton width={"xs"} isLoaded={data !== undefined}>
-              <Heading>{data?.name} Standup</Heading>
+            <Skeleton width={"xs"} isLoaded={!standupLoading}>
+              <Heading>{standup?.name} Standup</Heading>
             </Skeleton>
           </VStack>
 
-          <HStack>
-            <Button colorScheme="teal" color="white" variant="solid">
-              Preferences
-            </Button>
-            <Button
-              leftIcon={<SettingsIcon />}
-              colorScheme="pink"
-              variant="solid"
-              onClick={() => router.push(`/standups/${channelId}/manage/basic`)}
-            >
-              Manage
-            </Button>
-          </HStack>
+          <Button
+            leftIcon={<SettingsIcon />}
+            colorScheme="pink"
+            variant="solid"
+            onClick={() => router.push(`/standups/${channelId}/manage`)}
+          >
+            Manage
+          </Button>
         </HStack>
 
         <VStack w="full" spacing={10}>
@@ -222,89 +193,10 @@ const Standup: NextPage = () => {
               </Heading>
             </HStack>
 
-            {checkins?.length > 0 ? (
-              checkins?.map((checkin) => (
-                <VStack width={"100%"}>
-                  <HStack width="100%">
-                    <Divider />
-                    <Flex>
-                      <Text
-                        mx={4}
-                        fontSize="md"
-                        fontWeight={"semibold"}
-                        color="gray.700"
-                        noOfLines={1}
-                      >
-                        10/10/10
-                      </Text>
-                    </Flex>
-                    <Divider />
-                  </HStack>
-
-                  <Flex direction={"column"} w="100%">
-                    <Flex direction={"row"} alignItems={"center"} mb={2}>
-                      <Image
-                        boxSize={"75"}
-                        objectFit="cover"
-                        src={`https://avatars.dicebear.com/api/miniavs/${name}-${data?.name}.svg`}
-                      />
-
-                      <Text fontWeight={"semibold"} color="gray.900">
-                        bailytroyer
-                      </Text>
-                      <Text>- 03:08 pm</Text>
-                    </Flex>
-
-                    {[
-                      "What will you do today?",
-                      "What will you do today?",
-                      "What will you do today?",
-                    ].map((q) => (
-                      <Flex direction={"row"} w="100%" h="100%" my={2}>
-                        <Box
-                          mr={2}
-                          width={"5px"}
-                          bgColor={"blue.500"}
-                          borderRadius={"xl"}
-                        />
-
-                        <Flex direction={"column"}>
-                          <Text fontWeight={"bold"} color="gray.700">
-                            {q}
-                          </Text>
-                          <Text>stuff</Text>
-                        </Flex>
-                      </Flex>
-                    ))}
-                  </Flex>
-                </VStack>
-              ))
+            {checkins.length === 0 ? (
+              <EmptyCheckinsDisplay />
             ) : (
-              <Flex
-                flexDir={"column"}
-                alignItems={"center"}
-                justifyContent={"center"}
-                mt={20}
-                mb={10}
-              >
-                <Box>
-                  <NextImage src="/empty.svg" height={250} width={250} />
-                </Box>
-
-                <Heading size="md" color="gray.700" mt={8}>
-                  Let's Make Some Data
-                </Heading>
-                <Text
-                  fontSize="md"
-                  color="gray.900"
-                  textAlign={"center"}
-                  mt={2}
-                  w="60%"
-                >
-                  There's no data to display yet — but your Timeline board will
-                  light up as soon as one of the participants reports!
-                </Text>
-              </Flex>
+              checkins.map((c) => <CheckinCard checkin={c} key={c.id} />)
             )}
           </Flex>
         </VStack>

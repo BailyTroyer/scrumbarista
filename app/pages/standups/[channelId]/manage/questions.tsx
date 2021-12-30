@@ -181,15 +181,6 @@ export function SortableItem(props: any) {
   );
 }
 
-interface StandupResponse {
-  name: string;
-  channelId: string;
-  questions: string;
-  days: string[];
-  users: { name: string; email: string; image: string }[];
-  startTime: string;
-  active: string;
-}
 
 const Questions: NextLayoutComponentType = () => {
   const router = useRouter();
