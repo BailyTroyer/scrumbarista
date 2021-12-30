@@ -12,7 +12,7 @@ declare module "next" {
     any,
     P
   > & {
-    getLayout?: (page: ReactNode) => ReactNode;
+    getLayout?: (page: NextPage) => NextPage;
   };
 }
 

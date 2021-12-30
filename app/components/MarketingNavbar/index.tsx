@@ -5,6 +5,8 @@ import {
   CloseIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  MoonIcon,
+  SunIcon,
 } from "@chakra-ui/icons";
 import {
   Box,
@@ -21,8 +23,11 @@ import {
   PopoverContent,
   useColorModeValue,
   useDisclosure,
+  useColorMode,
 } from "@chakra-ui/react";
 import { signIn } from "next-auth/react";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
@@ -40,6 +45,8 @@ export default function WithSubnavigation() {
       callbackUrl: `${window.location.origin}/home`,
     });
   };
+
+  const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <Box
@@ -82,12 +89,10 @@ export default function WithSubnavigation() {
           </Flex>
         </Flex>
 
-        <Stack
-          flex={{ base: 1, md: 0 }}
-          justify={"flex-end"}
-          direction={"row"}
-          spacing={6}
-        >
+        <Stack flex={{ base: 1, md: 0 }} justify={"flex-end"} direction={"row"}>
+          <Button onClick={toggleColorMode} variant="ghost">
+            {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+          </Button>
           <Button
             display={{ base: "none", md: "inline-flex" }}
             fontSize={"sm"}
@@ -273,38 +278,38 @@ interface NavItem {
 }
 
 const NAV_ITEMS: Array<NavItem> = [
-  {
-    label: "Features",
-    children: [
-      {
-        label: "Slack Integration",
-        subLabel: "The meat and potatoes of Scrumbarista",
-        href: "#",
-      },
-      {
-        label: "Admin & Web UI",
-        subLabel: "Easily manage & view trends",
-        href: "#",
-      },
-    ],
-  },
+  // {
+  //   label: "Features",
+  //   children: [
+  //     {
+  //       label: "Slack Integration",
+  //       subLabel: "The meat and potatoes of Scrumbarista",
+  //       href: "#",
+  //     },
+  //     {
+  //       label: "Admin & Web UI",
+  //       subLabel: "Easily manage & view trends",
+  //       href: "#",
+  //     },
+  //   ],
+  // },
   {
     label: "Guides",
     children: [
-      {
-        label: "Getting Started",
-        subLabel: "If you're into manuals ... and that kinda stuff",
-        href: "#",
-      },
+      // {
+      //   label: "Getting Started",
+      //   subLabel: "If you're into manuals ... and that kinda stuff",
+      //   href: "#",
+      // },
       {
         label: "API Documentation",
         subLabel: "Built by devs, for devs 🛠️",
-        href: "#",
+        href: `${API_URL}/docs`,
       },
     ],
   },
   {
     label: "Contribute",
-    href: "#",
+    href: "https://github.com/BailyTroyer/scrumbarista",
   },
 ];

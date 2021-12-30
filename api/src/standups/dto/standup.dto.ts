@@ -1,5 +1,5 @@
 import { Exclude, Expose, Transform } from "class-transformer";
-import { IsString, IsArray } from "class-validator";
+import { IsString, IsArray, IsBoolean, IsMilitaryTime } from "class-validator";
 
 import { Standup } from "../entities/standup.entity";
 
@@ -21,4 +21,24 @@ export class StandupDto {
   @Expose()
   @Transform(({ obj }: { obj: Standup }) => obj.days.map((day) => day.day))
   readonly days: string[];
+
+  @Expose()
+  @IsMilitaryTime()
+  startTime: string;
+
+  @Expose()
+  @IsArray()
+  users: {
+    id: string;
+    image: string;
+    name: string;
+  }[];
+
+  @Expose()
+  @IsBoolean()
+  active: boolean;
+
+  @Expose()
+  @IsString()
+  introMessage: string;
 }

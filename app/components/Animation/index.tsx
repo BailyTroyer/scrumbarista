@@ -1,8 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 
 import type { LottiePlayer } from "lottie-web";
 
-export const NotFoundAnimation = () => {
+interface Props {
+  name: string;
+}
+
+export const Animation: FC<Props> = ({ name }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const [lottie, setLottie] = useState<LottiePlayer | null>(null);
 
@@ -18,7 +22,7 @@ export const NotFoundAnimation = () => {
         loop: true,
         autoplay: true,
         // path to your animation file, place it inside public folder
-        path: "/notfound.json",
+        path: `/${name}.json`,
       });
 
       return () => animation.destroy();
@@ -28,4 +32,4 @@ export const NotFoundAnimation = () => {
   return <div ref={ref} />;
 };
 
-export default NotFoundAnimation;
+export default Animation;
