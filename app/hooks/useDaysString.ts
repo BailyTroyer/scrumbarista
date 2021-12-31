@@ -6,7 +6,7 @@ const capitalizeFirstLetter = (word: string) => {
   return word.charAt(0).toUpperCase() + word.slice(1);
 };
 
-const zeroPad = (num: number, places: number) =>
+export const zeroPad = (num: number, places: number) =>
   String(num).padStart(places, "0");
 
 export const toRegularTime = (militaryTime: string) => {

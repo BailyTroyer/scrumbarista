@@ -41,4 +41,8 @@ export class StandupDto {
   @Expose()
   @IsString()
   introMessage: string;
+
+  @Expose()
+  @IsString()
+  channelName: string;
 }

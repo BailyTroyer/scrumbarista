@@ -10,13 +10,19 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { CheckinResponse } from "hooks/swr";
+import { CheckinResponse, StandupResponse } from "hooks/swr";
 
 interface Props {
   checkin: CheckinResponse;
+  standup: StandupResponse | null;
+  userInfo?: {
+    name: string;
+    id: string;
+    image: string;
+  };
 }
 
-const CheckinCard: FC<Props> = ({ checkin }: Props) => (
+const CheckinCard: FC<Props> = ({ standup, checkin, userInfo }: Props) => (
   <VStack width={"100%"}>
     <HStack width="100%">
       <Divider />
@@ -37,30 +43,34 @@ const CheckinCard: FC<Props> = ({ checkin }: Props) => (
     <Flex direction={"column"} w="100%">
       <Flex direction={"row"} alignItems={"center"} mb={2}>
         <Image
-          boxSize={"75"}
+          boxSize={"55"}
           objectFit="cover"
-          src={`https://avatars.dicebear.com/api/miniavs/${checkin.userId}.svg`}
+          src={userInfo?.image}
+          borderRadius="full"
+          mr={4}
         />
 
         <Text fontWeight={"semibold"} color="gray.900">
-          bailytroyer
+          {userInfo?.name}
         </Text>
-        <Text>- 03:08 pm</Text>
+        <Text mx={1}>-</Text>
+        <Text>
+          {new Date(checkin.createdDate).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </Text>
       </Flex>
 
-      {[
-        "What will you do today?",
-        "What will you do today?",
-        "What will you do today?",
-      ].map((q) => (
+      {checkin.answers.split("\n").map((a, i) => (
         <Flex direction={"row"} w="100%" h="100%" my={2}>
           <Box mr={2} width={"5px"} bgColor={"blue.500"} borderRadius={"xl"} />
 
           <Flex direction={"column"}>
             <Text fontWeight={"bold"} color="gray.700">
-              {q}
+              {standup?.questions.split("\n")[i]}
             </Text>
-            <Text>stuff</Text>
+            <Text>{a}</Text>
           </Flex>
         </Flex>
       ))}

@@ -35,7 +35,10 @@ export class StandupsService {
     take?: number;
     day?: string;
   }): Promise<
-    (Standup & { users: { name: string; email: string; image: string }[] })[]
+    (Standup & {
+      users: { name: string; id: string; image: string }[];
+      channelName: string;
+    })[]
   > {
     const { skip, take, day } = params;
 
@@ -67,20 +70,27 @@ export class StandupsService {
             ).user.profile;
             return {
               name: profile.real_name || "",
-              email: profile.email || "",
+              id: user,
               image: profile.image_192 || "",
             };
           })
         ).catch(() => []);
-        return { ...standup, users };
+        const channelName =
+          (
+            await this.bolt.conversations.info({
+              channel: standup.channelId,
+            })
+          ).channel.name || "";
+        return { ...standup, users, channelName };
       })
     );
   }
 
-  async findOne(
-    channelId: string
-  ): Promise<
-    Standup & { users: { name: string; email: string; image: string }[] }
+  async findOne(channelId: string): Promise<
+    Standup & {
+      users: { name: string; id: string; image: string }[];
+      channelName: string;
+    }
   > {
     const standup = await this.standupsRepository.findOneOrFail({ channelId });
 
@@ -97,13 +107,20 @@ export class StandupsService {
         ).user.profile;
         return {
           name: profile.real_name || "",
-          email: profile.email || "",
+          id: user,
           image: profile.image_192 || "",
         };
       })
     ).catch(() => []);
 
-    return { ...standup, users };
+    const channelName =
+      (
+        await this.bolt.conversations.info({
+          channel: standup.channelId,
+        })
+      ).channel.name || "";
+
+    return { ...standup, users, channelName };
   }
 
   async update(
@@ -121,6 +138,8 @@ export class StandupsService {
 
     standup.questions = updateStandupDto.questions;
     standup.name = updateStandupDto.name;
+    standup.introMessage = updateStandupDto.introMessage;
+    standup.active = updateStandupDto.active;
 
     return this.standupsRepository.save(standup);
   }

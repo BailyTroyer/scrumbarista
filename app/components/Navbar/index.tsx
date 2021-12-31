@@ -1,12 +1,6 @@
-import { FC, ReactNode } from "react";
+import { ReactNode } from "react";
 
-import {
-  AddIcon,
-  CheckIcon,
-  MoonIcon,
-  SearchIcon,
-  SunIcon,
-} from "@chakra-ui/icons";
+import { MoonIcon, SearchIcon, SunIcon } from "@chakra-ui/icons";
 import {
   Box,
   Flex,
@@ -34,6 +28,9 @@ import {
 } from "@chakra-ui/react";
 import { signOut, useSession } from "next-auth/react";
 import NextLink from "next/link";
+import { useHotkeys } from "react-hotkeys-hook";
+
+import useFocus from "hooks/useFocus";
 
 const Links: string[] = [];
 
@@ -59,6 +56,10 @@ const Navbar = () => {
 
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const { inputRef, setFocus } = useFocus();
+  useHotkeys("cmd+/", setFocus);
+
   return (
     <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
       <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
@@ -87,12 +88,13 @@ const Navbar = () => {
               border="none"
               w={500}
               _focus={{ shadow: "base" }}
+              ref={inputRef}
             />
             <InputRightElement
               width="5.5rem"
               children={
                 <HStack>
-                  <Kbd>ctrl</Kbd>
+                  <Kbd>⌘</Kbd>
                   <Kbd>/</Kbd>
                 </HStack>
               }

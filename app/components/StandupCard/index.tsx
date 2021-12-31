@@ -76,7 +76,7 @@ const StandupCard: FC<Props> = ({ standup }: Props) => {
             paddingX={4}
             paddingY={1}
           >
-            #general
+            #{standup?.channelName}
           </Box>
         </VStack>
         <Grid templateColumns="repeat(7, 1fr)">
@@ -94,13 +94,15 @@ const StandupCard: FC<Props> = ({ standup }: Props) => {
           {metrics.map(() => {
             return (
               <>
-                {[...Array.from(Array(5).keys())].map((_, index: number) => (
+                {[...Array.from(Array(7).keys())].map((_, index: number) => (
                   <Center boxSize={"50px"}>
                     <WrapItem>
                       <Tooltip label={`${index} participants`} openDelay={500}>
                         <Circle
-                          size={index <= 4 ? `${45 * Math.random()}px` : "20px"}
-                          bg={index <= 4 ? "blue.500" : "gray.200"}
+                          // size={index <= 4 ? `${45 * Math.random()}px` : "20px"}
+                          size="20px"
+                          // bg={index <= 4 ? "blue.500" : "gray.200"}
+                          bg="gray.200"
                         />
                       </Tooltip>
                     </WrapItem>

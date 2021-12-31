@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import { ChevronRightIcon, SettingsIcon } from "@chakra-ui/icons";
 import { Box } from "@chakra-ui/layout";
 import {
@@ -18,6 +20,7 @@ import {
   Flex,
   Skeleton,
   Button,
+  Checkbox,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import NextImage from "next/image";
@@ -28,6 +31,7 @@ import Link from "components/Link";
 import StandupDetailCard from "components/StandupDetailCard";
 import { useCheckins, useStandup } from "hooks/swr";
 import useDaysToString, { toRegularTime } from "hooks/useDaysString";
+import { stringToColour } from "utils";
 import { colors } from "utils/constants";
 
 const EmptyCheckinsDisplay = () => (
@@ -145,7 +149,7 @@ const Standup: NextPage = () => {
               paddingX={4}
               paddingY={1}
             >
-              #general
+              #{standup?.channelName}
             </Box>
           </Skeleton>
         </StandupDetailCard>
@@ -153,37 +157,57 @@ const Standup: NextPage = () => {
     </Grid>
   );
 
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    window.onscroll = () => {
+      setOffset(window.pageYOffset);
+    };
+  }, []);
+
+  const Header = () => (
+    <HStack
+      w="full"
+      sx={{
+        position: "sticky",
+        top: "0",
+      }}
+      zIndex={1}
+      // bg="white"
+      // boxShadow={offset > 0 ? "md" : ""}
+    >
+      <VStack align="flex-start" w="full">
+        <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
+          <BreadcrumbItem>
+            <BreadcrumbLink as={Link} href="/home">
+              Home
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+
+          <BreadcrumbItem>
+            <Text>{standup?.name} Standup</Text>
+          </BreadcrumbItem>
+        </Breadcrumb>
+        <Skeleton width={"xs"} isLoaded={!standupLoading}>
+          <Heading>{standup?.name} Standup</Heading>
+        </Skeleton>
+      </VStack>
+
+      <Button
+        leftIcon={<SettingsIcon />}
+        colorScheme="pink"
+        variant="solid"
+        onClick={() => router.push(`/standups/${channelId}/manage`)}
+      >
+        Manage
+      </Button>
+    </HStack>
+  );
+
   return (
     <Flex flex={1} bg={useColorModeValue("gray.50", "gray.700")}>
       <VStack w="full" h="full" padding={8} spacing={4} maxW="5xl" mx="auto">
-        <HStack w="full">
-          <VStack align="flex-start" w="full">
-            <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
-              <BreadcrumbItem>
-                <BreadcrumbLink as={Link} href="/home">
-                  Home
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-
-              <BreadcrumbItem>
-                <Text>{standup?.name} Standup</Text>
-              </BreadcrumbItem>
-            </Breadcrumb>
-            <Skeleton width={"xs"} isLoaded={!standupLoading}>
-              <Heading>{standup?.name} Standup</Heading>
-            </Skeleton>
-          </VStack>
-
-          <Button
-            leftIcon={<SettingsIcon />}
-            colorScheme="pink"
-            variant="solid"
-            onClick={() => router.push(`/standups/${channelId}/manage`)}
-          >
-            Manage
-          </Button>
-        </HStack>
-
+        <Header />
         <VStack w="full" spacing={10}>
           <MetaGrid />
           <Flex flexDir={"column"} alignItems={"center"} w="full">
@@ -196,7 +220,122 @@ const Standup: NextPage = () => {
             {checkins.length === 0 ? (
               <EmptyCheckinsDisplay />
             ) : (
-              checkins.map((c) => <CheckinCard checkin={c} key={c.id} />)
+              <Grid w="full" templateColumns="repeat(3, 1fr)" gap={4}>
+                <GridItem w="full" colSpan={2}>
+                  {checkins.map((c) => (
+                    <CheckinCard
+                      standup={standup}
+                      userInfo={standup?.users.find((u) => u.id === c.userId)}
+                      checkin={c}
+                      key={c.id}
+                    />
+                  ))}
+                </GridItem>
+                <GridItem w="full" colSpan={1}>
+                  <Box
+                    w="full"
+                    sx={{
+                      position: "sticky",
+                      top: "10",
+                    }}
+                    zIndex={1}
+                    // bg="white"
+                    // boxShadow={offset > 0 ? "md" : ""}
+                  >
+                    <VStack
+                      w="full"
+                      bg="white"
+                      borderRadius="2xl"
+                      shadow={"base"}
+                      p={5}
+                      alignItems={"flex-start"}
+                      spacing={8}
+                    >
+                      <Flex
+                        direction={"column"}
+                        alignItems={"center"}
+                        justifyContent={"space-between"}
+                        w="full"
+                      >
+                        <Flex
+                          w="full"
+                          direction={"row"}
+                          alignItems={"center"}
+                          justifyContent={"space-between"}
+                          mb={5}
+                        >
+                          <Heading fontSize="lg">Participants</Heading>
+                          <HStack>
+                            <Text fontSize="xs">All</Text>
+                            <Checkbox defaultIsChecked />
+                          </HStack>
+                        </Flex>
+                        <VStack spacing={2} w="full">
+                          {standup?.users.map((user) => (
+                            <Flex
+                              w="full"
+                              direction={"row"}
+                              alignItems={"center"}
+                              justifyContent={"space-between"}
+                            >
+                              <HStack>
+                                <Image
+                                  boxSize={"25"}
+                                  objectFit="cover"
+                                  src={user.image}
+                                  borderRadius="full"
+                                />
+                                <Text>{user.name}</Text>
+                              </HStack>
+                              <Checkbox defaultIsChecked />
+                            </Flex>
+                          ))}
+                        </VStack>
+                      </Flex>
+
+                      <Flex
+                        direction={"column"}
+                        alignItems={"center"}
+                        justifyContent={"space-between"}
+                        w="full"
+                      >
+                        <Flex
+                          w="full"
+                          direction={"row"}
+                          alignItems={"center"}
+                          justifyContent={"space-between"}
+                          mb={5}
+                        >
+                          <Heading fontSize="lg">Questions</Heading>
+                          <HStack>
+                            <Text fontSize="xs">All</Text>
+                            <Checkbox defaultIsChecked />
+                          </HStack>
+                        </Flex>
+                        <VStack spacing={2} w="full">
+                          {standup?.questions.split("\n").map((question) => (
+                            <Flex
+                              w="full"
+                              direction={"row"}
+                              alignItems={"center"}
+                              justifyContent={"space-between"}
+                            >
+                              <HStack>
+                                <Circle
+                                  size={2}
+                                  bg={stringToColour(question)}
+                                />
+                                <Text fontSize="sm">{question}</Text>
+                              </HStack>
+                              <Checkbox defaultIsChecked />
+                            </Flex>
+                          ))}
+                        </VStack>
+                      </Flex>
+                    </VStack>
+                  </Box>
+                </GridItem>
+              </Grid>
             )}
           </Flex>
         </VStack>
