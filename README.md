@@ -2,6 +2,10 @@
 
 A free alternative for managing your asynchronous standups. In this case here's a free lunch :D
 
+[![API codecov](https://codecov.io/gh/BailyTroyer/scrumbarista/branch/main/graph/badge.svg?token=VWKMJJDQHL&flag=api)](https://codecov.io/gh/BailyTroyer/scrumbarista)
+[![Bolt codecov](https://codecov.io/gh/BailyTroyer/scrumbarista/branch/main/graph/badge.svg?token=VWKMJJDQHL&flag=bolt)](https://codecov.io/gh/BailyTroyer/scrumbarista)
+
+
 ## Running Locally
 
 @todo create global makefile + docker steps

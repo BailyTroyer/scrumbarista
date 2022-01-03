@@ -15,7 +15,11 @@ const Link: FC<Props & LinkProps> = ({
 }: Props & LinkProps) => {
   return (
     <NextLink href={href} passHref>
-      <ChakraLink _hover={{ textDecoration: "none" }} {...linkProps}>
+      <ChakraLink
+        _hover={{ textDecoration: "none", outline: "none" }}
+        _active={{ textDecoration: "none", outline: "none" }}
+        {...linkProps}
+      >
         {children}
       </ChakraLink>
     </NextLink>

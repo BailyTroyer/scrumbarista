@@ -30,10 +30,12 @@ const checkAndPingUsers = async () => {
 
       const date = new Date().toLocaleDateString();
 
-      const users = (await app.client.conversations.members({
+      const users = await app.client.conversations.members({
         token,
         channel,
-      })) as any;
+      });
+
+      /// WHAT HAPPENS IF WE ALREADY RAN CRON A MINUTE AGO DOES IT DUPLICATE THE MESSAGE?
 
       users.members.forEach(async (user: string) => {
         const checkins = await getCheckins(channel, user, date);

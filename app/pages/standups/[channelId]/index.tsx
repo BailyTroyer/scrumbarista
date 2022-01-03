@@ -1,7 +1,8 @@
-import { ChevronRightIcon } from "@chakra-ui/icons";
+import { useEffect, useState } from "react";
+
+import { ChevronRightIcon, SettingsIcon } from "@chakra-ui/icons";
 import { Box } from "@chakra-ui/layout";
 import {
-  Center,
   Grid,
   GridItem,
   HStack,
@@ -16,178 +17,120 @@ import {
   Breadcrumb,
   BreadcrumbLink,
   BreadcrumbItem,
-  Divider,
   Flex,
   Skeleton,
+  Button,
+  Checkbox,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
+import NextImage from "next/image";
 import { useRouter } from "next/router";
-import useSWR from "swr";
 
-import Link from "../../../components/Link";
+import authenticatedRoute from "components/AuthenticatedRoute";
+import CheckinCard from "components/CheckinCard";
+import Link from "components/Link";
+import StandupDetailCard from "components/StandupDetailCard";
+import { useCheckins, useStandup } from "hooks/swr";
+import useDaysToString, { toRegularTime } from "hooks/useDaysString";
+import { stringToColour } from "utils";
+import { colors } from "utils/constants";
 
-const colors = [
-  "teal",
-  "purple",
-  "yellow",
-  "red",
-  "blue",
-  "cyan",
-  "orange",
-  "pink",
-];
+const EmptyCheckinsDisplay = () => (
+  <Flex
+    flexDir={"column"}
+    alignItems={"center"}
+    justifyContent={"center"}
+    mt={20}
+    mb={10}
+  >
+    <Box>
+      <NextImage src="/empty.svg" height={250} width={250} />
+    </Box>
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-const slackAuthFetcher = (url: string) => fetch(url).then((res) => res.json());
-
-interface StandupResponse {
-  name: string;
-  channelId: string;
-  questions: string;
-  days: string[];
-}
-
-interface CheckinResponse {
-  id: string;
-  createdDate: string;
-  answers: string;
-  userId: string;
-  channelId: string;
-}
+    <Heading size="md" color="gray.700" mt={8}>
+      Let's Make Some Data
+    </Heading>
+    <Text fontSize="md" color="gray.900" textAlign={"center"} mt={2} w="60%">
+      There's no data to display yet — but your Timeline board will light up as
+      soon as one of the participants reports!
+    </Text>
+  </Flex>
+);
 
 const Standup: NextPage = () => {
   const router = useRouter();
   const { channelId } = router.query;
 
-  const { data, error } = useSWR<StandupResponse>(
-    channelId ? `${API_URL}/standups/${channelId}` : null,
-    channelId ? slackAuthFetcher : null
-  );
+  const { standup, isLoading: standupLoading } = useStandup(channelId);
+  const { checkins } = useCheckins(channelId);
 
-  const { data: checkins, error: checkinsError } = useSWR<CheckinResponse[]>(
-    channelId ? `${API_URL}/standups/${channelId}/checkins` : null,
-    channelId ? slackAuthFetcher : null
-  );
-
-  const colorCardBg = useColorModeValue("white", "gray.800");
+  const daysString = useDaysToString(standup?.days || []);
 
   const MetaGrid = () => (
     <Grid
-      width={[200, 500, 600, 900]}
-      templateRows="repeat(4, 1fr)"
+      w="full"
+      h="400"
+      templateRows="repeat(3, 1fr)"
       templateColumns="repeat(4, 1fr)"
       gap={4}
     >
       <GridItem rowSpan={1} colSpan={4}>
-        <Link href={`/standups/${channelId}/manage/schedule`}>
-          <VStack
-            spacing={4}
-            align={"flex-start"}
-            shadow={"base"}
-            borderRadius="2xl"
-            padding={4}
-            bg={colorCardBg}
-            height="100%"
-            _hover={{
-              textDecoration: "none",
-              shadow: "lg",
-            }}
-          >
-            <Heading as="h4" size="md">
-              Schedule
-            </Heading>
+        <StandupDetailCard title="Schedule">
+          <Skeleton width={"xl"} isLoaded={!standupLoading}>
             <Text fontSize="md" color="gray.500">
-              Weekly from Monday to Friday, at 15:08 PM, in user's local
-              timezone
+              Weekly {daysString} at {toRegularTime(standup?.startTime || "")},
+              in user's local timezone
             </Text>
-          </VStack>
-        </Link>
+          </Skeleton>
+        </StandupDetailCard>
       </GridItem>
-      <GridItem rowSpan={3} colSpan={2}>
-        <Link href={`/standups/${channelId}/manage/questions`}>
-          <VStack
-            align={"flex-start"}
-            shadow={"base"}
-            borderRadius="2xl"
-            padding={4}
-            height="100%"
-            bg={colorCardBg}
-            _hover={{
-              textDecoration: "none",
-              shadow: "lg",
-            }}
-          >
-            <Heading as="h4" size="md">
-              Questions
-            </Heading>
-            <Text fontSize="md" color="gray.500">
-              {data?.questions
-                .split("\n")
-                .map((question: string, index: number) => (
-                  <HStack my={3}>
-                    <Circle size="10px" bg={`${colors[index]}.300`} />
-                    <Text fontSize="md" color="gray.500">
-                      {question}
-                    </Text>
-                  </HStack>
-                ))}
-            </Text>
-          </VStack>
-        </Link>
-      </GridItem>
-      <GridItem colSpan={2} rowSpan={2}>
-        <Link href={`/standups/${channelId}/manage/members`}>
-          <VStack
-            spacing={4}
-            align={"flex-start"}
-            shadow={"base"}
-            borderRadius="2xl"
-            padding={4}
-            height="100%"
-            bg={colorCardBg}
-            _hover={{
-              textDecoration: "none",
-              shadow: "lg",
-            }}
-          >
-            <Heading as="h4" size="md">
-              Participants
-            </Heading>
-            <HStack>
-              {["Baily Troyer", "John Doe", "Connor Prussin"].map((name) => (
-                <WrapItem>
-                  <Tooltip label={name} openDelay={500}>
-                    <Image
-                      boxSize={"75"}
-                      objectFit="cover"
-                      src={`https://avatars.dicebear.com/api/miniavs/${name}-${data?.name}.svg`}
-                    />
-                  </Tooltip>
-                </WrapItem>
+      <GridItem rowSpan={2} colSpan={2}>
+        <StandupDetailCard title="Questions">
+          <Text fontSize="md" color="gray.500">
+            {standupLoading &&
+              [0, 1, 2, 3].map((index) => (
+                <Skeleton key={index} w="xs" h={4} my={5} />
               ))}
-            </HStack>
-          </VStack>
-        </Link>
+
+            {standup?.questions
+              ?.split("\n")
+              .map((question: string, index: number) => (
+                <HStack my={3}>
+                  <Circle size="10px" bg={`${colors[index]}.300`} />
+                  <Text fontSize="md" color="gray.500">
+                    {question}
+                  </Text>
+                </HStack>
+              ))}
+          </Text>
+        </StandupDetailCard>
       </GridItem>
-      <GridItem colSpan={2} rowSpan={1}>
-        <Link href={`/standups/${channelId}/manage/basic`}>
-          <VStack
-            spacing={4}
-            align={"flex-start"}
-            shadow={"base"}
-            borderRadius="2xl"
-            padding={4}
-            bg={colorCardBg}
-            height="100%"
-            _hover={{
-              textDecoration: "none",
-              shadow: "lg",
-            }}
-          >
-            <Heading as="h4" size="md">
-              Broadcast channels
-            </Heading>
+      <GridItem rowSpan={1} colSpan={2}>
+        <StandupDetailCard title="Participants">
+          <HStack>
+            {standupLoading &&
+              [0, 1].map((index) => (
+                <Skeleton key={index} boxSize={"75"} borderRadius={"full"} />
+              ))}
+
+            {standup?.users?.map((user) => (
+              <WrapItem>
+                <Tooltip label={user.name} openDelay={500}>
+                  <Image
+                    boxSize={"75"}
+                    objectFit="cover"
+                    src={user.image}
+                    borderRadius="full"
+                  />
+                </Tooltip>
+              </WrapItem>
+            ))}
+          </HStack>
+        </StandupDetailCard>
+      </GridItem>
+      <GridItem rowSpan={1} colSpan={2}>
+        <StandupDetailCard title="Broadcast Channels">
+          <Skeleton isLoaded={!standupLoading} borderRadius="2xl">
             <Box
               borderRadius="2xl"
               border="1px"
@@ -195,111 +138,206 @@ const Standup: NextPage = () => {
               paddingX={4}
               paddingY={1}
             >
-              #general
+              #{standup?.channelName}
             </Box>
-          </VStack>
-        </Link>
+          </Skeleton>
+        </StandupDetailCard>
       </GridItem>
     </Grid>
   );
 
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    window.onscroll = () => {
+      setOffset(window.pageYOffset);
+    };
+  }, []);
+
   return (
-    <VStack
-      padding={8}
-      bg={useColorModeValue("gray.50", "gray.700")}
-      spacing={4}
-    >
-      <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
-        <BreadcrumbItem>
-          <BreadcrumbLink as={Link} href="/home">
-            Home
-          </BreadcrumbLink>
-        </BreadcrumbItem>
+    <Flex flexDirection="column" w="full">
+      <Box
+        bg={useColorModeValue("white", offset > 0 ? "gray.700" : "gray.800")}
+        sx={{
+          position: "sticky",
+          top: "16",
+        }}
+        boxShadow={offset > 0 ? "md" : ""}
+        zIndex={2}
+      >
+        <Flex
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+          padding={6}
+          maxW="5xl"
+          mx="auto"
+        >
+          <VStack align="flex-start">
+            <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
+              <BreadcrumbItem>
+                <BreadcrumbLink as={Link} href="/home">
+                  Home
+                </BreadcrumbLink>
+              </BreadcrumbItem>
 
-        <BreadcrumbItem>
-          <Text>{data?.name} Standup</Text>
-        </BreadcrumbItem>
-      </Breadcrumb>
+              <BreadcrumbItem>
+                <Text>{standup?.name} Standup</Text>
+              </BreadcrumbItem>
+            </Breadcrumb>
+            <Skeleton width={"xs"} isLoaded={!standupLoading}>
+              <Heading>{standup?.name} Standup</Heading>
+            </Skeleton>
+          </VStack>
 
-      <VStack spacing={8}>
-        {/*  */}
-        <Skeleton height="20px" width={"xs"} isLoaded={data !== undefined}>
-          <Heading textAlign={"center"}>{data?.name} Standup</Heading>
-        </Skeleton>
+          <Button
+            leftIcon={<SettingsIcon />}
+            colorScheme="pink"
+            variant="solid"
+            onClick={() => router.push(`/standups/${channelId}/manage`)}
+          >
+            Manage
+          </Button>
+        </Flex>
+      </Box>
 
-        <Center>
+      <VStack w="full" h="full" px={8} spacing={4} maxW="5xl" mx="auto">
+        <VStack w="full" spacing={10}>
           <MetaGrid />
-        </Center>
+          <Flex flexDir={"column"} alignItems={"center"} w="full">
+            <HStack w="full">
+              <Heading as="h4" size="md">
+                Timeline
+              </Heading>
+            </HStack>
 
-        <VStack>
-          <HStack width={[200, 500, 600, 900]}>
-            <Heading as="h4" size="md">
-              Timeline
-            </Heading>
-          </HStack>
-
-          {checkins?.map((checkin) => (
-            <VStack width={"100%"}>
-              <HStack width="100%">
-                <Divider />
-                <Flex>
-                  <Text
-                    mx={4}
-                    fontSize="md"
-                    fontWeight={"semibold"}
-                    color="gray.700"
-                    noOfLines={1}
-                  >
-                    10/10/10
-                  </Text>
-                </Flex>
-                <Divider />
-              </HStack>
-
-              <Flex direction={"row"} alignItems={"center"} mb={2}></Flex>
-
-              <Flex direction={"column"} w="100%">
-                <Flex direction={"row"} alignItems={"center"} mb={2}>
-                  <Image
-                    boxSize={"75"}
-                    objectFit="cover"
-                    src={`https://avatars.dicebear.com/api/miniavs/${name}-${data?.name}.svg`}
-                  />
-
-                  <Text fontWeight={"semibold"} color="gray.900">
-                    bailytroyer
-                  </Text>
-                  <Text>- 03:08 pm</Text>
-                </Flex>
-
-                {[
-                  "What will you do today?",
-                  "What will you do today?",
-                  "What will you do today?",
-                ].map((q) => (
-                  <Flex direction={"row"} w="100%" h="100%" my={2}>
-                    <Box
-                      mr={2}
-                      width={"5px"}
-                      bgColor={"blue.500"}
-                      borderRadius={"xl"}
+            {checkins.length === 0 ? (
+              <EmptyCheckinsDisplay />
+            ) : (
+              <Grid w="full" templateColumns="repeat(3, 1fr)" gap={4}>
+                <GridItem w="full" colSpan={2}>
+                  {checkins.map((c) => (
+                    <CheckinCard
+                      standup={standup}
+                      userInfo={standup?.users.find((u) => u.id === c.userId)}
+                      checkin={c}
+                      key={c.id}
                     />
+                  ))}
+                </GridItem>
+                <GridItem w="full" colSpan={1}>
+                  <Box
+                    w="full"
+                    sx={{
+                      position: "sticky",
+                      top: "13em",
+                    }}
+                    zIndex={10}
 
-                    <Flex direction={"column"}>
-                      <Text fontWeight={"bold"} color="gray.700">
-                        {q}
-                      </Text>
-                      <Text>stuff</Text>
-                    </Flex>
-                  </Flex>
-                ))}
-              </Flex>
-            </VStack>
-          ))}
+                    // bg="white"
+                    // boxShadow={offset > 0 ? "md" : ""}
+                  >
+                    <VStack
+                      w="full"
+                      bg={useColorModeValue("white", "gray.700")}
+                      // bg="white"
+                      borderRadius="2xl"
+                      shadow={"base"}
+                      p={5}
+                      alignItems={"flex-start"}
+                      spacing={8}
+                    >
+                      <Flex
+                        direction={"column"}
+                        alignItems={"center"}
+                        justifyContent={"space-between"}
+                        w="full"
+                      >
+                        <Flex
+                          w="full"
+                          direction={"row"}
+                          alignItems={"center"}
+                          justifyContent={"space-between"}
+                          mb={5}
+                        >
+                          <Heading fontSize="lg">Participants</Heading>
+                          <HStack>
+                            <Text fontSize="xs">All</Text>
+                            <Checkbox defaultIsChecked />
+                          </HStack>
+                        </Flex>
+                        <VStack spacing={2} w="full">
+                          {standup?.users.map((user) => (
+                            <Flex
+                              w="full"
+                              direction={"row"}
+                              alignItems={"center"}
+                              justifyContent={"space-between"}
+                            >
+                              <HStack>
+                                <Image
+                                  boxSize={"25"}
+                                  objectFit="cover"
+                                  src={user.image}
+                                  borderRadius="full"
+                                />
+                                <Text>{user.name}</Text>
+                              </HStack>
+                              <Checkbox defaultIsChecked />
+                            </Flex>
+                          ))}
+                        </VStack>
+                      </Flex>
+
+                      <Flex
+                        direction={"column"}
+                        alignItems={"center"}
+                        justifyContent={"space-between"}
+                        w="full"
+                      >
+                        <Flex
+                          w="full"
+                          direction={"row"}
+                          alignItems={"center"}
+                          justifyContent={"space-between"}
+                          mb={5}
+                        >
+                          <Heading fontSize="lg">Questions</Heading>
+                          <HStack>
+                            <Text fontSize="xs">All</Text>
+                            <Checkbox defaultIsChecked />
+                          </HStack>
+                        </Flex>
+                        <VStack spacing={2} w="full">
+                          {standup?.questions.split("\n").map((question) => (
+                            <Flex
+                              w="full"
+                              direction={"row"}
+                              alignItems={"center"}
+                              justifyContent={"space-between"}
+                            >
+                              <HStack>
+                                <Circle
+                                  size={2}
+                                  bg={stringToColour(question)}
+                                />
+                                <Text fontSize="sm">{question}</Text>
+                              </HStack>
+                              <Checkbox defaultIsChecked />
+                            </Flex>
+                          ))}
+                        </VStack>
+                      </Flex>
+                    </VStack>
+                  </Box>
+                </GridItem>
+              </Grid>
+            )}
+          </Flex>
         </VStack>
       </VStack>
-    </VStack>
+    </Flex>
   );
 };
 
-export default Standup;
+export default authenticatedRoute(Standup);

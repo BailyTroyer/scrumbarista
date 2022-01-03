@@ -18,23 +18,30 @@ export default function Layout({ children }: Props) {
   const DynamicNavbar: FC<Props> = ({ children }: Props) => {
     if (router.pathname === "/") {
       return (
-        <>
+        <Flex minHeight="100vh" flexDirection="column" w="full">
           <MarketingNavbar />
           {children}
-        </>
+        </Flex>
       );
     } else if (status === "loading" || status === "unauthenticated") {
-      return <>{children}</>;
+      return (
+        <Flex minHeight="100vh" flexDirection="column" w="full">
+          {children}
+        </Flex>
+      );
     }
 
-    return <Navbar>{children}</Navbar>;
+    return (
+      <Flex minHeight="100vh" flexDirection="column" w="full" bg="blue">
+        <Navbar />
+        {children}
+      </Flex>
+    );
   };
 
   return (
-    <Flex minHeight="100vh" flexDirection="column">
-      <DynamicNavbar>
-        <main>{children}</main>
-      </DynamicNavbar>
-    </Flex>
+    <DynamicNavbar>
+      <main style={{ display: "flex", flex: 1 }}>{children}</main>
+    </DynamicNavbar>
   );
 }

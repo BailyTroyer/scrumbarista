@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.meta.name}}
+  namespace: {{.Values.meta.namespace}}
+  labels: {{include "labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: {{.Values.meta.name}}
+  replicas: {{.Values.containers.api.replicas}}
+  template:
+    metadata:
+      labels: {{include "labels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{.Values.containers.api.name}}
+        image: {{.Values.containers.api.image.repository}}:{{.Values.containers.api.image.tag}}
+        imagePullPolicy: Always
+        resources: {{toYaml .Values.containers.api.resources | nindent 10}}
+        ports:
+        - containerPort: {{.Values.containers.api.port}}
+        readinessProbe:
+          initialDelaySeconds: 5
+          httpGet:
+            port: {{.Values.containers.api.port}}
+            path: /health
+        livenessProbe:
+          initialDelaySeconds: 5
+          httpGet:
+            port: {{.Values.containers.api.port}}
+            path: /health
+        env:
+        {{- with .Values.containers.api.env }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
