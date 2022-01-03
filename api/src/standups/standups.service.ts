@@ -81,6 +81,7 @@ export class StandupsService {
               channel: standup.channelId,
             })
           ).channel.name || "";
+
         return { ...standup, users, channelName };
       })
     );

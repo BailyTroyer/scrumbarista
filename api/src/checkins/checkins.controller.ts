@@ -9,16 +9,19 @@ import {
   Query,
   UseInterceptors,
   UseFilters,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { plainToClass } from "class-transformer";
 
-import { EntityNotFoundExceptionFilter } from "../filters/entity-not-found-exception.filter";
+import { EntityNotFoundExceptionFilter } from "../core/filters/entity-not-found-exception.filter";
+import { SlackGuard } from "./../core/guards/slack.guard";
 import { CheckinsService } from "./checkins.service";
 import { CheckinDto } from "./dto/checkin.dto";
 import { CreateCheckinDto } from "./dto/create-checkin.dto";
 import { UpdateCheckinDto } from "./dto/update-checkin.dto";
 
+@UseGuards(SlackGuard)
 @ApiTags("checkins")
 @Controller("/standups")
 @UseInterceptors(EntityNotFoundExceptionFilter)

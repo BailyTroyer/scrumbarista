@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Global, Module } from "@nestjs/common";
 import { App } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
 
@@ -20,7 +20,9 @@ const boltFactory = {
   inject: [],
 };
 
+@Global()
 @Module({
+  imports: [],
   providers: [boltFactory],
   exports: ["BOLT"],
 })

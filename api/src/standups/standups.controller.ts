@@ -8,16 +8,19 @@ import {
   Delete,
   Query,
   UseFilters,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { plainToClass } from "class-transformer";
 
-import { EntityNotFoundExceptionFilter } from "../filters/entity-not-found-exception.filter";
+import { EntityNotFoundExceptionFilter } from "../core/filters/entity-not-found-exception.filter";
+import { SlackGuard } from "./../core/guards/slack.guard";
 import { CreateStandupDto } from "./dto/create-standup.dto";
 import { StandupDto } from "./dto/standup.dto";
 import { UpdateStandupDto } from "./dto/update-standup.dto";
 import { StandupsService } from "./standups.service";
 
+@UseGuards(SlackGuard)
 @ApiTags("standups")
 @Controller("standups")
 export class StandupsController {

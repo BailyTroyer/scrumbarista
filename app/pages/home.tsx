@@ -13,6 +13,7 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 import Anim from "components/Animation";
@@ -71,7 +72,7 @@ const Home: NextPage = () => {
     return (
       <Alert status="error">
         <AlertIcon />
-        {error.error}
+        {JSON.stringify(error)}
       </Alert>
     );
   }
@@ -109,5 +110,4 @@ const Home: NextPage = () => {
   );
 };
 
-// export default authenticatedRoute(Home);
-export default Home;
+export default authenticatedRoute(Home);

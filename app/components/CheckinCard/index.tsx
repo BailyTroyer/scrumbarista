@@ -7,6 +7,7 @@ import {
   HStack,
   Image,
   Text,
+  useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
 
@@ -27,13 +28,7 @@ const CheckinCard: FC<Props> = ({ standup, checkin, userInfo }: Props) => (
     <HStack width="100%">
       <Divider />
       <Flex>
-        <Text
-          mx={4}
-          fontSize="md"
-          fontWeight={"semibold"}
-          color="gray.700"
-          noOfLines={1}
-        >
+        <Text mx={4} fontSize="md" fontWeight={"semibold"} noOfLines={1}>
           10/10/10
         </Text>
       </Flex>
@@ -50,9 +45,7 @@ const CheckinCard: FC<Props> = ({ standup, checkin, userInfo }: Props) => (
           mr={4}
         />
 
-        <Text fontWeight={"semibold"} color="gray.900">
-          {userInfo?.name}
-        </Text>
+        <Text fontWeight={"semibold"}>{userInfo?.name}</Text>
         <Text mx={1}>-</Text>
         <Text>
           {new Date(checkin.createdDate).toLocaleTimeString([], {
@@ -67,7 +60,10 @@ const CheckinCard: FC<Props> = ({ standup, checkin, userInfo }: Props) => (
           <Box mr={2} width={"5px"} bgColor={"blue.500"} borderRadius={"xl"} />
 
           <Flex direction={"column"}>
-            <Text fontWeight={"bold"} color="gray.700">
+            <Text
+              fontWeight={"bold"}
+              color={useColorModeValue("gray.700", "gray.400")}
+            >
               {standup?.questions.split("\n")[i]}
             </Text>
             <Text>{a}</Text>

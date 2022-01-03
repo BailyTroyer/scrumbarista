@@ -1,7 +1,21 @@
-import { Exclude, Expose, Transform } from "class-transformer";
+import { Exclude, Expose, Transform, Type } from "class-transformer";
 import { IsString, IsArray, IsBoolean, IsMilitaryTime } from "class-validator";
 
 import { Standup } from "../entities/standup.entity";
+
+class UserDto {
+  @Expose()
+  @IsString()
+  name: string;
+
+  @Expose()
+  @IsString()
+  id: string;
+
+  @Expose()
+  @IsString()
+  image: string;
+}
 
 @Exclude()
 export class StandupDto {
@@ -26,13 +40,18 @@ export class StandupDto {
   @IsMilitaryTime()
   startTime: string;
 
+  // @Expose()
+  // @IsArray()
+  // users: {
+  //   id: string;
+  //   image: string;
+  //   name: string;
+  // }[];
+
   @Expose()
   @IsArray()
-  users: {
-    id: string;
-    image: string;
-    name: string;
-  }[];
+  @Type(() => UserDto)
+  users: UserDto;
 
   @Expose()
   @IsBoolean()

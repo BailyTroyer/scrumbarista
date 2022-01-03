@@ -26,6 +26,7 @@ import type { NextPage } from "next";
 import NextImage from "next/image";
 import { useRouter } from "next/router";
 
+import authenticatedRoute from "components/AuthenticatedRoute";
 import CheckinCard from "components/CheckinCard";
 import Link from "components/Link";
 import StandupDetailCard from "components/StandupDetailCard";
@@ -74,10 +75,7 @@ const Standup: NextPage = () => {
       gap={4}
     >
       <GridItem rowSpan={1} colSpan={4}>
-        <StandupDetailCard
-          href={`/standups/${channelId}/manage/schedule`}
-          title="Schedule"
-        >
+        <StandupDetailCard title="Schedule">
           <Skeleton width={"xl"} isLoaded={!standupLoading}>
             <Text fontSize="md" color="gray.500">
               Weekly {daysString} at {toRegularTime(standup?.startTime || "")},
@@ -87,10 +85,7 @@ const Standup: NextPage = () => {
         </StandupDetailCard>
       </GridItem>
       <GridItem rowSpan={2} colSpan={2}>
-        <StandupDetailCard
-          href={`/standups/${channelId}/manage/questions`}
-          title="Questions"
-        >
+        <StandupDetailCard title="Questions">
           <Text fontSize="md" color="gray.500">
             {standupLoading &&
               [0, 1, 2, 3].map((index) => (
@@ -111,10 +106,7 @@ const Standup: NextPage = () => {
         </StandupDetailCard>
       </GridItem>
       <GridItem rowSpan={1} colSpan={2}>
-        <StandupDetailCard
-          href={`/standups/${channelId}/manage/members`}
-          title="Participants"
-        >
+        <StandupDetailCard title="Participants">
           <HStack>
             {standupLoading &&
               [0, 1].map((index) => (
@@ -137,10 +129,7 @@ const Standup: NextPage = () => {
         </StandupDetailCard>
       </GridItem>
       <GridItem rowSpan={1} colSpan={2}>
-        <StandupDetailCard
-          href={`/standups/${channelId}/manage/basic`}
-          title="Broadcast Channels"
-        >
+        <StandupDetailCard title="Broadcast Channels">
           <Skeleton isLoaded={!standupLoading} borderRadius="2xl">
             <Box
               borderRadius="2xl"
@@ -165,49 +154,54 @@ const Standup: NextPage = () => {
     };
   }, []);
 
-  const Header = () => (
-    <HStack
-      w="full"
-      sx={{
-        position: "sticky",
-        top: "0",
-      }}
-      zIndex={1}
-      // bg="white"
-      // boxShadow={offset > 0 ? "md" : ""}
-    >
-      <VStack align="flex-start" w="full">
-        <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
-          <BreadcrumbItem>
-            <BreadcrumbLink as={Link} href="/home">
-              Home
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-
-          <BreadcrumbItem>
-            <Text>{standup?.name} Standup</Text>
-          </BreadcrumbItem>
-        </Breadcrumb>
-        <Skeleton width={"xs"} isLoaded={!standupLoading}>
-          <Heading>{standup?.name} Standup</Heading>
-        </Skeleton>
-      </VStack>
-
-      <Button
-        leftIcon={<SettingsIcon />}
-        colorScheme="pink"
-        variant="solid"
-        onClick={() => router.push(`/standups/${channelId}/manage`)}
-      >
-        Manage
-      </Button>
-    </HStack>
-  );
-
   return (
-    <Flex flex={1} bg={useColorModeValue("gray.50", "gray.700")}>
-      <VStack w="full" h="full" padding={8} spacing={4} maxW="5xl" mx="auto">
-        <Header />
+    <Flex flexDirection="column" w="full">
+      <Box
+        bg={useColorModeValue("white", offset > 0 ? "gray.700" : "gray.800")}
+        sx={{
+          position: "sticky",
+          top: "16",
+        }}
+        boxShadow={offset > 0 ? "md" : ""}
+        zIndex={2}
+      >
+        <Flex
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+          padding={6}
+          maxW="5xl"
+          mx="auto"
+        >
+          <VStack align="flex-start">
+            <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
+              <BreadcrumbItem>
+                <BreadcrumbLink as={Link} href="/home">
+                  Home
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+
+              <BreadcrumbItem>
+                <Text>{standup?.name} Standup</Text>
+              </BreadcrumbItem>
+            </Breadcrumb>
+            <Skeleton width={"xs"} isLoaded={!standupLoading}>
+              <Heading>{standup?.name} Standup</Heading>
+            </Skeleton>
+          </VStack>
+
+          <Button
+            leftIcon={<SettingsIcon />}
+            colorScheme="pink"
+            variant="solid"
+            onClick={() => router.push(`/standups/${channelId}/manage`)}
+          >
+            Manage
+          </Button>
+        </Flex>
+      </Box>
+
+      <VStack w="full" h="full" px={8} spacing={4} maxW="5xl" mx="auto">
         <VStack w="full" spacing={10}>
           <MetaGrid />
           <Flex flexDir={"column"} alignItems={"center"} w="full">
@@ -236,15 +230,17 @@ const Standup: NextPage = () => {
                     w="full"
                     sx={{
                       position: "sticky",
-                      top: "10",
+                      top: "13em",
                     }}
-                    zIndex={1}
+                    zIndex={10}
+
                     // bg="white"
                     // boxShadow={offset > 0 ? "md" : ""}
                   >
                     <VStack
                       w="full"
-                      bg="white"
+                      bg={useColorModeValue("white", "gray.700")}
+                      // bg="white"
                       borderRadius="2xl"
                       shadow={"base"}
                       p={5}
@@ -344,4 +340,4 @@ const Standup: NextPage = () => {
   );
 };
 
-export default Standup;
+export default authenticatedRoute(Standup);

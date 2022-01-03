@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-types */
 import type {
   NextComponentType,
@@ -13,11 +14,5 @@ declare module "next" {
     P
   > & {
     getLayout?: (page: NextPage) => NextPage;
-  };
-}
-
-declare module "next/app" {
-  type AppLayoutProps<P = {}> = AppProps & {
-    Component: NextLayoutComponentType;
   };
 }

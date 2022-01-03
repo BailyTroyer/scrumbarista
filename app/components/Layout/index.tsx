@@ -16,19 +16,23 @@ export default function Layout({ children }: Props) {
   const { status } = useSession();
 
   const DynamicNavbar: FC<Props> = ({ children }: Props) => {
-    // if (router.pathname === "/") {
-    //   return (
-    //     <Flex minHeight="100vh" flexDirection="column" flex={1}>
-    //       <MarketingNavbar />
-    //       {children}
-    //     </Flex>
-    //   );
-    // } else if (status === "loading" || status === "unauthenticated") {
-    //   return <>{children}</>;
-    // }
+    if (router.pathname === "/") {
+      return (
+        <Flex minHeight="100vh" flexDirection="column" w="full">
+          <MarketingNavbar />
+          {children}
+        </Flex>
+      );
+    } else if (status === "loading" || status === "unauthenticated") {
+      return (
+        <Flex minHeight="100vh" flexDirection="column" w="full">
+          {children}
+        </Flex>
+      );
+    }
 
     return (
-      <Flex minHeight="100vh" flexDirection="column" flex={1}>
+      <Flex minHeight="100vh" flexDirection="column" w="full" bg="blue">
         <Navbar />
         {children}
       </Flex>

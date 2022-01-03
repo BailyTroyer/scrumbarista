@@ -1,9 +1,12 @@
+import { useSession } from "next-auth/react";
 import useSWR from "swr";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const fetcher = (...args: Parameters<typeof fetch>) =>
-  fetch(...args).then((res) => res.json());
+const fetcher = (url: string, token: string) =>
+  fetch(url, { headers: { Authorization: `Bearer ${token}` } }).then((res) =>
+    res.json()
+  );
 
 export interface StandupsResponse {
   name: string;
@@ -21,10 +24,14 @@ export interface StandupsErrorResponse {
 }
 
 export const useStandups = () => {
+  const { data: session } = useSession();
+  console.log("ACCESS TOKEN: ", JSON.stringify(session));
   const { data, error } = useSWR<StandupsResponse[], StandupsErrorResponse>(
-    `${API_URL}/standups`,
+    [`${API_URL}/standups`, session?.accessToken],
     fetcher
   );
+
+  console.log("DATA: ", data);
 
   return {
     standups: data || [],
@@ -46,8 +53,11 @@ export interface StandupResponse {
 }
 
 export const useStandup = (channelId: string | string[] | undefined) => {
+  const { data: session } = useSession();
   const { data, error } = useSWR<StandupResponse>(
-    channelId ? `${API_URL}/standups/${channelId}` : null,
+    channelId
+      ? [`${API_URL}/standups/${channelId}`, session?.accessToken]
+      : null,
     channelId ? fetcher : null
   );
 
@@ -67,8 +77,11 @@ export interface CheckinResponse {
 }
 
 export const useCheckins = (channelId: string | string[] | undefined) => {
+  const { data: session } = useSession();
   const { data, error } = useSWR<CheckinResponse[]>(
-    channelId ? `${API_URL}/standups/${channelId}/checkins` : null,
+    channelId
+      ? [`]${API_URL}/standups/${channelId}/checkins`, session?.accessToken]
+      : null,
     channelId ? fetcher : null
   );
 
@@ -78,3 +91,8 @@ export const useCheckins = (channelId: string | string[] | undefined) => {
     error: error || null,
   };
 };
+
+export interface ChannelResponse {
+  name: string;
+  id: string;
+}
