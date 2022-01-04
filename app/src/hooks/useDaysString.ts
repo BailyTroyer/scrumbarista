@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { weekDays } from "utils/constants";
+import { weekDays } from "src/utils/constants";
 
 const capitalizeFirstLetter = (word: string) => {
   return word.charAt(0).toUpperCase() + word.slice(1);

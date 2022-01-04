@@ -13,17 +13,12 @@ export type NewStandup = {
   channelId: string;
   questions: string;
   days: Day[];
+  startTime: string;
+  introMessage: string;
 };
 
 export type Standup = NewStandup & {
   id: string;
-};
-
-export const newEmptyStandup: NewStandup = {
-  name: "",
-  channelId: "",
-  questions: "",
-  days: [],
 };
 
 export type Checkin = {

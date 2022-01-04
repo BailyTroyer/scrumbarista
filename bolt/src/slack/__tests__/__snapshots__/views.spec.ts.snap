@@ -99,7 +99,7 @@ exports[`The views handlers standupView posts an emphemeral message when unable 
 Array [
   Object {
     "channel": "",
-    "text": "I was unable to create name",
+    "text": "I was unable to update undefined",
     "user": "userId",
   },
 ]
@@ -109,7 +109,7 @@ exports[`The views handlers standupView posts an ephemeral message when standup 
 Array [
   Object {
     "channel": "",
-    "text": "I've created name",
+    "text": "I was unable to update undefined",
     "user": "userId",
   },
 ]

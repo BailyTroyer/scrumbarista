@@ -25,15 +25,15 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useSWRConfig } from "swr";
 
-import AdvancedSettingsSection from "components/AdvancedSettingsSection";
-import authenticatedRoute from "components/AuthenticatedRoute";
-import Link from "components/Link";
-import QuestionsDnd from "components/QuestionsDnd";
-import ScheduleSettingsSection from "components/ScheduleSettingsSection";
-import Separator from "components/Separator";
-import SettingGroup from "components/SettingGroup";
-import { API_URL, useStandup } from "hooks/swr";
-import useDaysToString, { toRegularTime } from "hooks/useDaysString";
+import AdvancedSettingsSection from "src/components/AdvancedSettingsSection";
+import authenticatedRoute from "src/components/AuthenticatedRoute";
+import Link from "src/components/Link";
+import QuestionsDnd from "src/components/QuestionsDnd";
+import ScheduleSettingsSection from "src/components/ScheduleSettingsSection";
+import Separator from "src/components/Separator";
+import SettingGroup from "src/components/SettingGroup";
+import { API_URL, useStandup } from "src/hooks/swr";
+import useDaysToString, { toRegularTime } from "src/hooks/useDaysString";
 
 const Manage: NextPage = () => {
   const router = useRouter();

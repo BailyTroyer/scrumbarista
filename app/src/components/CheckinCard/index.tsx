@@ -11,7 +11,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { CheckinResponse, StandupResponse } from "hooks/swr";
+import { CheckinResponse, StandupResponse } from "src/hooks/swr";
 
 interface Props {
   checkin: CheckinResponse;

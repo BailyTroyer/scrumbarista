@@ -20,7 +20,7 @@ import { StandupDto } from "./dto/standup.dto";
 import { UpdateStandupDto } from "./dto/update-standup.dto";
 import { StandupsService } from "./standups.service";
 
-@UseGuards(SlackGuard)
+// @UseGuards(SlackGuard)
 @ApiTags("standups")
 @Controller("standups")
 export class StandupsController {

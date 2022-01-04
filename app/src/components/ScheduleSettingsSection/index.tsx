@@ -1,7 +1,7 @@
 import { Button, HStack, Select, Grid } from "@chakra-ui/react";
 
-import SettingGroup from "components/SettingGroup";
-import { weekDays } from "utils/constants";
+import SettingGroup from "src/components/SettingGroup";
+import { weekDays } from "src/utils/constants";
 
 const times = ["09:00", "09:30", "10:00"];
 

@@ -5,7 +5,7 @@ import { NextPage } from "next";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 
-import Layout from "components/Layout";
+import Layout from "src/components/Layout";
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;

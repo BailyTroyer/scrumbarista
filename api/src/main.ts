@@ -4,6 +4,13 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
 
+declare let process: {
+  env: {
+    PORT: string;
+    npm_package_version: string;
+  };
+};
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -19,6 +26,6 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(8000);
+  await app.listen(process.env.PORT || 8000);
 }
 bootstrap();

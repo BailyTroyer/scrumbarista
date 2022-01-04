@@ -17,9 +17,6 @@ import {
   BreadcrumbLink,
   BreadcrumbItem,
   Flex,
-  Skeleton,
-  Button,
-  Checkbox,
   Box,
   Divider,
   Center,
@@ -27,7 +24,7 @@ import {
 import { NextPage } from "next";
 import Link from "next/link";
 
-import authenticatedRoute from "components/AuthenticatedRoute";
+import authenticatedRoute from "src/components/AuthenticatedRoute";
 
 const days = ["M", "T", "W", "T", "F", "S", "S"];
 const metrics = [{ day: "Dec 19" }, { day: "Dec 19" }, { day: "Dec 19" }];

@@ -1,16 +1,10 @@
 import { useEffect, useState } from "react";
 
-import {
-  AddIcon,
-  CheckIcon,
-  ChevronRightIcon,
-  QuestionIcon,
-} from "@chakra-ui/icons";
+import { AddIcon, CheckIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import {
   Box,
   Text,
   Button,
-  Center,
   Flex,
   useColorModeValue,
   VStack,
@@ -27,14 +21,13 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import AsyncSelect from "react-select/async";
 
-import authenticatedRoute from "components/AuthenticatedRoute";
-import QuestionsDnd from "components/QuestionsDnd";
-import ScheduleSettingsSection from "components/ScheduleSettingsSection";
-import Separator from "components/Separator";
-import SettingGroup from "components/SettingGroup";
-import { API_URL, ChannelResponse } from "hooks/swr";
-import useDaysToString, { toRegularTime } from "hooks/useDaysString";
-import useSlack from "hooks/useSlack";
+import authenticatedRoute from "src/components/AuthenticatedRoute";
+import QuestionsDnd from "src/components/QuestionsDnd";
+import ScheduleSettingsSection from "src/components/ScheduleSettingsSection";
+import Separator from "src/components/Separator";
+import SettingGroup from "src/components/SettingGroup";
+import { API_URL, ChannelResponse } from "src/hooks/swr";
+import useDaysToString, { toRegularTime } from "src/hooks/useDaysString";
 
 const New: NextPage = () => {
   const router = useRouter();
@@ -47,15 +40,7 @@ const New: NextPage = () => {
     };
   }, []);
 
-  const { listChannels } = useSlack();
-
   const promiseOptions = async (inputValue: string) => {
-    // new Promise<ColourOption[]>((resolve) => {
-    //   setTimeout(() => {
-    //     resolve(filterColors(inputValue));
-    //   }, 1000);
-    // });
-
     const response: ChannelResponse[] = await (
       await fetch(`${API_URL}/slack/channels`)
     ).json();

@@ -26,14 +26,14 @@ import type { NextPage } from "next";
 import NextImage from "next/image";
 import { useRouter } from "next/router";
 
-import authenticatedRoute from "components/AuthenticatedRoute";
-import CheckinCard from "components/CheckinCard";
-import Link from "components/Link";
-import StandupDetailCard from "components/StandupDetailCard";
-import { useCheckins, useStandup } from "hooks/swr";
-import useDaysToString, { toRegularTime } from "hooks/useDaysString";
-import { stringToColour } from "utils";
-import { colors } from "utils/constants";
+import authenticatedRoute from "src/components/AuthenticatedRoute";
+import CheckinCard from "src/components/CheckinCard";
+import Link from "src/components/Link";
+import StandupDetailCard from "src/components/StandupDetailCard";
+import { useCheckins, useStandup } from "src/hooks/swr";
+import useDaysToString, { toRegularTime } from "src/hooks/useDaysString";
+import { stringToColour } from "src/utils";
+import { colors } from "src/utils/constants";
 
 const EmptyCheckinsDisplay = () => (
   <Flex

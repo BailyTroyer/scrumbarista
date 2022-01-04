@@ -21,7 +21,7 @@ services:
       - ./api/test:/app/test
       - ./api/nest-cli.json:/app/nest-cli.json
     environment:
-      - DB_URL=db
+      - DB_URL=mysql://username:password@db:3306/scrumbarista
     ports:
       - 8000:8000
     depends_on:
@@ -34,6 +34,10 @@ services:
       - ./app/pages:/app/pages
       - ./app/components:/app/components
       - ./app/.env.local:/app/.env.local
+    environment:
+      - SLACK_CLIENT_ID=CHANGE_ME
+      - SLACK_CLIENT_SECRET=CHANGE_ME
+      - NEXTAUTH_URL=CHANGE_ME
     ports:
       - 3000:3000
     depends_on:

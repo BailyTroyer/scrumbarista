@@ -12,7 +12,6 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
-  useDisclosure,
   useColorModeValue,
   Stack,
   useColorMode,
@@ -24,13 +23,12 @@ import {
   Input,
   InputRightElement,
   Kbd,
-  Text,
 } from "@chakra-ui/react";
 import { signOut, useSession } from "next-auth/react";
 import NextLink from "next/link";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import useFocus from "hooks/useFocus";
+import useFocus from "src/hooks/useFocus";
 
 const Links: string[] = [];
 
@@ -55,7 +53,6 @@ const Navbar = () => {
   const defaultImage = `https://avatars.dicebear.com/api/miniavs/${data?.name}.svg`;
 
   const { colorMode, toggleColorMode } = useColorMode();
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { inputRef, setFocus } = useFocus();
   useHotkeys("cmd+/", setFocus);
