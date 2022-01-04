@@ -27,7 +27,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import { stringToColour } from "utils";
+import { stringToColour } from "src/utils";
 
 const Question = (props: any) => {
   const { attributes, listeners, setNodeRef, transform, transition } =

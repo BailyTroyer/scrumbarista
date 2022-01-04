@@ -15,9 +15,9 @@ import {
   Circle,
 } from "@chakra-ui/react";
 
-import Link from "components/Link";
-import { StandupsResponse } from "hooks/swr";
-import useDaysToString, { toRegularTime } from "hooks/useDaysString";
+import Link from "src/components/Link";
+import { StandupsResponse } from "src/hooks/swr";
+import useDaysToString, { toRegularTime } from "src/hooks/useDaysString";
 
 const days = ["M", "T", "W", "T", "F", "S", "S"];
 const metrics = [{ day: "Dec 19" }, { day: "Dec 19" }, { day: "Dec 19" }];

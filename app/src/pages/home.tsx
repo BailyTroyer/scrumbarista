@@ -13,14 +13,13 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
-import Anim from "components/Animation";
-import authenticatedRoute from "components/AuthenticatedRoute";
-import Link from "components/Link";
-import StandupCard from "components/StandupCard";
-import { useStandups } from "hooks/swr";
+import Anim from "src/components/Animation";
+import authenticatedRoute from "src/components/AuthenticatedRoute";
+import Link from "src/components/Link";
+import StandupCard from "src/components/StandupCard";
+import { useStandups } from "src/hooks/swr";
 
 const EmptyStandup = () => (
   <Center flex={1} h="100%" flexDir={"column"}>

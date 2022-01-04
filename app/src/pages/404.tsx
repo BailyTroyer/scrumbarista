@@ -9,7 +9,7 @@ import {
 import { NextPage } from "next";
 import Link from "next/link";
 
-import Anim from "components/Animation";
+import Anim from "src/components/Animation";
 
 const NotFound: NextPage = () => {
   return (
