@@ -33,11 +33,7 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
       .split("\n")
       .filter((x) => x !== "");
 
-    if (answers.length === questions.length) {
-      // user already answered everything. Send generic feedback message
-
-      say("Looks like you've already finished today's standup. Congrats!");
-    } else {
+    if (answers.length !== questions.length) {
       answers.push(text);
 
       const checkin = {

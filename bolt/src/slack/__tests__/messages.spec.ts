@@ -51,7 +51,7 @@ describe("The messages handlers", () => {
       `);
     });
 
-    it("posts default message when already completed checkin for the day", async () => {
+    it("posts no message when already completed checkin for the day", async () => {
       const say = jest.fn();
 
       server.use(
@@ -104,11 +104,7 @@ describe("The messages handlers", () => {
         },
       } as any);
 
-      expect(say.mock.calls[0]).toMatchInlineSnapshot(`
-        Array [
-          "Looks like you've already finished today's standup. Congrats!",
-        ]
-      `);
+      expect(say.mock.calls[0]).toBeUndefined();
     });
     it("asks next question in current day's standup", async () => {
       const say = jest.fn();

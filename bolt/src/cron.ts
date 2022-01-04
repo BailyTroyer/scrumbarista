@@ -8,38 +8,38 @@ const signingSecret = process.env.SLACK_SIGNING_SECRET;
 
 const app = new App({ token, signingSecret });
 
-const checkAndPingUsers = async () => {
-  // get current day
-  const days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  const d = new Date();
-  const dayName = days[d.getDay()];
+const days = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
+const date = new Date();
+const localDateString = date.toLocaleDateString();
+const dayName = days[date.getDay()];
+
+const checkAndPingUsers = async () => {
   const standups = await listStandups(dayName);
 
   standups.forEach(
     async ({ channelId: channel, name, ...standup }: Standup) => {
       const questions = standup.questions.split("\n").filter((q) => q !== "");
 
-      const date = new Date().toLocaleDateString();
-
+      // fetch all users in channel
       const users = await app.client.conversations.members({
         token,
         channel,
       });
 
       /// WHAT HAPPENS IF WE ALREADY RAN CRON A MINUTE AGO DOES IT DUPLICATE THE MESSAGE?
-
       users.members.forEach(async (user: string) => {
-        const checkins = await getCheckins(channel, user, date);
+        const checkins = await getCheckins(channel, user, localDateString);
 
+        // if user already completed/started checkin
         if (checkins.length > 1) {
           await app.client.chat.postMessage({
             token,

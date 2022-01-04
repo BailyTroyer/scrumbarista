@@ -30,6 +30,7 @@ export const standupView: Middleware<
   const selectedValues = view.state.values;
   const name: string = selectedValues.name.name.value;
   const channelId: string = JSON.parse(view.private_metadata).channelId;
+  const startTime: string = selectedValues.time.time.selected_time;
 
   // check if standup already exists
   const standup = await getStandup(channelId);
@@ -40,6 +41,8 @@ export const standupView: Middleware<
     days: selectedValues.days.days.selected_options.map((d: any) =>
       String(d.value)
     ) as Day[],
+    startTime,
+    introMessage: "",
   };
 
   if (standup) {

@@ -58,7 +58,7 @@ Array [
             "text": Object {
               "text": "*Manage*
 invoked with \\"/standup\\"
-Opens a dialog to manage a Stand-up",
+Opens a dialog to manage a stand up",
               "type": "mrkdwn",
             },
             "type": "section",
@@ -72,26 +72,13 @@ Opens a dialog to manage a Stand-up",
             "text": Object {
               "text": "*Checkin*
 invoked with \\"/checkin\\"
-Opens a dialog to checkin and fulfull the daily Stand-up. Otherwise you will get a message in your DM at the alloted time",
+Opens a dialog to checkin and fulfull the daily stand up. Otherwise you will get a message in your DM at the alloted time",
               "type": "mrkdwn",
             },
             "type": "section",
           },
         ],
         "color": "#41BC88",
-      },
-      Object {
-        "blocks": Array [
-          Object {
-            "text": Object {
-              "text": "*need more information?*
-too bad :wink:, we're not at that point yet...",
-              "type": "mrkdwn",
-            },
-            "type": "section",
-          },
-        ],
-        "color": "#E4E4E4",
       },
     ],
     "channel": "channel",

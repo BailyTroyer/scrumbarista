@@ -6,9 +6,11 @@ import { Checkin, CreateCheckinDTO, NewStandup, Standup } from "../models";
 declare let process: {
   env: {
     API_URL: string;
+    SLACK_BOT_TOKEN: string;
   };
 };
 
+const token = process.env.SLACK_BOT_TOKEN;
 const API_URL = process.env.API_URL || "http://localhost:8000";
 
 /**
@@ -25,7 +27,8 @@ export const getCheckins = async (
   date: string
 ): Promise<Checkin[] | null> => {
   const response = await fetch(
-    `${API_URL}/standups/${channelId}/checkins?userId=${userId}&date=${date}`
+    `${API_URL}/standups/${channelId}/checkins?userId=${userId}&date=${date}`,
+    { headers: { Authorization: `Bearer ${token}` } }
   ).catch(() => null);
 
   if (response?.ok) {
@@ -87,9 +90,9 @@ export const createCheckin = (
 export const getStandup = async (
   channelId: string
 ): Promise<Standup | null> => {
-  const response = await fetch(`${API_URL}/standups/${channelId}`).catch(
-    () => null
-  );
+  const response = await fetch(`${API_URL}/standups/${channelId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  }).catch(() => null);
 
   if (response?.ok) {
     return response?.json();
@@ -100,9 +103,9 @@ export const getStandup = async (
 
 // filter by date
 export const listStandups = async (day: string): Promise<Standup[] | null> => {
-  const response = await fetch(`${API_URL}/standups?day=${day}`).catch(
-    () => null
-  );
+  const response = await fetch(`${API_URL}/standups?day=${day}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  }).catch(() => null);
 
   if (response?.ok) {
     return response?.json();
@@ -119,6 +122,7 @@ export const createStandup = async (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(newStandup),
   }).catch(() => null);
@@ -139,6 +143,7 @@ export const addCheckin = async (
     body: JSON.stringify(checkin),
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
   }).catch(() => null);
 
@@ -161,6 +166,7 @@ export const updateCheckin = async (
       body: JSON.stringify(checkin),
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
     }
   ).catch(() => null);
@@ -178,6 +184,7 @@ export const updateStandup = async (channelId: string, standup: NewStandup) => {
     body: JSON.stringify(standup),
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
   }).catch(() => null);
 
@@ -193,7 +200,8 @@ export const searchForCheckin = async (
   date: string
 ): Promise<(Checkin & { channelId: string }) | null> => {
   const response = await fetch(
-    `${API_URL}/standups/checkins/search?userId=${userId}&date=${date}`
+    `${API_URL}/standups/checkins/search?userId=${userId}&date=${date}`,
+    { headers: { Authorization: `Bearer ${token}` } }
   ).catch(() => null);
 
   if (response?.ok) {
