@@ -16,13 +16,13 @@ export class CheckinsService {
     private readonly standupsService: StandupsService
   ) {}
 
-  search(userId: string, date: string): Promise<Checkin> {
+  search(userId: string, createdDate: string): Promise<Checkin> {
     return this.checkinsRepository.findOneOrFail({
       where: {
         userId,
         createdDate: Between(
-          startOfDay(new Date(date)),
-          endOfDay(new Date(date))
+          startOfDay(new Date(createdDate)),
+          endOfDay(new Date(createdDate))
         ),
       },
       relations: ["standup"],
@@ -44,19 +44,24 @@ export class CheckinsService {
 
   findAll(
     channelId: string,
-    params: { skip?: number; take?: number; userId?: string; date?: string }
+    params: {
+      skip?: number;
+      take?: number;
+      userId?: string;
+      createdDate?: string;
+    }
   ): Promise<Checkin[]> {
-    const { skip, take, userId, date } = params;
+    const { skip, take, userId, createdDate } = params;
 
     // Conditionally add date/userId if passed
     let filters = {};
     if (userId) filters = { ...filters, userId };
-    if (date)
+    if (createdDate)
       filters = {
         ...filters,
         createdDate: Between(
-          startOfDay(new Date(date)),
-          endOfDay(new Date(date))
+          startOfDay(new Date(createdDate)),
+          endOfDay(new Date(createdDate))
         ),
       };
 

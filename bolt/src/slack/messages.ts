@@ -33,6 +33,8 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
       .split("\n")
       .filter((x) => x !== "");
 
+    // @todo if the answers have newlines (i.e. slack bullets)
+    // then we exit too early since it counts as another answer
     if (answers.length !== questions.length) {
       answers.push(text);
 
@@ -73,6 +75,18 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
           username: userInfo.user.profile.real_name,
           icon_url: userInfo.user.profile.image_192,
         });
+
+        const checkin = {
+          answers: answers.join("\n"),
+          postMessageTs: postedMessage.ts,
+        };
+
+        // update ts for message here
+        await updateCheckin(
+          preExistingCheckin.channelId,
+          checkin,
+          preExistingCheckin.id
+        );
 
         say("all done. Thanks!");
       }

@@ -27,7 +27,7 @@ export const getCheckins = async (
   date: string
 ): Promise<Checkin[] | null> => {
   const response = await fetch(
-    `${API_URL}/standups/${channelId}/checkins?userId=${userId}&date=${date}`,
+    `${API_URL}/standups/${channelId}/checkins?userId=${userId}&createdDate=${date}`,
     { headers: { Authorization: `Bearer ${token}` } }
   ).catch(() => null);
 
@@ -200,7 +200,7 @@ export const searchForCheckin = async (
   date: string
 ): Promise<(Checkin & { channelId: string }) | null> => {
   const response = await fetch(
-    `${API_URL}/standups/checkins/search?userId=${userId}&date=${date}`,
+    `${API_URL}/standups/checkins/search?userId=${userId}&createdDate=${date}`,
     { headers: { Authorization: `Bearer ${token}` } }
   ).catch(() => null);
 
