@@ -16,7 +16,7 @@ export class Checkin {
   @CreateDateColumn()
   createdDate: Date;
 
-  @Column("simple-array")
+  @Column({ type: "json" })
   answers: string[];
 
   @Column({ default: "" })
