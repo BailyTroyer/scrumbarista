@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "ts-node-dev src/app.ts",
+    "start": "TZ=UTC ts-node-dev src/app.ts",
     "start:prod": "ts-node src/app.ts",
     "cron": "ts-node src/cron.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

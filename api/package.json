@@ -12,7 +12,7 @@
     "typeorm:migrate": "npm run typeorm migration:generate -- -n",
     "typeorm:run": "npm run typeorm migration:run",
     "format": "prettier --write \"src/**/*.ts\"",
-    "start": "nest start --watch",
+    "start": "TZ=UTC nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

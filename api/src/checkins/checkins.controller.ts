@@ -21,7 +21,7 @@ import { CheckinDto } from "./dto/checkin.dto";
 import { CreateCheckinDto } from "./dto/create-checkin.dto";
 import { UpdateCheckinDto } from "./dto/update-checkin.dto";
 
-@UseGuards(SlackGuard)
+// @UseGuards(SlackGuard)
 @ApiTags("checkins")
 @Controller("/standups")
 @UseInterceptors(EntityNotFoundExceptionFilter)
@@ -34,11 +34,11 @@ export class CheckinsController {
   @ApiResponse({ status: 201, description: "checkin created" })
   async search(
     @Query("userId") userId: string,
-    @Query("date") date: string
+    @Query("createdDate") createdDate: string
   ): Promise<CheckinDto> {
     return plainToClass(
       CheckinDto,
-      await this.checkinsService.search(userId, date)
+      await this.checkinsService.search(userId, createdDate)
     );
   }
 
@@ -65,7 +65,7 @@ export class CheckinsController {
     @Query("offset") skip = 0,
     @Query("limit") take = 25,
     @Query("userId") userId: string,
-    @Query("date") date: string
+    @Query("createdDate") createdDate: string
   ): Promise<CheckinDto[]> {
     return plainToClass(
       CheckinDto,
@@ -73,7 +73,7 @@ export class CheckinsController {
         take,
         skip,
         userId,
-        date,
+        createdDate,
       })
     );
   }

@@ -25,7 +25,7 @@ const dayName = days[date.getDay()];
 const checkAndPingUsers = async () => {
   const standups = await listStandups(dayName);
 
-  standups.forEach(
+  standups?.forEach(
     async ({ channelId: channel, name, ...standup }: Standup) => {
       const questions = standup.questions.split("\n").filter((q) => q !== "");
 
@@ -35,21 +35,14 @@ const checkAndPingUsers = async () => {
         channel,
       });
 
-      /// WHAT HAPPENS IF WE ALREADY RAN CRON A MINUTE AGO DOES IT DUPLICATE THE MESSAGE?
       users.members.forEach(async (user: string) => {
         const checkins = await getCheckins(channel, user, localDateString);
 
         // if user already completed/started checkin
-        if (checkins.length > 1) {
-          await app.client.chat.postMessage({
-            token,
-            channel: user,
-            text: `☕ The *${name} is about to start. But I see you already did your checkin, nice 😉`,
-          });
-        } else {
+        if (checkins.length === 0) {
           // send reminder message & create empty checkin for later completion
           const checkin = { answers: "", postMessageTs: "", userId: user };
-          const createdCheckin = await addCheckin(channel, checkin);
+          await addCheckin(channel, checkin);
 
           await app.client.chat.postMessage({
             token,
