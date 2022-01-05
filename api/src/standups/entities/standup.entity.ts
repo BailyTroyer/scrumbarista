@@ -14,8 +14,8 @@ export class Standup {
   @Column({ default: "" })
   name: string;
 
-  @Column({ default: "" })
-  questions: string;
+  @Column("simple-array")
+  questions: string[];
 
   @Column("time")
   startTime: Date;

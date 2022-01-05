@@ -22,12 +22,12 @@ describe("CheckinController", () => {
     const standup = await standupRepository.save({
       name: "test-standup",
       channelId: "channelId",
-      questions: "questions",
+      questions: ["questions"],
       days: [],
     });
 
     const checkin = await checkinRepository.save({
-      answers: "answers",
+      answers: ["answers"],
       postMessageTs: "postMessageTs",
       userId: "user",
     });
@@ -65,7 +65,7 @@ describe("CheckinController", () => {
       await standupRepository.save({
         name: "test-standup",
         channelId: "channelId",
-        questions: "questions",
+        questions: ["questions"],
         days: [],
       });
 
@@ -106,7 +106,7 @@ describe("CheckinController", () => {
         .post("/standups/channelId/checkins")
         .set("Accept", "application/json")
         .send({
-          answers: "new-answers",
+          answers: ["new-answers"],
           postMessageTs: "post-message-ts",
           userId: "user",
         })
@@ -115,7 +115,7 @@ describe("CheckinController", () => {
           expect(body).toEqual({
             id: expect.stringMatching(uuid),
             createdDate: expect.stringMatching(date),
-            answers: "new-answers",
+            answers: ["new-answers"],
             postMessageTs: "post-message-ts",
             userId: "user",
             channelId: "channelId",
@@ -130,7 +130,7 @@ describe("CheckinController", () => {
 
       return request(app.getHttpServer())
         .patch(`/standups/channelId/checkins/${checkin.id}`)
-        .send({ answers: "new-answers" })
+        .send({ answers: ["new-answers"] })
         .expect(200);
     });
   });

@@ -66,7 +66,7 @@ const New: NextPage = () => {
         onSubmit={async (values, { setSubmitting }) => {
           const newValues = {
             ...values,
-            questions: values.questions.join("\n"),
+            questions: values.questions,
           };
 
           console.log("POSTOING: ", values);

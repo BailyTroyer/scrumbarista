@@ -11,7 +11,7 @@ export enum Day {
 export type NewStandup = {
   name: string;
   channelId: string;
-  questions: string;
+  questions: string[];
   days: Day[];
   startTime: string;
   introMessage: string;
@@ -23,12 +23,12 @@ export type Standup = NewStandup & {
 
 export type Checkin = {
   createdDate: Date;
-  answers: string;
+  answers: string[];
   postMessageTs: string;
   id: string;
 };
 
 export type CreateCheckinDTO = {
-  answers: string;
+  answers: string[];
   postMessageTs: string;
 };

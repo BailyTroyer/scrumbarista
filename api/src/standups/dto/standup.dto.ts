@@ -28,8 +28,8 @@ export class StandupDto {
   channelId: string;
 
   @Expose()
-  @IsString()
-  questions: string;
+  @IsString({ each: true })
+  questions: string[];
 
   @IsArray()
   @Expose()
@@ -39,14 +39,6 @@ export class StandupDto {
   @Expose()
   @IsMilitaryTime()
   startTime: string;
-
-  // @Expose()
-  // @IsArray()
-  // users: {
-  //   id: string;
-  //   image: string;
-  //   name: string;
-  // }[];
 
   @Expose()
   @IsArray()

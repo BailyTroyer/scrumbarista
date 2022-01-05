@@ -37,7 +37,7 @@ export const standupView: Middleware<
   const newStandup: NewStandup = {
     name,
     channelId,
-    questions: String(selectedValues.questions.questions.value),
+    questions: selectedValues.questions.questions.value.split("\n"),
     days: selectedValues.days.days.selected_options.map((d: any) =>
       String(d.value)
     ) as Day[],
@@ -84,7 +84,7 @@ export const checkinView: Middleware<
   const standup = await getStandup(JSON.parse(view.private_metadata).channelId);
 
   // if standup DNE post ephemeral message no standup
-  const questions = standup.questions.split("\n");
+  const questions = standup.questions;
   const answers = Object.keys(selectedValues).map(
     (k) => selectedValues[k][k].value
   );
@@ -117,7 +117,7 @@ export const checkinView: Middleware<
     });
 
     const createCheckinDto = {
-      answers: answers.join("\n"),
+      answers,
       postMessageTs: updateStandupMessage.ts,
       userId: user.user.id,
     };
@@ -143,7 +143,7 @@ export const checkinView: Middleware<
     });
 
     const updateCheckinDto = {
-      answers: answers.join("\n"),
+      answers,
       postMessageTs: standupMessage.ts,
     };
 

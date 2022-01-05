@@ -43,7 +43,7 @@ describe("StandupController", () => {
       await standupRepository.save({
         name: "test-standup",
         channelId: "channel",
-        questions: "questions",
+        questions: ["questions"],
         days: [],
       });
 
@@ -54,7 +54,7 @@ describe("StandupController", () => {
           {
             name: "test-standup",
             channelId: "channel",
-            questions: "questions",
+            questions: ["questions"],
             days: [],
           },
         ]);
@@ -66,7 +66,7 @@ describe("StandupController", () => {
       await standupRepository.save({
         name: "unique-standup-by-channel",
         channelId: "channelId",
-        questions: "questions",
+        questions: ["questions"],
         days: [],
       });
 
@@ -76,7 +76,7 @@ describe("StandupController", () => {
         .expect({
           channelId: "channelId",
           name: "unique-standup-by-channel",
-          questions: "questions",
+          questions: ["questions"],
           days: [],
         });
     });
@@ -106,14 +106,14 @@ describe("StandupController", () => {
         .send({
           name: "test-standup",
           channelId: "channel",
-          questions: "questions",
+          questions: ["questions"],
           days: ["monday"],
         })
         .expect(201)
         .expect({
           name: "test-standup",
           channelId: "channel",
-          questions: "questions",
+          questions: ["questions"],
           days: ["monday"],
         });
     });
@@ -124,7 +124,7 @@ describe("StandupController", () => {
       await standupRepository.save({
         name: "unique-standup-by-channel",
         channelId: "channelId",
-        questions: "questions",
+        questions: ["questions"],
         days: [],
       });
 
@@ -141,7 +141,7 @@ describe("StandupController", () => {
       await standupRepository.save({
         name: "to-be-deleted",
         channelId: "channelId",
-        questions: "questions",
+        questions: ["questions"],
         days: [],
       });
 

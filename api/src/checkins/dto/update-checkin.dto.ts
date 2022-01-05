@@ -1,9 +1,9 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
 export class UpdateCheckinDto {
-  @IsString()
+  @IsString({ each: true })
   @IsNotEmpty()
-  answers: string;
+  answers: string[];
 
   @IsString()
   @IsNotEmpty()

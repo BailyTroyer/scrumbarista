@@ -17,8 +17,8 @@ export class UpdateStandupDto extends PartialType(CreateStandupDto) {
   name?: string;
 
   @IsOptional()
-  @IsString()
-  questions?: string;
+  @IsString({ each: true })
+  questions?: string[];
 
   @IsMilitaryTime()
   startTime: Date;

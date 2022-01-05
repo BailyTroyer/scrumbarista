@@ -14,8 +14,8 @@ export class CheckinDto {
   createdDate: Date;
 
   @Expose()
-  @IsString()
-  answers: string;
+  @IsString({ each: true })
+  answers: string[];
 
   @Expose()
   @IsString()

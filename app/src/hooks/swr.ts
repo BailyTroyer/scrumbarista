@@ -11,7 +11,7 @@ const fetcher = (url: string, token: string) =>
 export interface StandupsResponse {
   name: string;
   channelId: string;
-  questions: string;
+  questions: string[];
   days: string[];
   users: { name: string; id: string; image: string }[];
   startTime: string;
@@ -43,7 +43,7 @@ export const useStandups = () => {
 export interface StandupResponse {
   name: string;
   channelId: string;
-  questions: string;
+  questions: string[];
   days: string[];
   introMessage: string;
   channelName: string;
@@ -71,7 +71,7 @@ export const useStandup = (channelId: string | string[] | undefined) => {
 export interface CheckinResponse {
   id: string;
   createdDate: string;
-  answers: string;
+  answers: string[];
   userId: string;
   channelId: string;
 }

@@ -16,8 +16,8 @@ export class Checkin {
   @CreateDateColumn()
   createdDate: Date;
 
-  @Column({ default: "" })
-  answers: string;
+  @Column("simple-array")
+  answers: string[];
 
   @Column({ default: "" })
   postMessageTs: string;
