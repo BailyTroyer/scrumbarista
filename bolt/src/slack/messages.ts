@@ -28,10 +28,8 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
       return;
     }
 
-    const questions = standup.questions.split("\n");
-    const answers = preExistingCheckin.answers
-      .split("\n")
-      .filter((x) => x !== "");
+    const questions = standup.questions;
+    const answers = preExistingCheckin.answers.filter((x) => x !== "");
 
     // @todo if the answers have newlines (i.e. slack bullets)
     // then we exit too early since it counts as another answer
@@ -39,12 +37,12 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
       answers.push(text);
 
       const checkin = {
-        answers: answers.join("\n"),
+        answers,
         postMessageTs: ts,
       };
 
       // add checkin
-      const updatedCheckin = await updateCheckin(
+      await updateCheckin(
         preExistingCheckin.channelId,
         checkin,
         preExistingCheckin.id
@@ -77,7 +75,7 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
         });
 
         const checkin = {
-          answers: answers.join("\n"),
+          answers,
           postMessageTs: postedMessage.ts,
         };
 

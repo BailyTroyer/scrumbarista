@@ -139,7 +139,7 @@ export const standupBlocks = (
         element: {
           type: "plain_text_input",
           multiline: true,
-          initial_value: standup?.questions || "",
+          initial_value: standup?.questions.join("\n") || "",
           action_id: "questions",
         },
         label: {

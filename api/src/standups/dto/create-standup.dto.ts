@@ -15,8 +15,8 @@ export class CreateStandupDto {
   @IsNotEmpty()
   channelId: string;
 
-  @IsString()
-  questions: string;
+  @IsString({ each: true })
+  questions: string[];
 
   @IsMilitaryTime()
   startTime: Date;

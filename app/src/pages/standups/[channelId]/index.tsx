@@ -92,16 +92,14 @@ const Standup: NextPage = () => {
                 <Skeleton key={index} w="xs" h={4} my={5} />
               ))}
 
-            {standup?.questions
-              ?.split("\n")
-              .map((question: string, index: number) => (
-                <HStack my={3}>
-                  <Circle size="10px" bg={`${colors[index]}.300`} />
-                  <Text fontSize="md" color="gray.500">
-                    {question}
-                  </Text>
-                </HStack>
-              ))}
+            {standup?.questions.map((question: string, index: number) => (
+              <HStack my={3}>
+                <Circle size="10px" bg={`${colors[index]}.300`} />
+                <Text fontSize="md" color="gray.500">
+                  {question}
+                </Text>
+              </HStack>
+            ))}
           </Text>
         </StandupDetailCard>
       </GridItem>
@@ -309,7 +307,7 @@ const Standup: NextPage = () => {
                           </HStack>
                         </Flex>
                         <VStack spacing={2} w="full">
-                          {standup?.questions.split("\n").map((question) => (
+                          {standup?.questions.map((question) => (
                             <Flex
                               w="full"
                               direction={"row"}

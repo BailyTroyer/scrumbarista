@@ -40,7 +40,7 @@ describe("The commands handlers", () => {
               id: "id",
               name: "name",
               channelId: "C01LQPT2LMD",
-              questions: "questions",
+              questions: ["questions"],
               days: ["monday"],
             })
           )
@@ -72,7 +72,7 @@ describe("The commands handlers", () => {
               id: "id",
               name: "name",
               channelId: "C01LQPT2LMD",
-              questions: "questions",
+              questions: ["questions"],
               days: ["monday"],
             })
           )
@@ -108,7 +108,7 @@ describe("The commands handlers", () => {
               id: "id",
               name: "name",
               channelId: "C01LQPT2LMD",
-              questions: "questions",
+              questions: ["questions"],
               days: ["monday"],
             })
           )
@@ -119,7 +119,7 @@ describe("The commands handlers", () => {
             res(
               ctx.json({
                 createdDate: new Date(),
-                answers: "answers",
+                answers: ["answers"],
                 postMessageTs: "messageTs",
               })
             )

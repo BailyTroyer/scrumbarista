@@ -64,7 +64,7 @@ const Timeline = () => {
           </Text>
         </Flex>
 
-        {"answer1\nanswer2\nanswer3".split("\n").map((a, i) => (
+        {["answer1", "answer2", "answer3"].map((a, i) => (
           <Flex direction={"row"} w="100%" h="100%" my={2}>
             <Box
               mr={2}
@@ -78,7 +78,7 @@ const Timeline = () => {
                 fontWeight={"bold"}
                 color={useColorModeValue("gray.700", "gray.400")}
               >
-                {"question1\nquestion2\nquestion3".split("\n")[i]}
+                {["answer1", "answer2", "answer3"][i]}
               </Text>
               <Text>{a}</Text>
             </Flex>

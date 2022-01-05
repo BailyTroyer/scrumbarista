@@ -55,7 +55,7 @@ const CheckinCard: FC<Props> = ({ standup, checkin, userInfo }: Props) => (
         </Text>
       </Flex>
 
-      {checkin.answers.split("\n").map((a, i) => (
+      {checkin.answers.map((a, i) => (
         <Flex direction={"row"} w="100%" h="100%" my={2}>
           <Box mr={2} width={"5px"} bgColor={"blue.500"} borderRadius={"xl"} />
 
@@ -64,7 +64,7 @@ const CheckinCard: FC<Props> = ({ standup, checkin, userInfo }: Props) => (
               fontWeight={"bold"}
               color={useColorModeValue("gray.700", "gray.400")}
             >
-              {standup?.questions.split("\n")[i]}
+              {standup?.questions[i]}
             </Text>
             <Text>{a}</Text>
           </Flex>

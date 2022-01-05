@@ -47,8 +47,8 @@ export const createCheckin = (
   standup: Standup,
   checkin: Checkin | null
 ): View => {
-  const answers = checkin?.answers?.split("\n") || [];
-  const questions = standup.questions.split("\n");
+  const answers = checkin?.answers || [];
+  const questions = standup.questions;
 
   const blocks = questions.map((question: string, i: number) => ({
     type: "input",

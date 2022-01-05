@@ -89,13 +89,13 @@ const Manage: NextPage = () => {
           introMessage: standup?.introMessage || "",
           days: standup?.days || [],
           startTime: standup?.startTime.slice(0, -3) || "",
-          questions: standup?.questions.split("\n") || [],
+          questions: standup?.questions || [],
           active: standup?.active || true,
         }}
         onSubmit={async (values, { setSubmitting }) => {
           const newValues = {
             ...values,
-            questions: values.questions.join("\n"),
+            questions: values.questions,
           };
 
           const response = await fetch(`${API_URL}/standups/${channelId}`, {

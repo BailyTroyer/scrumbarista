@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateCheckinDto {
-  @IsString()
-  answers: string;
+  @IsString({ each: true })
+  answers: string[];
 
   @IsString()
   postMessageTs: string;

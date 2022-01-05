@@ -15,7 +15,7 @@ describe("The views handlers", () => {
               id: "id",
               name: "name",
               channelId: "C01LQPT2LMD",
-              questions: "questions",
+              questions: ["questions"],
               days: ["monday"],
             })
           )
@@ -116,7 +116,7 @@ describe("The views handlers", () => {
               id: "id",
               name: "name",
               channelId: "C01LQPT2LMD",
-              questions: "questions",
+              questions: ["questions"],
               days: ["monday"],
             })
           )
@@ -127,7 +127,7 @@ describe("The views handlers", () => {
             res(
               ctx.json({
                 createdDate: new Date(),
-                answers: "answers",
+                answers: ["answers"],
                 postMessageTs: "messageTs",
               })
             )
@@ -193,7 +193,7 @@ describe("The views handlers", () => {
               id: "id",
               name: "name",
               channelId: "C01LQPT2LMD",
-              questions: "questions",
+              questions: ["questions"],
               days: ["monday"],
             })
           )
@@ -204,7 +204,7 @@ describe("The views handlers", () => {
             res(
               ctx.json({
                 createdDate: new Date(),
-                answers: "answers",
+                answers: ["answers"],
                 postMessageTs: "messageTs",
               })
             )
@@ -217,7 +217,7 @@ describe("The views handlers", () => {
                 {
                   id: "id",
                   createdDate: new Date(),
-                  answers: "answers",
+                  answers: ["answers"],
                   postMessageTs: "messageTs",
                 },
               ])

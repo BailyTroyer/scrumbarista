@@ -61,7 +61,7 @@ describe("The messages handlers", () => {
               id: "id",
               name: "name",
               channelId: "C01LQPT2LMD",
-              questions: "questions",
+              questions: ["questions"],
               days: ["monday"],
             })
           )
@@ -72,7 +72,7 @@ describe("The messages handlers", () => {
             res(
               ctx.json({
                 createdDate: new Date(),
-                answers: "answers",
+                answers: ["answers"],
                 postMessageTs: "messageTs",
                 channelId: "channelId",
               })
@@ -85,7 +85,7 @@ describe("The messages handlers", () => {
               ctx.json([
                 {
                   createdDate: new Date(),
-                  answers: "answers",
+                  answers: ["answers"],
                   postMessageTs: "messageTs",
                 },
               ])
@@ -116,7 +116,7 @@ describe("The messages handlers", () => {
               id: "id",
               name: "name",
               channelId: "channelId",
-              questions: "question1\nquestion2\nquestion3",
+              questions: ["question1", "question2", "question3"],
               days: ["monday"],
             })
           )
@@ -127,7 +127,7 @@ describe("The messages handlers", () => {
             res(
               ctx.json({
                 createdDate: new Date(),
-                answers: "",
+                answers: [],
                 postMessageTs: "messageTs",
                 channelId: "channelId",
                 id: "id",
@@ -140,7 +140,7 @@ describe("The messages handlers", () => {
             res(
               ctx.json({
                 createdDate: new Date(),
-                answers: "answers",
+                answers: ["answers"],
                 postMessageTs: "messageTs",
               })
             )
@@ -184,7 +184,7 @@ describe("The messages handlers", () => {
               id: "id",
               name: "name",
               channelId: "channelId",
-              questions: "question1\nquestion2\nquestion3",
+              questions: ["question1", "question2", "question3"],
               days: ["monday"],
             })
           )
@@ -195,7 +195,7 @@ describe("The messages handlers", () => {
             res(
               ctx.json({
                 createdDate: new Date(),
-                answers: "answer1\nanswer2",
+                answers: ["answer1", "answer2"],
                 postMessageTs: "messageTs",
                 channelId: "channelId",
                 id: "id",
@@ -208,7 +208,7 @@ describe("The messages handlers", () => {
             res(
               ctx.json({
                 createdDate: new Date(),
-                answers: "answer1\nanswer2\nanswer3",
+                answers: ["answer1", "answer2", "answer3"],
                 postMessageTs: "messageTs",
               })
             )
