@@ -80,7 +80,7 @@ export const useCheckins = (channelId: string | string[] | undefined) => {
   const { data: session } = useSession();
   const { data, error } = useSWR<CheckinResponse[]>(
     channelId
-      ? [`]${API_URL}/standups/${channelId}/checkins`, session?.accessToken]
+      ? [`${API_URL}/standups/${channelId}/checkins`, session?.accessToken]
       : null,
     channelId ? fetcher : null
   );

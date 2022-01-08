@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { startOfDay, endOfDay } from "date-fns";
-import { Between, Repository, UpdateResult } from "typeorm";
+import { Between, In, Repository, UpdateResult } from "typeorm";
 
 import { StandupsService } from "../standups/standups.service";
 import { CreateCheckinDto } from "./dto/create-checkin.dto";
+import { UserFilterDto } from "./dto/filters.dto";
 import { UpdateCheckinDto } from "./dto/update-checkin.dto";
 import { Checkin } from "./entities/checkin.entity";
 
@@ -47,15 +48,15 @@ export class CheckinsService {
     params: {
       skip?: number;
       take?: number;
-      userId?: string;
+      users?: UserFilterDto;
       createdDate?: string;
     }
   ): Promise<Checkin[]> {
-    const { skip, take, userId, createdDate } = params;
+    const { skip, take, users, createdDate } = params;
 
     // Conditionally add date/userId if passed
     let filters = {};
-    if (userId) filters = { ...filters, userId };
+    if (users.users) filters = { ...filters, userId: In(users.users) };
     if (createdDate)
       filters = {
         ...filters,

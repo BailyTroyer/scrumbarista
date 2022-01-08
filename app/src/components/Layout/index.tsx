@@ -23,7 +23,10 @@ export default function Layout({ children }: Props) {
           {children}
         </Flex>
       );
-    } else if (status === "loading" || status === "unauthenticated") {
+    } else if (
+      status === "loading" ||
+      (status === "unauthenticated" && process.env.NODE_ENV === "production")
+    ) {
       return (
         <Flex minHeight="100vh" flexDirection="column" w="full">
           {children}
@@ -32,7 +35,7 @@ export default function Layout({ children }: Props) {
     }
 
     return (
-      <Flex minHeight="100vh" flexDirection="column" w="full" bg="blue">
+      <Flex minHeight="100vh" flexDirection="column" w="full">
         <Navbar />
         {children}
       </Flex>

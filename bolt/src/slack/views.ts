@@ -66,6 +66,26 @@ export const standupView: Middleware<
   }
 };
 
+export const standupUserConfigView: Middleware<
+  SlackViewMiddlewareArgs<ViewSubmitAction>
+> = async ({
+  ack,
+  view,
+  client,
+  body: {
+    user: { id: userId },
+  },
+}) => {
+  await ack();
+
+  const selectedValues = view.state.values;
+  const channelId: string = JSON.parse(view.private_metadata).channelId;
+
+  const tz = selectedValues.tz.tz.selected_option.value;
+
+  console.log("TZ: ", `${userId} set TZ ${tz} for ${channelId}`);
+};
+
 export const checkinView: Middleware<
   SlackViewMiddlewareArgs<ViewSubmitAction>
 > = async ({

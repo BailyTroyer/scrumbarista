@@ -24,6 +24,10 @@ const authenticatedRoute = <P extends object>(
     const { status } = useSession();
     const router = useRouter();
 
+    if (process.env.NODE_ENV === "development") {
+      return <Component {...props} />;
+    }
+
     if (status === "loading") {
       return <FullPageLoader />;
     }

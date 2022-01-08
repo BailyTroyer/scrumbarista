@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UseFilters,
   UseGuards,
+  ValidationPipe,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { plainToClass } from "class-transformer";
@@ -19,6 +20,7 @@ import { SlackGuard } from "./../core/guards/slack.guard";
 import { CheckinsService } from "./checkins.service";
 import { CheckinDto } from "./dto/checkin.dto";
 import { CreateCheckinDto } from "./dto/create-checkin.dto";
+import { UserFilterDto } from "./dto/filters.dto";
 import { UpdateCheckinDto } from "./dto/update-checkin.dto";
 
 // @UseGuards(SlackGuard)
@@ -64,7 +66,7 @@ export class CheckinsController {
     @Param("channelId") channelId: string,
     @Query("offset") skip = 0,
     @Query("limit") take = 25,
-    @Query("userId") userId: string,
+    @Query(new ValidationPipe({ transform: true })) users: UserFilterDto,
     @Query("createdDate") createdDate: string
   ): Promise<CheckinDto[]> {
     return plainToClass(
@@ -72,7 +74,7 @@ export class CheckinsController {
       await this.checkinsService.findAll(channelId, {
         take,
         skip,
-        userId,
+        users,
         createdDate,
       })
     );

@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { ScheduleModule } from "@nestjs/schedule";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { CheckinsModule } from "./checkins/checkins.module";
@@ -10,6 +11,7 @@ import { StandupsModule } from "./standups/standups.module";
 @Module({
   imports: [
     TypeOrmModule.forRoot({ ...ormConfig, keepConnectionAlive: true }),
+    ScheduleModule.forRoot(),
     HealthModule,
     StandupsModule,
     CheckinsModule,

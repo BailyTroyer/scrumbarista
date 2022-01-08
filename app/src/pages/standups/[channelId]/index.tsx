@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ChevronRightIcon, SettingsIcon } from "@chakra-ui/icons";
 import { Box } from "@chakra-ui/layout";
@@ -21,6 +21,7 @@ import {
   Skeleton,
   Button,
   Checkbox,
+  Divider,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import NextImage from "next/image";
@@ -28,6 +29,7 @@ import { useRouter } from "next/router";
 
 import authenticatedRoute from "src/components/AuthenticatedRoute";
 import CheckinCard from "src/components/CheckinCard";
+import CheckinFilterBox from "src/components/CheckinFilterBox";
 import Link from "src/components/Link";
 import StandupDetailCard from "src/components/StandupDetailCard";
 import { useCheckins, useStandup } from "src/hooks/swr";
@@ -65,6 +67,12 @@ const Standup: NextPage = () => {
   const { checkins } = useCheckins(channelId);
 
   const daysString = useDaysToString(standup?.days || []);
+
+  const days = useMemo(() => {
+    return checkins
+      .map((s) => new Date(s.createdDate).toDateString())
+      .filter((value, index, self) => self.indexOf(value) === index);
+  }, [checkins]);
 
   const MetaGrid = () => (
     <Grid
@@ -214,6 +222,40 @@ const Standup: NextPage = () => {
             ) : (
               <Grid w="full" templateColumns="repeat(3, 1fr)" gap={4}>
                 <GridItem w="full" colSpan={2}>
+                  {days.map((d) => (
+                    <VStack spacing={5}>
+                      <HStack width="100%">
+                        <Divider />
+                        <Flex w="full" justifyContent={"center"}>
+                          <Text
+                            textAlign={"center"}
+                            mx={4}
+                            fontSize="md"
+                            fontWeight={"semibold"}
+                            noOfLines={1}
+                          >
+                            {d}
+                          </Text>
+                        </Flex>
+                        <Divider />
+                      </HStack>
+                      {checkins
+                        .filter(
+                          (c) => new Date(c.createdDate).toDateString() === d
+                        )
+                        .map((c) => (
+                          <CheckinCard
+                            standup={standup}
+                            userInfo={standup?.users.find(
+                              (u) => u.id === c.userId
+                            )}
+                            checkin={c}
+                            key={c.id}
+                          />
+                        ))}
+                    </VStack>
+                  ))}
+
                   {checkins.map((c) => (
                     <CheckinCard
                       standup={standup}
@@ -231,102 +273,8 @@ const Standup: NextPage = () => {
                       top: "13em",
                     }}
                     zIndex={10}
-
-                    // bg="white"
-                    // boxShadow={offset > 0 ? "md" : ""}
                   >
-                    <VStack
-                      w="full"
-                      bg={useColorModeValue("white", "gray.700")}
-                      // bg="white"
-                      borderRadius="2xl"
-                      shadow={"base"}
-                      p={5}
-                      alignItems={"flex-start"}
-                      spacing={8}
-                    >
-                      <Flex
-                        direction={"column"}
-                        alignItems={"center"}
-                        justifyContent={"space-between"}
-                        w="full"
-                      >
-                        <Flex
-                          w="full"
-                          direction={"row"}
-                          alignItems={"center"}
-                          justifyContent={"space-between"}
-                          mb={5}
-                        >
-                          <Heading fontSize="lg">Participants</Heading>
-                          <HStack>
-                            <Text fontSize="xs">All</Text>
-                            <Checkbox defaultIsChecked />
-                          </HStack>
-                        </Flex>
-                        <VStack spacing={2} w="full">
-                          {standup?.users.map((user) => (
-                            <Flex
-                              w="full"
-                              direction={"row"}
-                              alignItems={"center"}
-                              justifyContent={"space-between"}
-                            >
-                              <HStack>
-                                <Image
-                                  boxSize={"25"}
-                                  objectFit="cover"
-                                  src={user.image}
-                                  borderRadius="full"
-                                />
-                                <Text>{user.name}</Text>
-                              </HStack>
-                              <Checkbox defaultIsChecked />
-                            </Flex>
-                          ))}
-                        </VStack>
-                      </Flex>
-
-                      <Flex
-                        direction={"column"}
-                        alignItems={"center"}
-                        justifyContent={"space-between"}
-                        w="full"
-                      >
-                        <Flex
-                          w="full"
-                          direction={"row"}
-                          alignItems={"center"}
-                          justifyContent={"space-between"}
-                          mb={5}
-                        >
-                          <Heading fontSize="lg">Questions</Heading>
-                          <HStack>
-                            <Text fontSize="xs">All</Text>
-                            <Checkbox defaultIsChecked />
-                          </HStack>
-                        </Flex>
-                        <VStack spacing={2} w="full">
-                          {standup?.questions.map((question) => (
-                            <Flex
-                              w="full"
-                              direction={"row"}
-                              alignItems={"center"}
-                              justifyContent={"space-between"}
-                            >
-                              <HStack>
-                                <Circle
-                                  size={2}
-                                  bg={stringToColour(question)}
-                                />
-                                <Text fontSize="sm">{question}</Text>
-                              </HStack>
-                              <Checkbox defaultIsChecked />
-                            </Flex>
-                          ))}
-                        </VStack>
-                      </Flex>
-                    </VStack>
+                    <CheckinFilterBox standup={standup} checkins={checkins} />
                   </Box>
                 </GridItem>
               </Grid>

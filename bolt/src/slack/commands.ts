@@ -1,11 +1,25 @@
 import { Middleware, SlackCommandMiddlewareArgs } from "@slack/bolt";
 
 import { scrumbaristaAttachments } from "../blocks";
-import { standupBlocks } from "../blocks/standup";
+import { standupBlocks, userConfigBlocks } from "../blocks/standup";
 import { createCheckin, getCheckins, getStandup } from "../services/api";
 
 export const scrumbaristaCommand: Middleware<SlackCommandMiddlewareArgs> =
-  async ({ ack, command: { channel_id: channel, user_id: user }, client }) => {
+  async (args) => {
+    const {
+      ack,
+      command: { channel_id: channel, user_id: user },
+      client,
+      body: { text: commandArgs },
+    } = args;
+
+    switch (commandArgs) {
+      case "randomPerson":
+        return randomPersonCommand(args);
+      case "randomOrder":
+        return randomOrderCommand(args);
+    }
+
     void ack();
     await client.chat.postEphemeral({
       channel,
@@ -14,17 +28,25 @@ export const scrumbaristaCommand: Middleware<SlackCommandMiddlewareArgs> =
     });
   };
 
-export const standupCommand: Middleware<SlackCommandMiddlewareArgs> = async ({
-  ack,
-  command: { channel_id: channelId, trigger_id },
-  client,
-}) => {
+export const standupCommand: Middleware<SlackCommandMiddlewareArgs> = async (
+  args
+) => {
+  const {
+    ack,
+    command: { channel_id: channelId, trigger_id },
+    client,
+    body: { text: commandArgs },
+  } = args;
+
   await ack();
 
   const standup = await getStandup(channelId);
   await client.views.open({
     trigger_id,
-    view: standupBlocks(standup, channelId),
+    view:
+      commandArgs === "me"
+        ? userConfigBlocks(standup, channelId)
+        : standupBlocks(standup, channelId),
   });
 };
 
@@ -73,7 +95,9 @@ export const randomOrderCommand: Middleware<SlackCommandMiddlewareArgs> =
 
     await client.chat.postEphemeral({
       channel,
-      text: users.join(","),
+      text: `🧑‍⚖️ Hear ye, hear ye, hear ye. I declare the following drawing of peoples ${users.join(
+        ","
+      )} 📜`,
       user,
     });
   };
@@ -102,7 +126,7 @@ export const randomPersonCommand: Middleware<SlackCommandMiddlewareArgs> =
 
     await client.chat.postEphemeral({
       channel,
-      text: name,
+      text: `By the power vested in me I hereby declare ✨${name}✨ to be the random person 🪄`,
       user,
     });
   };
