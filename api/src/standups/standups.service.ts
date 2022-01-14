@@ -7,6 +7,7 @@ import { CreateStandupDto } from "./dto/create-standup.dto";
 import { UpdateStandupDto } from "./dto/update-standup.dto";
 import { Day } from "./entities/day.entity";
 import { Standup } from "./entities/standup.entity";
+import { timezone, TimezoneOverride } from "./entities/tzoverride.entity";
 
 @Injectable()
 export class StandupsService {
@@ -15,6 +16,8 @@ export class StandupsService {
     private standupsRepository: Repository<Standup>,
     @InjectRepository(Day)
     private daysRepository: Repository<Day>,
+    @InjectRepository(TimezoneOverride)
+    private timezoneOverridesRepository: Repository<TimezoneOverride>,
     @Inject("BOLT") private bolt: WebClient
   ) {}
 
@@ -147,5 +150,35 @@ export class StandupsService {
 
   async remove(channelId: string): Promise<void> {
     await this.standupsRepository.delete({ channelId });
+  }
+
+  async createTimezoneOverride(
+    channelId: string,
+    userId: string,
+    timezone: timezone
+  ) {
+    const standup = await this.findOne(channelId);
+    return this.timezoneOverridesRepository.save({ timezone, standup, userId });
+  }
+
+  async updateTimezoneOverride(
+    channelId: string,
+    userId: string,
+    timezone: timezone
+  ) {
+    const standup = await this.findOne(channelId);
+    const timezoneOverride = await this.timezoneOverridesRepository.findOne({
+      standup,
+      userId,
+    });
+
+    timezoneOverride.timezone = timezone;
+
+    return this.timezoneOverridesRepository.save(timezoneOverride);
+  }
+
+  async deleteTimezoneOverride(channelId: string, userId: string) {
+    const standup = await this.findOne(channelId);
+    await this.timezoneOverridesRepository.delete({ standup, userId });
   }
 }

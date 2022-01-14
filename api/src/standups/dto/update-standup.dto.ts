@@ -6,9 +6,11 @@ import {
   IsEnum,
   IsMilitaryTime,
   IsBoolean,
+  IsIn,
 } from "class-validator";
 
 import { DayOfWeek } from "../entities/day.entity";
+import { timezone, timezones } from "../entities/tzoverride.entity";
 import { CreateStandupDto } from "./create-standup.dto";
 
 export class UpdateStandupDto extends PartialType(CreateStandupDto) {
@@ -31,6 +33,9 @@ export class UpdateStandupDto extends PartialType(CreateStandupDto) {
   @ArrayUnique()
   @IsEnum(DayOfWeek, { each: true })
   days?: DayOfWeek[];
+
+  @IsIn(timezones)
+  timezone: timezone;
 
   @IsOptional()
   @IsString()

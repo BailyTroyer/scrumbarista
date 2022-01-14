@@ -2,6 +2,7 @@ import { Exclude, Expose, Transform, Type } from "class-transformer";
 import { IsString, IsArray, IsBoolean, IsMilitaryTime } from "class-validator";
 
 import { Standup } from "../entities/standup.entity";
+import { timezone } from "../entities/tzoverride.entity";
 
 class UserDto {
   @Expose()
@@ -35,6 +36,19 @@ export class StandupDto {
   @Expose()
   @Transform(({ obj }: { obj: Standup }) => obj.days.map((day) => day.day))
   readonly days: string[];
+
+  @IsArray()
+  @Expose()
+  @Transform(({ obj }: { obj: Standup }) =>
+    obj.timezoneOverrides.map((override) => ({
+      timezone: override.timezone,
+      userId: override.userId,
+    }))
+  )
+  readonly timezoneOverrides: string[];
+
+  @Expose()
+  timezone: timezone;
 
   @Expose()
   @IsMilitaryTime()

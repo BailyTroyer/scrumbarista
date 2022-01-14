@@ -2,6 +2,7 @@ import { Entity, Column, OneToMany } from "typeorm";
 
 import { Checkin } from "../../checkins/entities/checkin.entity";
 import { Day } from "./day.entity";
+import { TimezoneOverride, timezone, timezones } from "./tzoverride.entity";
 
 // Channels are a single source of truth
 /**  Saving times @see https://stackoverflow.com/questions/63976442/how-to-validate-date-and-time-in-typeorm-and-nestjs */
@@ -19,6 +20,18 @@ export class Standup {
 
   @Column("time")
   startTime: Date;
+
+  @Column({
+    type: "enum",
+    enum: timezones,
+    default: "CST",
+  })
+  timezone: timezone;
+
+  @OneToMany(() => TimezoneOverride, (tzoverride) => tzoverride.standup, {
+    eager: true,
+  })
+  timezoneOverrides: TimezoneOverride[];
 
   @Column("bool", { default: true })
   active: boolean;

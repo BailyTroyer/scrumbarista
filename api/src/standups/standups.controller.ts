@@ -15,6 +15,10 @@ import { plainToClass } from "class-transformer";
 import { EntityNotFoundExceptionFilter } from "../core/filters/entity-not-found-exception.filter";
 import { CreateStandupDto } from "./dto/create-standup.dto";
 import { StandupDto } from "./dto/standup.dto";
+import {
+  CreateTimezoneOverrideDto,
+  TimezoneOverrideDto,
+} from "./dto/timezoneOverride.dto";
 import { UpdateStandupDto } from "./dto/update-standup.dto";
 import { StandupsService } from "./standups.service";
 
@@ -33,6 +37,20 @@ export class StandupsController {
     return plainToClass(
       StandupDto,
       await this.standupsService.create(createStandupDto)
+    );
+  }
+
+  @Post(":channelId/timezone-overrides/:userId")
+  @ApiOperation({ summary: "create user timezone override" })
+  @ApiResponse({ status: 200 })
+  async createTimeZoneOverride(
+    @Param("channelId") channelId: string,
+    @Param("userId") userId: string,
+    @Body() { timezone }: CreateTimezoneOverrideDto
+  ): Promise<TimezoneOverrideDto> {
+    return plainToClass(
+      TimezoneOverrideDto,
+      this.standupsService.createTimezoneOverride(channelId, userId, timezone)
     );
   }
 
@@ -73,9 +91,33 @@ export class StandupsController {
     );
   }
 
+  @Patch(":channelId/timezone-overrides/:userId")
+  @ApiOperation({ summary: "update user timezone override" })
+  @ApiResponse({ status: 200 })
+  async updateTimeZoneOverride(
+    @Param("channelId") channelId: string,
+    @Param("userId") userId: string,
+    @Body() { timezone }: CreateTimezoneOverrideDto
+  ) {
+    return plainToClass(
+      TimezoneOverrideDto,
+      this.standupsService.updateTimezoneOverride(channelId, userId, timezone)
+    );
+  }
+
   @Delete(":channelId")
   @UseFilters(EntityNotFoundExceptionFilter)
   remove(@Param("channelId") channelId: string): Promise<void> {
     return this.standupsService.remove(channelId);
+  }
+
+  @Delete(":channelId/timezone-overrides/:userId")
+  @ApiOperation({ summary: "delete user timezone override" })
+  @ApiResponse({ status: 200 })
+  async deleteTimeZoneOverride(
+    @Param("channelId") channelId: string,
+    @Param("userId") userId: string
+  ): Promise<void> {
+    return this.standupsService.deleteTimezoneOverride(channelId, userId);
   }
 }
