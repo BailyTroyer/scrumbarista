@@ -19,7 +19,7 @@ export class Standup {
   questions: string[];
 
   @Column("time")
-  startTime: Date;
+  startTime: string;
 
   @Column({
     type: "enum",

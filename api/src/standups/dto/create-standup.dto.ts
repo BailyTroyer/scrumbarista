@@ -21,7 +21,7 @@ export class CreateStandupDto {
   questions: string[];
 
   @IsMilitaryTime()
-  startTime: Date;
+  startTime: string;
 
   @ArrayUnique()
   @IsEnum(DayOfWeek, { each: true })

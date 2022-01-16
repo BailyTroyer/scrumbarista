@@ -3,8 +3,9 @@ import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
 import { Connection, getConnection, getRepository, Repository } from "typeorm";
 
-import { AppModule } from "../app.module";
-import { Standup } from "../standups/entities/standup.entity";
+import { AppModule } from "src/app.module";
+import { Standup } from "src/standups/entities/standup.entity";
+
 import { Checkin } from "./entities/checkin.entity";
 
 const uuid =

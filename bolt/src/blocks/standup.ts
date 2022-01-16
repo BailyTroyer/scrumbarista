@@ -1,41 +1,7 @@
 import { PlainTextOption, View } from "@slack/types";
 
 import { Standup } from "../models";
-
-const timezones: { name: string; relative }[] = [
-  { name: "GMT", relative: 0 },
-  { name: "UTC", relative: 0 },
-  { name: "ECT", relative: 1 },
-  { name: "EET", relative: 2 },
-  { name: "ART", relative: 2 },
-  { name: "EAT", relative: 3 },
-  { name: "MET", relative: 3.5 },
-  { name: "NET", relative: 4 },
-  { name: "PLT", relative: 5 },
-  { name: "IST", relative: 5.5 },
-  { name: "BST", relative: 6 },
-  { name: "VST", relative: 7 },
-  { name: "CTT", relative: 8 },
-  { name: "JST", relative: 9 },
-  { name: "ACT", relative: 9.5 },
-  { name: "AET", relative: 10 },
-  { name: "SST", relative: 11 },
-  { name: "NST", relative: 12 },
-  { name: "MIT", relative: -11 },
-  { name: "HST", relative: -10 },
-  { name: "AST", relative: -9 },
-  { name: "PST", relative: -8 },
-  { name: "PNT", relative: -7 },
-  { name: "MST", relative: -7 },
-  { name: "CST", relative: -6 },
-  { name: "EST", relative: -5 },
-  { name: "IET", relative: -5 },
-  { name: "PRT", relative: -4 },
-  { name: "CNT", relative: -3 },
-  { name: "AGT", relative: -3 },
-  { name: "BET", relative: -3 },
-  { name: "CAT", relative: -1 },
-];
+import { timezones } from "../utils/time";
 
 const capitalize = (s) => {
   if (typeof s !== "string") return "";
@@ -98,6 +64,36 @@ export const standupBlocks = (
           type: "plain_text",
           text: "Time",
           emoji: true,
+        },
+      },
+      {
+        type: "section",
+        block_id: "tz",
+        text: {
+          type: "mrkdwn",
+          text: "Pick a Timezone",
+        },
+        accessory: {
+          action_id: "tz",
+          type: "static_select",
+          placeholder: {
+            type: "plain_text",
+            text: "Select timezone",
+          },
+          initial_option: {
+            text: {
+              type: "plain_text",
+              text: standup.timezone,
+            },
+            value: standup.timezone,
+          },
+          options: timezones.map(({ name }) => ({
+            text: {
+              type: "plain_text",
+              text: name,
+            },
+            value: name,
+          })),
         },
       },
       {
@@ -188,7 +184,7 @@ export const standupBlocks = (
         elements: [
           {
             type: "plain_text",
-            text: "Enter the stand-up questions, separated by linebreak",
+            text: "Enter questions separated by linebreak; You can use {last_checkin} for the last checkin date.",
           },
         ],
       },
@@ -203,8 +199,14 @@ export const standupBlocks = (
 
 export const userConfigBlocks = (
   standup: Standup | null,
-  channelId: string
+  channelId: string,
+  userId: string
 ): View => {
+  const defaultTimezone = standup.timezone;
+  const userTimezone = standup.timezoneOverrides.find(
+    (override) => override.userId === userId
+  )?.timezone;
+
   return {
     type: "modal",
     callback_id: "standupUserConfig",
@@ -227,7 +229,13 @@ export const userConfigBlocks = (
             type: "plain_text",
             text: "Select timezone",
           },
-
+          initial_option: {
+            text: {
+              type: "plain_text",
+              text: userTimezone || defaultTimezone,
+            },
+            value: userTimezone || defaultTimezone,
+          },
           options: timezones.map(({ name }) => ({
             text: {
               type: "plain_text",

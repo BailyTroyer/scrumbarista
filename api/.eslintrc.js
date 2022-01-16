@@ -4,7 +4,7 @@ module.exports = {
     project: 'tsconfig.json',
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'import'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
@@ -42,4 +42,11 @@ module.exports = {
       }
     ],
   },
+  settings: {
+    "import/resolver": {
+      "typescript": {
+        "project": ".",
+      }
+    }
+  }
 };

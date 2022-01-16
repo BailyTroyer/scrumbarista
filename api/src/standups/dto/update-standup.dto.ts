@@ -23,7 +23,7 @@ export class UpdateStandupDto extends PartialType(CreateStandupDto) {
   questions?: string[];
 
   @IsMilitaryTime()
-  startTime: Date;
+  startTime: string;
 
   @IsBoolean()
   @IsOptional()

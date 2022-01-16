@@ -12,7 +12,8 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { plainToClass } from "class-transformer";
 
-import { EntityNotFoundExceptionFilter } from "../core/filters/entity-not-found-exception.filter";
+import { EntityNotFoundExceptionFilter } from "src/core/filters/entity-not-found-exception.filter";
+
 import { CreateStandupDto } from "./dto/create-standup.dto";
 import { StandupDto } from "./dto/standup.dto";
 import {

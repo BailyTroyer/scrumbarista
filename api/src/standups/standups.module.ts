@@ -1,7 +1,8 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { BoltModule } from "../core/modules/bolt.module";
+import { BoltModule } from "src/core/modules/bolt.module";
+
 import { Day } from "./entities/day.entity";
 import { Standup } from "./entities/standup.entity";
 import { TimezoneOverride } from "./entities/tzoverride.entity";
@@ -10,8 +11,8 @@ import { StandupsService } from "./standups.service";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Standup, Day, TimezoneOverride]),
     BoltModule,
+    TypeOrmModule.forFeature([Standup, Day, TimezoneOverride]),
   ],
   controllers: [StandupsController],
   providers: [StandupsService],

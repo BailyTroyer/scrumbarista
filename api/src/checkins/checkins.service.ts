@@ -3,7 +3,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { startOfDay, endOfDay } from "date-fns";
 import { Between, In, Repository, UpdateResult } from "typeorm";
 
-import { StandupsService } from "../standups/standups.service";
+import { StandupsService } from "src/standups/standups.service";
+
 import { CreateCheckinDto } from "./dto/create-checkin.dto";
 import { UserFilterDto } from "./dto/filters.dto";
 import { UpdateCheckinDto } from "./dto/update-checkin.dto";

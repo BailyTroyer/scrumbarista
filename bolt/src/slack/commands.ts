@@ -33,7 +33,7 @@ export const standupCommand: Middleware<SlackCommandMiddlewareArgs> = async (
 ) => {
   const {
     ack,
-    command: { channel_id: channelId, trigger_id },
+    command: { channel_id: channelId, trigger_id, user_id: userId },
     client,
     body: { text: commandArgs },
   } = args;
@@ -45,7 +45,7 @@ export const standupCommand: Middleware<SlackCommandMiddlewareArgs> = async (
     trigger_id,
     view:
       commandArgs === "me"
-        ? userConfigBlocks(standup, channelId)
+        ? userConfigBlocks(standup, channelId, userId)
         : standupBlocks(standup, channelId),
   });
 };

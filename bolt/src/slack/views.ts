@@ -13,6 +13,7 @@ import {
   getStandup,
   updateCheckin,
   updateStandup,
+  setUserTimezone,
 } from "../services/api";
 
 export const standupView: Middleware<
@@ -31,6 +32,7 @@ export const standupView: Middleware<
   const name: string = selectedValues.name.name.value;
   const channelId: string = JSON.parse(view.private_metadata).channelId;
   const startTime: string = selectedValues.time.time.selected_time;
+  const timezone = selectedValues.tz.tz.selected_option.value;
 
   // check if standup already exists
   const standup = await getStandup(channelId);
@@ -43,6 +45,7 @@ export const standupView: Middleware<
     ) as Day[],
     startTime,
     introMessage: "",
+    timezone,
   };
 
   if (standup) {
@@ -84,6 +87,22 @@ export const standupUserConfigView: Middleware<
   const tz = selectedValues.tz.tz.selected_option.value;
 
   console.log("TZ: ", `${userId} set TZ ${tz} for ${channelId}`);
+  const response = await setUserTimezone(channelId, userId, tz);
+
+  if (response?.timezone !== tz) {
+    await client.chat.postEphemeral({
+      channel: channelId,
+      user: userId,
+      text: "I was unable to update your personal standup settings",
+    });
+    return;
+  }
+
+  await client.chat.postEphemeral({
+    channel: channelId,
+    user: userId,
+    text: "I've updated your personal standup settings",
+  });
 };
 
 export const checkinView: Middleware<

@@ -38,6 +38,30 @@ export const getCheckins = async (
   return null;
 };
 
+export const setUserTimezone = async (
+  channelId: string,
+  userId: string,
+  timezone: string
+): Promise<{ userId: string; timezone: string } | null> => {
+  const response = await fetch(
+    `${API_URL}/standups/${channelId}/timezone-overrides/${userId}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ timezone }),
+    }
+  ).catch(() => null);
+
+  if (response?.ok) {
+    return response?.json();
+  }
+
+  return null;
+};
+
 /**
  * Creates a given checkin for a standup.
  * @param standup the standup to append the checkin to.
@@ -93,6 +117,8 @@ export const getStandup = async (
   const response = await fetch(`${API_URL}/standups/${channelId}`, {
     headers: { Authorization: `Bearer ${token}` },
   }).catch(() => null);
+
+  console.log("RESPONSE: ", response);
 
   if (response?.ok) {
     return response?.json();

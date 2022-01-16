@@ -4,6 +4,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { CronJob } from "cron";
 import { Repository } from "typeorm";
 
+import { CheckinNotifierService } from "src/core/modules/checkin-notifier.module";
+
 import { Notification } from "./entities/notification.entity";
 
 @Injectable()
@@ -11,7 +13,8 @@ export class NotificationsService implements OnApplicationBootstrap {
   constructor(
     @InjectRepository(Notification)
     private notificationsRepository: Repository<Notification>,
-    private schedulerRegistry: SchedulerRegistry
+    private schedulerRegistry: SchedulerRegistry,
+    private readonly checkinNotifier: CheckinNotifierService
   ) {}
 
   async onApplicationBootstrap() {

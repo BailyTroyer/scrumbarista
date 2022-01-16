@@ -15,10 +15,14 @@ export type NewStandup = {
   days: Day[];
   startTime: string;
   introMessage: string;
+  timezone: string;
 };
+
+export type TimezoneOverride = { timezone: string; userId: string };
 
 export type Standup = NewStandup & {
   id: string;
+  timezoneOverrides: TimezoneOverride[];
 };
 
 export type Checkin = {
