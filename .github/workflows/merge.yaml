@@ -27,4 +27,4 @@ jobs:
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
         with:
-          args: upgrade --install scrumbarista ./deploy --namespace scrumbarista --set containers.bolt.image.tag=${{ github.sha }} --wait
+          args: upgrade --install scrumbarista ./deploy --namespace scrumbarista --set containers.bolt.image.tag=${{ github.sha }} --atomic --wait
