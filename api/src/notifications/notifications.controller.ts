@@ -38,11 +38,38 @@ export class NotificationsController {
     );
   }
 
+  @Post(":channelId/:userId")
+  @ApiOperation({ summary: "create a user standup notification" })
+  @ApiResponse({
+    status: 201,
+    description: "user standup notification created",
+  })
+  async createUserCron(
+    @Param("channelId") channelId: string,
+    @Param("userId") userId: string,
+    @Body() { interval }: CreateNotificationDto
+  ): Promise<NotificationDto> {
+    return plainToClass(
+      NotificationDto,
+      this.notificationsService.addUserCronJob(channelId, interval, userId)
+    );
+  }
+
   @Delete("crons/:channelId")
   @ApiOperation({ summary: "delete standup notification" })
   @ApiResponse({ status: 200 })
   async deleteCron(@Param("channelId") channelId: string): Promise<string> {
     return this.notificationsService.deleteCron(channelId);
+  }
+
+  @Delete("crons/:channelId/:userId")
+  @ApiOperation({ summary: "delete user standup notification" })
+  @ApiResponse({ status: 200 })
+  async deleteUserCron(
+    @Param("channelId") channelId: string,
+    @Param("userId") userId: string
+  ): Promise<string> {
+    return this.notificationsService.deleteCronForUser(channelId, userId);
   }
 
   @Post("standups/:channelId/checkins/trigger")

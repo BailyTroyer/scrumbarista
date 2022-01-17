@@ -84,7 +84,12 @@ export class CheckinNotifierService {
   }
 
   public async pingUsersForCheckin(standup: StandupAndUsers): Promise<void> {
-    for (const user of standup.users) {
+    // Ping all users that don't have overrides
+
+    const overrides = standup.timezoneOverrides.map((o) => o.userId);
+
+    for (const user of standup.users.filter((u) => !overrides.includes(u.id))) {
+      console.log("USER TO PING: ", user.id);
       await this.pingUserStandup(standup, user.id);
     }
   }

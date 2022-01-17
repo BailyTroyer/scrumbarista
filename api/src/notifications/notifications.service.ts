@@ -9,7 +9,10 @@ import { CheckinNotifierService } from "src/core/modules/checkin-notifier.module
 import { Standup } from "src/standups/entities/standup.entity";
 
 import { NotificationDto } from "./dto/notification.dto";
-import { StandupNotification } from "./entities/notification.entity";
+import {
+  StandupNotification,
+  UserStandupNotification,
+} from "./entities/notification.entity";
 
 type StandupAndUsers = Standup & {
   users: {
@@ -24,7 +27,9 @@ type StandupAndUsers = Standup & {
 export class NotificationsService implements OnApplicationBootstrap {
   constructor(
     @InjectRepository(StandupNotification)
-    private notificationsRepository: Repository<StandupNotification>,
+    private standupNotificationsRepository: Repository<StandupNotification>,
+    @InjectRepository(UserStandupNotification)
+    private userNotificationsRepository: Repository<UserStandupNotification>,
     private schedulerRegistry: SchedulerRegistry,
     private checkinNotifier: CheckinNotifierService,
     @InjectRepository(Standup)
@@ -67,9 +72,10 @@ export class NotificationsService implements OnApplicationBootstrap {
 
   // load the standup notifications + any user overrides
   async onApplicationBootstrap() {
-    const notifications = await this.notificationsRepository.find();
+    const standupNotifications =
+      await this.standupNotificationsRepository.find();
 
-    for (const notification of notifications) {
+    for (const notification of standupNotifications) {
       const { channelId, interval } = notification;
 
       const standup = await this.getStandup(channelId);
@@ -80,13 +86,27 @@ export class NotificationsService implements OnApplicationBootstrap {
       this.schedulerRegistry.addCronJob(channelId, cron);
       cron.start();
     }
+
+    const userNotifications = await this.userNotificationsRepository.find();
+
+    for (const notification of userNotifications) {
+      const { channelId, interval, userId } = notification;
+
+      const standup = await this.getStandup(channelId);
+
+      const cron = new CronJob(interval, () =>
+        this.checkinNotifier.pingUsersForCheckin(standup)
+      );
+      this.schedulerRegistry.addCronJob(`${channelId}-${userId}`, cron);
+      cron.start();
+    }
   }
 
   async addCronJob(
     channelId: string,
     interval: string
   ): Promise<StandupNotification> {
-    const notification = await this.notificationsRepository.save({
+    const notification = await this.standupNotificationsRepository.save({
       interval,
       channelId,
     });
@@ -97,7 +117,32 @@ export class NotificationsService implements OnApplicationBootstrap {
       this.checkinNotifier.pingUsersForCheckin(standup)
     );
 
-    this.schedulerRegistry.addCronJob(notification.channelId, job);
+    // if userId exists append to cronjob name
+    this.schedulerRegistry.addCronJob(channelId, job);
+    job.start();
+
+    return notification;
+  }
+
+  async addUserCronJob(
+    channelId: string,
+    interval: string,
+    userId: string
+  ): Promise<UserStandupNotification> {
+    const notification = await this.userNotificationsRepository.save({
+      interval,
+      channelId,
+      userId,
+    });
+
+    const standup = await this.getStandup(channelId);
+
+    const job = new CronJob(notification.interval, () =>
+      this.checkinNotifier.pingUserForCheckin(standup, userId)
+    );
+
+    // if userId exists append to cronjob name
+    this.schedulerRegistry.addCronJob(`${channelId}-${userId}`, job);
     job.start();
 
     return notification;
@@ -108,12 +153,12 @@ export class NotificationsService implements OnApplicationBootstrap {
     interval: string
   ): Promise<StandupNotification> {
     // Find & Update interval resource
-    const notification = await this.notificationsRepository.findOne({
+    const notification = await this.standupNotificationsRepository.findOne({
       channelId,
     });
 
     notification.interval = interval;
-    this.notificationsRepository.save(notification);
+    this.standupNotificationsRepository.save(notification);
 
     // Update cronjob interval
     const jobs = this.schedulerRegistry.getCronJobs();
@@ -123,24 +168,66 @@ export class NotificationsService implements OnApplicationBootstrap {
     return notification;
   }
 
+  async updateUserCron(
+    channelId: string,
+    interval: string,
+    userId: string
+  ): Promise<UserStandupNotification> {
+    // Find & Update interval resource
+    const notification = await this.userNotificationsRepository.findOne({
+      channelId,
+      userId,
+    });
+
+    notification.interval = interval;
+    this.userNotificationsRepository.save(notification);
+
+    // Update cronjob interval
+    const jobs = this.schedulerRegistry.getCronJobs();
+    const job = jobs.get(`${channelId}-${userId}`);
+    job.setTime(new CronTime(interval));
+
+    return notification;
+  }
+
   async getCrons(): Promise<NotificationDto[]> {
     const jobs = this.schedulerRegistry.getCronJobs();
-    const notifications = await this.notificationsRepository.find();
+    const notifications = await this.standupNotificationsRepository.find();
+    const userNotifications = await this.userNotificationsRepository.find();
 
     const nextJobs = [];
     jobs.forEach((_, key) => {
-      const interval = notifications.find((n) => n.channelId === key).interval;
-      nextJobs.push({ name: key, interval });
+      // @todo This is gross; double back once MVP and fix this
+      const interval = notifications.find((n) => n.channelId === key)?.interval;
+      const userInterval = userNotifications.find(
+        (n) => `${n.channelId}-${n.userId}` === key
+      )?.interval;
+      nextJobs.push({ name: key, interval: interval || userInterval });
     });
+
     return nextJobs;
   }
 
   getCron(channelId: string): Promise<StandupNotification | null> {
-    return this.notificationsRepository.findOne({ channelId });
+    return this.standupNotificationsRepository.findOne({ channelId });
+  }
+
+  getCronForUser(
+    channelId: string,
+    userId: string
+  ): Promise<StandupNotification | null> {
+    return this.userNotificationsRepository.findOne({ channelId, userId });
+  }
+
+  async deleteCronForUser(channelId: string, userId: string): Promise<string> {
+    await this.userNotificationsRepository.delete({ channelId, userId });
+
+    this.schedulerRegistry.deleteCronJob(`${channelId}-${userId}`);
+    return `notification ${channelId}-${userId} deleted!`;
   }
 
   async deleteCron(channelId: string): Promise<string> {
-    await this.notificationsRepository.delete({ channelId });
+    await this.standupNotificationsRepository.delete({ channelId });
 
     this.schedulerRegistry.deleteCronJob(channelId);
     return `notification ${channelId} deleted!`;

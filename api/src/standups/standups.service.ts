@@ -55,7 +55,7 @@ export class StandupsService {
       standupTime
     );
 
-    const standupCron = this.notificationsService.getCron(channelId);
+    const standupCron = await this.notificationsService.getCron(channelId);
 
     if (!standupCron) {
       this.notificationsService.addCronJob(
@@ -78,7 +78,52 @@ export class StandupsService {
 
     const override = standup.timezoneOverrides.find((o) => o.userId === userId);
 
-    return;
+    const days = [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday",
+    ];
+
+    // Create base notification
+    const dayInterval = standup.days
+      .map((d) => days.indexOf(d.day.toString()))
+      .join(",");
+
+    const splitTime = standup.startTime.split(":") as any[];
+
+    const standupTime = new Date();
+    standupTime.setHours(splitTime[0]);
+    standupTime.setMinutes(splitTime[1]);
+
+    const tzOffsetDate = this.timeUtils.tzOffset(
+      this.timeUtils.getTimezoneOffset(override.timezone) * -1,
+      standupTime
+    );
+
+    const userStandupCron = await this.notificationsService.getCronForUser(
+      channelId,
+      userId
+    );
+
+    console.log("USER STANDUP CRON: ", userStandupCron);
+
+    if (!userStandupCron) {
+      this.notificationsService.addUserCronJob(
+        channelId,
+        `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`,
+        userId
+      );
+    } else {
+      this.notificationsService.updateUserCron(
+        channelId,
+        `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`,
+        userId
+      );
+    }
   }
 
   async create({
@@ -229,13 +274,19 @@ export class StandupsService {
   ) {
     const standup = await this.findOne(channelId);
 
-    await this.timezoneOverridesRepository.save({ timezone, standup, userId });
+    const timezoneOverride = await this.timezoneOverridesRepository.save({
+      timezone,
+      standup,
+      userId,
+    });
 
     // Update notification interval
     this.createOrUpdateUserStandupNotificationInterval(
       standup.channelId,
       userId
     );
+
+    return timezoneOverride;
   }
 
   async updateTimezoneOverride(
@@ -258,6 +309,8 @@ export class StandupsService {
       standup.channelId,
       userId
     );
+
+    return timezoneOverride;
   }
 
   async deleteTimezoneOverride(channelId: string, userId: string) {
