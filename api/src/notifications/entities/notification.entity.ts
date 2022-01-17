@@ -1,10 +1,18 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column } from "typeorm";
 
-@Entity()
-export class Notification {
-  @PrimaryGeneratedColumn()
-  id: string;
+abstract class Notification {
+  @Column({ primary: true, default: "" })
+  channelId: string;
 
   @Column()
   interval: string;
+}
+
+@Entity()
+export class StandupNotification extends Notification {}
+
+@Entity()
+export class UserStandupNotification extends Notification {
+  @Column({ unique: true })
+  userId: string;
 }

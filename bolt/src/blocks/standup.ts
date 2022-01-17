@@ -52,7 +52,7 @@ export const standupBlocks = (
         block_id: "time",
         element: {
           type: "timepicker",
-          initial_time: "16:20",
+          initial_time: "09:00",
           placeholder: {
             type: "plain_text",
             text: "Select time",
@@ -78,15 +78,19 @@ export const standupBlocks = (
           type: "static_select",
           placeholder: {
             type: "plain_text",
-            text: "Select timezone",
+            text: "Select tz",
           },
-          initial_option: {
-            text: {
-              type: "plain_text",
-              text: standup.timezone,
-            },
-            value: standup.timezone,
-          },
+          ...(standup?.timezone
+            ? {
+                initial_option: {
+                  text: {
+                    type: "plain_text",
+                    text: standup?.timezone,
+                  },
+                  value: standup.timezone,
+                },
+              }
+            : null),
           options: timezones.map(({ name }) => ({
             text: {
               type: "plain_text",

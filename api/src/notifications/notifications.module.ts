@@ -1,16 +1,18 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+import { Standup } from "src/standups/entities/standup.entity";
+
 import { BoltModule } from "../core/modules/bolt.module";
 import { CheckinNotifierModule } from "../core/modules/checkin-notifier.module";
-import { Notification } from "./entities/notification.entity";
+import { StandupNotification } from "./entities/notification.entity";
 import { NotificationsController } from "./notifications.controller";
 import { NotificationsService } from "./notifications.service";
 
 @Module({
   imports: [
     BoltModule,
-    TypeOrmModule.forFeature([Notification]),
+    TypeOrmModule.forFeature([StandupNotification, Standup]),
     CheckinNotifierModule,
   ],
   controllers: [NotificationsController],

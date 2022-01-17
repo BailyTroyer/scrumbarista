@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { startOfDay, endOfDay } from "date-fns";
 import { Between, In, Repository, UpdateResult } from "typeorm";
 
-import { StandupsService } from "src/standups/standups.service";
+import { Standup } from "src/standups/entities/standup.entity";
 
 import { CreateCheckinDto } from "./dto/create-checkin.dto";
 import { UserFilterDto } from "./dto/filters.dto";
@@ -15,7 +15,8 @@ export class CheckinsService {
   constructor(
     @InjectRepository(Checkin)
     private checkinsRepository: Repository<Checkin>,
-    private readonly standupsService: StandupsService
+    @InjectRepository(Standup)
+    private standupsRepository: Repository<Standup>
   ) {}
 
   search(userId: string, createdDate: string): Promise<Checkin> {
@@ -36,7 +37,7 @@ export class CheckinsService {
     createCheckinDto: CreateCheckinDto
   ): Promise<Checkin> {
     // Fetch standup
-    const standup = await this.standupsService.findOne(channelId);
+    const standup = await this.standupsRepository.findOne({ channelId });
     // Create checkin
     const checkin = this.checkinsRepository.create(createCheckinDto);
     // Tie relation 1toM

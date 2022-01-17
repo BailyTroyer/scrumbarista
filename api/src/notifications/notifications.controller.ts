@@ -1,8 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { plainToClass } from "class-transformer";
 
 import { CheckinNotifierService } from "../core/modules/checkin-notifier.module";
-import { CreateCronDto } from "./dto/create-cron.dto";
+import { CreateNotificationDto } from "./dto/create-notification.dto";
+import { NotificationDto } from "./dto/notification.dto";
 import { NotificationsService } from "./notifications.service";
 
 @ApiTags("notifications")
@@ -14,25 +16,40 @@ export class NotificationsController {
   ) {}
 
   @Get()
-  async getCrons() {
-    return this.notificationsService.getCrons();
+  @ApiOperation({ summary: "list notifications" })
+  @ApiResponse({ status: 200 })
+  async getCrons(): Promise<NotificationDto[]> {
+    return plainToClass(
+      NotificationDto,
+      await this.notificationsService.getCrons()
+    );
   }
 
-  @Post()
-  async createCron(@Body() { interval }: CreateCronDto) {
-    return this.notificationsService.addCronJob(interval);
+  @Post(":channelId")
+  @ApiOperation({ summary: "create a standup notification" })
+  @ApiResponse({ status: 201, description: "standup notification created" })
+  async createCron(
+    @Param("channelId") channelId: string,
+    @Body() { interval }: CreateNotificationDto
+  ): Promise<NotificationDto> {
+    return plainToClass(
+      NotificationDto,
+      this.notificationsService.addCronJob(channelId, interval)
+    );
   }
 
-  @Delete("crons/:id")
-  async deleteCron(@Param("id") id: string) {
-    return this.notificationsService.deleteCron(id);
+  @Delete("crons/:channelId")
+  @ApiOperation({ summary: "delete standup notification" })
+  @ApiResponse({ status: 200 })
+  async deleteCron(@Param("channelId") channelId: string): Promise<string> {
+    return this.notificationsService.deleteCron(channelId);
   }
 
   @Post("standups/:channelId/checkins/trigger")
   @ApiOperation({ summary: "trigger a standup checkin to all users" })
   @ApiResponse({ status: 200 })
   async notifyAll(@Param("channelId") channelId: string): Promise<void> {
-    return this.checkinNotifier.pingUsersForCheckin(channelId);
+    return this.notificationsService.pingUsersForCheckin(channelId);
   }
 
   @Post("standups/:channelId/checkins/:userId/trigger")
@@ -42,6 +59,6 @@ export class NotificationsController {
     @Param("channelId") channelId: string,
     @Param("userId") userId: string
   ): Promise<void> {
-    return this.checkinNotifier.pingUserForCheckin(channelId, userId);
+    return this.notificationsService.pingUserForCheckin(channelId, userId);
   }
 }

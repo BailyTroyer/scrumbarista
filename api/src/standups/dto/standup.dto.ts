@@ -45,7 +45,7 @@ export class StandupDto {
       userId: override.userId,
     }))
   )
-  readonly timezoneOverrides: string[];
+  readonly timezoneOverrides: { userId: string; timezone: string }[];
 
   @Expose()
   timezone: timezone;
@@ -57,7 +57,7 @@ export class StandupDto {
   @Expose()
   @IsArray()
   @Type(() => UserDto)
-  users: UserDto;
+  users: UserDto[];
 
   @Expose()
   @IsBoolean()

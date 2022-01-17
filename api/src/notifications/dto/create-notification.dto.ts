@@ -1,6 +1,9 @@
 import { IsString } from "class-validator";
 
-export class CreateCronDto {
+export class CreateNotificationDto {
   @IsString()
   interval: string;
+
+  @IsString()
+  channelId: string;
 }

@@ -46,6 +46,14 @@ export class TimeUtilsService {
     return new Date(utc + 3600000 * offset);
   };
 
+  /**
+   * Calculates the current date given a timezone offset.
+   */
+  tzOffset = (offset: number, date: Date): Date => {
+    const utc = date.getTime() + date.getTimezoneOffset() * 60000;
+    return new Date(utc + 3600000 * offset);
+  };
+
   getTimezoneOffset = (name: string): number =>
     timezones.find((tz) => tz.name === name)?.relative || 0;
 

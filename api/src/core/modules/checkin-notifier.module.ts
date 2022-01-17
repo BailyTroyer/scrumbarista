@@ -5,22 +5,28 @@ import { Standup } from "src/standups/entities/standup.entity";
 
 import { CheckinsModule } from "../../checkins/checkins.module";
 import { CheckinsService } from "../../checkins/checkins.service";
-import { StandupsModule } from "../../standups/standups.module";
-import { StandupsService } from "../../standups/standups.service";
 import { TimeUtilsModule, TimeUtilsService } from "./../utils/time";
 import { BoltModule } from "./bolt.module";
+
+type StandupAndUsers = Standup & {
+  users: {
+    name: string;
+    id: string;
+    image: string;
+  }[];
+  channelName: string;
+};
 
 @Injectable()
 export class CheckinNotifierService {
   constructor(
     @Inject("BOLT") private bolt: WebClient,
-    private readonly standupsService: StandupsService,
     private readonly checkinsService: CheckinsService,
     private readonly timeUtils: TimeUtilsService
   ) {}
 
   private async pingUserStandup(
-    standup: Standup,
+    standup: StandupAndUsers,
     userId: string
   ): Promise<void> {
     const questions = standup.questions.filter((q) => q !== "");
@@ -77,26 +83,22 @@ export class CheckinNotifierService {
     }
   }
 
-  public async pingUsersForCheckin(channelId: string): Promise<void> {
-    const standup = await this.standupsService.findOne(channelId);
-
+  public async pingUsersForCheckin(standup: StandupAndUsers): Promise<void> {
     for (const user of standup.users) {
       await this.pingUserStandup(standup, user.id);
     }
   }
 
   public async pingUserForCheckin(
-    channelId: string,
+    standup: StandupAndUsers,
     userId: string
   ): Promise<void> {
-    const standup = await this.standupsService.findOne(channelId);
-
     return this.pingUserStandup(standup, userId);
   }
 }
 
 @Module({
-  imports: [BoltModule, StandupsModule, CheckinsModule, TimeUtilsModule],
+  imports: [BoltModule, CheckinsModule, TimeUtilsModule],
   providers: [CheckinNotifierService],
   exports: [CheckinNotifierService],
 })

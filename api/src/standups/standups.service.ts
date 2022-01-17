@@ -3,6 +3,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { WebClient } from "@slack/web-api";
 import { Repository } from "typeorm";
 
+import { TimeUtilsService } from "src/core/utils/time";
+import { NotificationsService } from "src/notifications/notifications.service";
+
 import { CreateStandupDto } from "./dto/create-standup.dto";
 import { UpdateStandupDto } from "./dto/update-standup.dto";
 import { Day } from "./entities/day.entity";
@@ -18,8 +21,65 @@ export class StandupsService {
     private daysRepository: Repository<Day>,
     @InjectRepository(TimezoneOverride)
     private timezoneOverridesRepository: Repository<TimezoneOverride>,
-    @Inject("BOLT") private bolt: WebClient
+    @Inject("BOLT") private bolt: WebClient,
+    private readonly timeUtils: TimeUtilsService,
+    private notificationsService: NotificationsService
   ) {}
+
+  private async createOrUpdateStandupNotificationInterval(channelId: string) {
+    const standup = await this.findOne(channelId);
+
+    const days = [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday",
+    ];
+
+    // Create base notification
+    const dayInterval = standup.days
+      .map((d) => days.indexOf(d.day.toString()))
+      .join(",");
+
+    const splitTime = standup.startTime.split(":") as any[];
+
+    const standupTime = new Date();
+    standupTime.setHours(splitTime[0]);
+    standupTime.setMinutes(splitTime[1]);
+
+    const tzOffsetDate = this.timeUtils.tzOffset(
+      this.timeUtils.getTimezoneOffset(standup.timezone) * -1,
+      standupTime
+    );
+
+    const standupCron = this.notificationsService.getCron(channelId);
+
+    if (!standupCron) {
+      this.notificationsService.addCronJob(
+        channelId,
+        `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`
+      );
+    } else {
+      this.notificationsService.updateCronJob(
+        channelId,
+        `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`
+      );
+    }
+  }
+
+  private async createOrUpdateUserStandupNotificationInterval(
+    channelId: string,
+    userId: string
+  ) {
+    const standup = await this.findOne(channelId);
+
+    const override = standup.timezoneOverrides.find((o) => o.userId === userId);
+
+    return;
+  }
 
   async create({
     days,
@@ -29,6 +89,9 @@ export class StandupsService {
 
     const standup = await this.standupsRepository.save(createStandupDto);
     standup.days = await this.daysRepository.save(days.map((day) => ({ day })));
+
+    // Create notification
+    this.createOrUpdateStandupNotificationInterval(standup.channelId);
 
     return this.standupsRepository.save(standup);
   }
@@ -90,6 +153,7 @@ export class StandupsService {
     );
   }
 
+  // Should be DTO maybe? document this and "my architecture standards"
   async findOne(channelId: string): Promise<
     Standup & {
       users: { name: string; id: string; image: string }[];
@@ -144,8 +208,14 @@ export class StandupsService {
     standup.name = updateStandupDto.name;
     standup.introMessage = updateStandupDto.introMessage;
     standup.active = updateStandupDto.active;
+    standup.timezone = updateStandupDto.timezone;
 
-    return this.standupsRepository.save(standup);
+    await this.standupsRepository.save(standup);
+
+    // update notification schedule (if changed)
+    this.createOrUpdateStandupNotificationInterval(standup.channelId);
+
+    return standup;
   }
 
   async remove(channelId: string): Promise<void> {
@@ -158,7 +228,14 @@ export class StandupsService {
     timezone: timezone
   ) {
     const standup = await this.findOne(channelId);
-    return this.timezoneOverridesRepository.save({ timezone, standup, userId });
+
+    await this.timezoneOverridesRepository.save({ timezone, standup, userId });
+
+    // Update notification interval
+    this.createOrUpdateUserStandupNotificationInterval(
+      standup.channelId,
+      userId
+    );
   }
 
   async updateTimezoneOverride(
@@ -174,7 +251,13 @@ export class StandupsService {
 
     timezoneOverride.timezone = timezone;
 
-    return this.timezoneOverridesRepository.save(timezoneOverride);
+    await this.timezoneOverridesRepository.save(timezoneOverride);
+
+    // Update notification interval
+    this.createOrUpdateUserStandupNotificationInterval(
+      standup.channelId,
+      userId
+    );
   }
 
   async deleteTimezoneOverride(channelId: string, userId: string) {

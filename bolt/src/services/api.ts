@@ -118,8 +118,6 @@ export const getStandup = async (
     headers: { Authorization: `Bearer ${token}` },
   }).catch(() => null);
 
-  console.log("RESPONSE: ", response);
-
   if (response?.ok) {
     return response?.json();
   }

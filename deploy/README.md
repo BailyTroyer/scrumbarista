@@ -13,6 +13,10 @@ This chart bootstraps a Scrumbarista API,WebUI and Bolt service on a [Kubernetes
 ## Prerequisites
 
 - Kubernetes 1.3+ with Beta APIs enabled
+- Istio 1.1+ with sidecar injection enabled in your namespace
+    ```bash
+    $ kubectl label namespace {name} istio-injection=enabled
+    ```
 
 ## Installing the Chart
 
