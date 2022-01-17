@@ -1,20 +1,20 @@
-name: Bolt Merge CI
+name: APP Merge CI
 
 on:
   push:
     branches:
       - "master"
     # paths:
-    #   - "bolt/**"
+    #   - "app/**"
 
 jobs:
   build:
     env:
-      REGISTRY: 418118555604.dkr.ecr.us-east-1.amazonaws.com/scrumbarista-bolt
+      REGISTRY: 418118555604.dkr.ecr.us-east-1.amazonaws.com/scrumbarista-app
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./bolt
+        working-directory: ./app
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

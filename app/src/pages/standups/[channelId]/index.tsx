@@ -20,7 +20,6 @@ import {
   Flex,
   Skeleton,
   Button,
-  Checkbox,
   Divider,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
@@ -34,7 +33,6 @@ import Link from "src/components/Link";
 import StandupDetailCard from "src/components/StandupDetailCard";
 import { useCheckins, useStandup } from "src/hooks/swr";
 import useDaysToString, { toRegularTime } from "src/hooks/useDaysString";
-import { stringToColour } from "src/utils";
 import { colors } from "src/utils/constants";
 
 const EmptyCheckinsDisplay = () => (

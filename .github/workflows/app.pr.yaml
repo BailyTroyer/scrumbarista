@@ -1,16 +1,16 @@
-name: Bolt PR CI
+name: APP PR CI
 
 on:
   pull_request:
     # paths:
-    #   - "bolt/**"
+    #   - "app/**"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./bolt
+        working-directory: ./app
     steps:
     - uses: actions/checkout@v2
 
@@ -31,6 +31,3 @@ jobs:
 
     - name: Lint
       run: npm run lint
-
-    - name: Test
-      run: npm run test
