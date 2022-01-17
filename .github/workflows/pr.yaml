@@ -1,0 +1,26 @@
+name: Main PR CI/CD
+
+on:
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Helm Lint
+        uses: ./.github/actions/helm
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        with:
+          args: lint ./deploy
+
+      - name: Helm Dry Run
+        uses: ./.github/actions/helm
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        with:
+          args: upgrade --install scrumbarista ./deploy --namespace scrumbarista --set containers.api.image.tag=${{ github.sha }} --debug --dry-run

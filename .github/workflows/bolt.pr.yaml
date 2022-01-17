@@ -19,15 +19,18 @@ jobs:
       with:
         node-version: '14'
 
-    - name: Cache dependencies
+    - name: Cache
       uses: actions/cache@v2
       with:
         path: ~/.npm
         key: npm-${{ hashFiles('package-lock.json') }}
         restore-keys: npm-
 
-    - name: Install dependencies
+    - name: Install
       run: npm ci --ignore-scripts
+
+    - name: Build
+      run: docker build -t bolt .
 
     - name: Lint
       run: npm run lint

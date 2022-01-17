@@ -1,45 +1,45 @@
 import { Button, HStack, Select as ChakraSelect, Grid } from "@chakra-ui/react";
-import Select from "react-select/base";
+// import Select from "react-select/base";
 
 import SettingGroup from "src/components/SettingGroup";
 import { weekDays } from "src/utils/constants";
 
 const times = ["09:00", "09:30", "10:00"];
 
-const timezones = [
-  "GMT",
-  "UTC",
-  "ECT",
-  "EET",
-  "ART",
-  "EAT",
-  "MET",
-  "NET",
-  "PLT",
-  "IST",
-  "BST",
-  "VST",
-  "CTT",
-  "JST",
-  "ACT",
-  "AET",
-  "SST",
-  "NST",
-  "MIT",
-  "HST",
-  "AST",
-  "PST",
-  "PNT",
-  "MST",
-  "CST",
-  "EST",
-  "IET",
-  "PRT",
-  "CNT",
-  "AGT",
-  "BET",
-  "CAT",
-];
+// const timezones = [
+//   "GMT",
+//   "UTC",
+//   "ECT",
+//   "EET",
+//   "ART",
+//   "EAT",
+//   "MET",
+//   "NET",
+//   "PLT",
+//   "IST",
+//   "BST",
+//   "VST",
+//   "CTT",
+//   "JST",
+//   "ACT",
+//   "AET",
+//   "SST",
+//   "NST",
+//   "MIT",
+//   "HST",
+//   "AST",
+//   "PST",
+//   "PNT",
+//   "MST",
+//   "CST",
+//   "EST",
+//   "IET",
+//   "PRT",
+//   "CNT",
+//   "AGT",
+//   "BET",
+//   "CAT",
+// ];
 
 const ScheduleSettingsSection = ({
   startTime,

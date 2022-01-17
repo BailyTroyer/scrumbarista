@@ -1,5 +1,5 @@
 meta:
-  name: api
+  name: scrumbarista
   namespace: scrumbarista
   environment: development
 containers:
@@ -10,37 +10,49 @@ containers:
       tag: CHANGE_ME
     resources:
       limits:
-        cpu: 250m
-        memory: 256Mi
+        cpu: 1
+        memory: 2Gi
       requests:
         cpu: 250m
         memory: 256Mi
     env:
-    - name: DB_URL
-      value: CHANGE_ME 
+      - name: PORT
+        value: "8000"
+      - name: DB_URL
+        valueFrom:
+          secretKeyRef:
+            name: app.config
+            key: DB_URL
+      - name: SLACK_SIGNING_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: app.config
+            key: SLACK_SIGNING_SECRET
+      - name: SLACK_BOT_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: app.config
+            key: SLACK_BOT_TOKEN
     port: 8000
     replicas: 1
-  bolt:
-    name: bolt
-    image:
-      repository: 418118555604.dkr.ecr.us-east-1.amazonaws.com/scrumbarista-bolt
-      tag: CHANGE_ME
-    resources:
-      limits:
-        cpu: 250m
-        memory: 256Mi
-      requests:
-        cpu: 250m
-        memory: 256Mi
+    host: scrumbarista-api.useast1.dev.baily.io
+  mysql:
     env:
-    - name: SLACK_SIGNING_SECRET
-      value: REPLACE_ME
-    - name: SLACK_BOT_TOKEN
-      value: REPLACE_ME
-    - name: PORT
-      value: "8080"
-    port: 8080
-    replicas: 1
+      - name: HOST
+        valueFrom:
+          secretKeyRef:
+            name: app.config
+            key: HOST
+      - name: DB_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: app.config
+            key: DB_USERNAME
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: app.config
+            key: DB_PASSWORD
   app:
     name: app
     image:
@@ -48,11 +60,56 @@ containers:
       tag: CHANGE_ME
     resources:
       limits:
-        cpu: 250m
-        memory: 256Mi
+        cpu: 1
+        memory: 2Gi
       requests:
         cpu: 250m
         memory: 256Mi
+    env:
+      - name: NEXT_PUBLIC_API_URL
+        value: http://api.svc.cluster.local
+      - name: NEXT_PUBLIC_BOLT_URL
+        value: http://bolt.svc.cluster.local
+      - name: SLACK_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: app.config
+            key: SLACK_CLIENT_SECRET
+      - name: SLACK_CLIENT_ID
+        valueFrom:
+          secretKeyRef:
+            name: app.config
+            key: SLACK_CLIENT_ID
     port: 3000
     replicas: 1
     host: scrumbarista-app.useast1.dev.baily.io
+  bolt:
+    name: bolt
+    image:
+      repository: 418118555604.dkr.ecr.us-east-1.amazonaws.com/scrumbarista-bolt
+      tag: CHANGE_ME
+    resources:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    env:
+      - name: API_URL
+        value: http://api.svc.cluster.local
+      - name: PORT
+        value: "8080"
+      - name: SLACK_SIGNING_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: app.config
+            key: SLACK_SIGNING_SECRET
+      - name: SLACK_BOT_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: app.config
+            key: SLACK_BOT_TOKEN
+    port: 8080
+    replicas: 1
+    host: scrumbarista-bolt.useast1.dev.baily.io

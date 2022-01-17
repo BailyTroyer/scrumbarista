@@ -78,6 +78,7 @@ const New: NextPage = () => {
           });
 
           const responseJson = await response.json();
+          console.log(responseJson);
 
           setSubmitting(false);
 

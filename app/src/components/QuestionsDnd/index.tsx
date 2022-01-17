@@ -68,7 +68,6 @@ const Question = (props: any) => {
 
       <Menu isOpen={isOpen}>
         <MenuButton
-          variant="ghost"
           borderRadius={5}
           aria-label="Courses"
           fontWeight="normal"

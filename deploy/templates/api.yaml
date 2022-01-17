@@ -1,17 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{.Values.meta.name}}
+  name: {{.Values.containers.api.name}}
   namespace: {{.Values.meta.namespace}}
   labels: {{include "labels" . | nindent 4 }}
+    app: {{.Values.containers.api.name}}
 spec:
   selector:
     matchLabels:
-      app: {{.Values.meta.name}}
+      app: {{.Values.containers.api.name}}
   replicas: {{.Values.containers.api.replicas}}
   template:
     metadata:
       labels: {{include "labels" . | nindent 8 }}
+        app: {{.Values.containers.api.name}}
     spec:
       containers:
       - name: {{.Values.containers.api.name}}
@@ -38,9 +40,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.meta.name }}
+  name: {{.Values.containers.api.name}}
   namespace: {{.Values.meta.namespace}}
   labels: {{include "labels" . | nindent 4}}
+    app: {{.Values.containers.api.name}}
 spec:
   type: ClusterIP
   ports:
@@ -49,14 +52,15 @@ spec:
       port: {{.Values.containers.api.port}}
       targetPort: {{.Values.containers.api.port}}
   selector:
-    app: {{.Values.meta.name}}
+    app: {{.Values.containers.api.name}}
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
-  name: {{ .Values.meta.name }}
+  name: {{.Values.containers.api.name}}
   namespace: {{.Values.meta.namespace}}
   labels: {{include "labels" . | nindent 4}}
+    app: {{.Values.containers.api.name}}
 spec:
   selector:
     istio: ingressgateway
@@ -71,17 +75,47 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: {{.Values.meta.name}}
+  name: {{.Values.containers.api.name}}
   namespace: {{.Values.meta.namespace}}
   labels: {{include "labels" . | nindent 4}}
+    app: {{.Values.containers.api.name}}
 spec:
   hosts:
   - {{.Values.containers.api.host}}
   gateways:
-  - {{.Values.meta.name}}
+  - {{.Values.containers.api.name}}
   http:
   - route:
     - destination:
-        host: {{.Values.meta.name}}
+        host: {{.Values.containers.api.name}}
         port:
           number: {{.Values.containers.api.port}}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-api-migrations
+  namespace: {{.Values.meta.namespace}}
+  labels: {{include "labels" . | nindent 4}}
+    app: {{.Values.containers.api.name}}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-1"
+spec:
+  template:
+    metadata:
+      name: {{ .Release.Name }}-api-migrations
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: {{.Values.containers.api.name}}-migrate
+        image: {{.Values.containers.api.image.repository}}:{{.Values.containers.api.image.tag}}
+        imagePullPolicy: Always
+        resources: {{toYaml .Values.containers.api.resources | nindent 10}}
+        command: ["npm", "run", "typeorm:run"]
+        env:
+        {{- with .Values.containers.api.env }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}

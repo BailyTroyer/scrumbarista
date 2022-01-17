@@ -3,17 +3,16 @@ name: Main CI/CD
 on:
   push:
     branches:
-      - "master"
+      - "main"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    needs: [build]
     steps:
     
       - name: Checkout code
         uses: actions/checkout@v2
-      
+
       - name: Configure AWS credentials
         # Make sure you use a separate AWS user for deploying (i.e. not ADMIN)
         uses: aws-actions/configure-aws-credentials@v1
@@ -21,10 +20,40 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      
-      # - name: Helm Install
-      #   uses: ./.github/actions/helm
-      #   env:
-      #     KUBECONFIG: ${{ secrets.KUBECONFIG }}
-      #   with:
-      #     args: upgrade --install scrumbarista ./deploy --namespace scrumbarista --set containers.bolt.image.tag=${{ github.sha }} --atomic --wait
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build API
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        working-directory: ./api
+        run: docker build -t $REGISTRY/scrumbarista-api:${{ github.sha }} .
+
+      - name: Build APP
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        working-directory: ./app
+        run: docker build -t $REGISTRY/scrumbarista-app:${{ github.sha }} .
+
+      - name: Build Bolt
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        working-directory: ./bolt
+        run: docker build -t $REGISTRY/scrumbarista-bolt:${{ github.sha }} .
+
+      - name: Push
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker push $REGISTRY/scrumbarista-api:${{ github.sha }}
+          docker push $REGISTRY/scrumbarista-app:${{ github.sha }}
+          docker push $REGISTRY/scrumbarista-bolt:${{ github.sha }}
+
+      - name: Helm Install
+        uses: ./.github/actions/helm
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        with:
+          args: upgrade --install scrumbarista ./deploy --namespace scrumbarista --set containers.api.image.tag=${{ github.sha }},containers.app.image.tag=${{ github.sha }},containers.bolt.image.tag=${{ github.sha }}
