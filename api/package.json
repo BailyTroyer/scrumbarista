@@ -52,7 +52,6 @@
     "codecov": "^3.8.3",
     "eslint": "^8.3.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-config-scrumbarista": "../eslint-config-scrumbarista",
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-prettier": "^4.0.0",
