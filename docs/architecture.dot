@@ -1,0 +1,15 @@
+digraph scrumbarista {
+
+  rankdir="LR";
+
+  subgraph api {
+    node [style=filled];
+    color=lightgrey;
+    API -> MySQL;
+    label = "process #2";
+    color=blue
+  }
+  
+  WebUI -> NextAuth -> API;
+  Slack -> Bolt -> API;
+}

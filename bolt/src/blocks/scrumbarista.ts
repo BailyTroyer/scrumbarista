@@ -2,6 +2,14 @@ import { sectionBlock } from ".";
 
 export const scrumbaristaAttachments = [
   {
+    color: "#2E68EC",
+    blocks: [
+      sectionBlock(
+        '*Scrumbarista*\ninvoked with "/scrumbarista"\n"randomPerson" and "randomOrder" arguments for picking random groups'
+      ),
+    ],
+  },
+  {
     color: "#ECB22E",
     blocks: [
       sectionBlock(

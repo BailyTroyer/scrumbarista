@@ -1,10 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { startOfDay, endOfDay } from "date-fns";
-import { Between, Repository, UpdateResult } from "typeorm";
+import { Between, In, Repository, UpdateResult } from "typeorm";
 
-import { StandupsService } from "../standups/standups.service";
+import { Standup } from "src/standups/entities/standup.entity";
+
 import { CreateCheckinDto } from "./dto/create-checkin.dto";
+import { UserFilterDto } from "./dto/filters.dto";
 import { UpdateCheckinDto } from "./dto/update-checkin.dto";
 import { Checkin } from "./entities/checkin.entity";
 
@@ -13,7 +15,8 @@ export class CheckinsService {
   constructor(
     @InjectRepository(Checkin)
     private checkinsRepository: Repository<Checkin>,
-    private readonly standupsService: StandupsService
+    @InjectRepository(Standup)
+    private standupsRepository: Repository<Standup>
   ) {}
 
   search(userId: string, createdDate: string): Promise<Checkin> {
@@ -34,7 +37,7 @@ export class CheckinsService {
     createCheckinDto: CreateCheckinDto
   ): Promise<Checkin> {
     // Fetch standup
-    const standup = await this.standupsService.findOne(channelId);
+    const standup = await this.standupsRepository.findOne({ channelId });
     // Create checkin
     const checkin = this.checkinsRepository.create(createCheckinDto);
     // Tie relation 1toM
@@ -47,15 +50,15 @@ export class CheckinsService {
     params: {
       skip?: number;
       take?: number;
-      userId?: string;
+      users?: UserFilterDto;
       createdDate?: string;
     }
   ): Promise<Checkin[]> {
-    const { skip, take, userId, createdDate } = params;
+    const { skip, take, users, createdDate } = params;
 
     // Conditionally add date/userId if passed
     let filters = {};
-    if (userId) filters = { ...filters, userId };
+    if (users.users) filters = { ...filters, userId: In(users.users) };
     if (createdDate)
       filters = {
         ...filters,

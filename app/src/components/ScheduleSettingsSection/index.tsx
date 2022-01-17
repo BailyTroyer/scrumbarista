@@ -39,7 +39,7 @@ const ScheduleSettingsSection = ({
 
     <SettingGroup
       label="Days"
-      tooltip="The daily time to ping members for the standup"
+      tooltip="The days to ping members for the standup"
     >
       <Grid templateColumns="repeat(7, 1fr)" gap={2}>
         {weekDays.map((d) => (

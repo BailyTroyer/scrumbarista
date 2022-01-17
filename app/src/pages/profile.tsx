@@ -66,12 +66,7 @@ const Timeline = () => {
 
         {["answer1", "answer2", "answer3"].map((a, i) => (
           <Flex direction={"row"} w="100%" h="100%" my={2}>
-            <Box
-              mr={2}
-              width={"5px"}
-              bgColor={"blue.500"}
-              borderRadius={"xl"}
-            />
+            <Box mr={2} width={"5px"} borderRadius={"xl"} />
 
             <Flex direction={"column"}>
               <Text

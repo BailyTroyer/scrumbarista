@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.meta.name}}
+  namespace: {{.Values.meta.namespace}}
+  labels: {{include "labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: {{.Values.meta.name}}
+  replicas: {{.Values.containers.bolt.replicas}}
+  template:
+    metadata:
+      labels: {{include "labels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{.Values.containers.bolt.name}}
+        image: {{.Values.containers.bolt.image.repository}}:{{.Values.containers.bolt.image.tag}}
+        imagePullPolicy: Always
+        resources: {{toYaml .Values.containers.bolt.resources | nindent 10}}
+        ports:
+        - containerPort: {{.Values.containers.bolt.port}}
+        readinessProbe:
+          initialDelaySeconds: 15
+          httpGet:
+            port: {{.Values.containers.bolt.port}}
+            path: /health
+        livenessProbe:
+          initialDelaySeconds: 15
+          httpGet:
+            port: {{.Values.containers.bolt.port}}
+            path: /health
+        env:
+        {{- with .Values.containers.bolt.env }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.meta.name }}
+  namespace: {{.Values.meta.namespace}}
+  labels: {{include "labels" . | nindent 4}}
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{.Values.containers.bolt.port}}
+      targetPort: {{.Values.containers.bolt.port}}
+  selector:
+    app: {{.Values.meta.name}}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: {{ .Values.meta.name }}
+  namespace: {{.Values.meta.namespace}}
+  labels: {{include "labels" . | nindent 4}}
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - {{.Values.containers.bolt.host}}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{.Values.meta.name}}
+  namespace: {{.Values.meta.namespace}}
+  labels: {{include "labels" . | nindent 4}}
+spec:
+  hosts:
+  - {{.Values.containers.bolt.host}}
+  gateways:
+  - {{.Values.meta.name}}
+  http:
+  - route:
+    - destination:
+        host: {{.Values.meta.name}}
+        port:
+          number: {{.Values.containers.bolt.port}}

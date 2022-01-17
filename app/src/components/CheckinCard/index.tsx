@@ -2,9 +2,7 @@ import { FC } from "react";
 
 import {
   Box,
-  Divider,
   Flex,
-  HStack,
   Image,
   Text,
   useColorModeValue,
@@ -25,16 +23,6 @@ interface Props {
 
 const CheckinCard: FC<Props> = ({ standup, checkin, userInfo }: Props) => (
   <VStack width={"100%"}>
-    <HStack width="100%">
-      <Divider />
-      <Flex>
-        <Text mx={4} fontSize="md" fontWeight={"semibold"} noOfLines={1}>
-          10/10/10
-        </Text>
-      </Flex>
-      <Divider />
-    </HStack>
-
     <Flex direction={"column"} w="100%">
       <Flex direction={"row"} alignItems={"center"} mb={2}>
         <Image
@@ -57,7 +45,7 @@ const CheckinCard: FC<Props> = ({ standup, checkin, userInfo }: Props) => (
 
       {checkin.answers.map((a, i) => (
         <Flex direction={"row"} w="100%" h="100%" my={2}>
-          <Box mr={2} width={"5px"} bgColor={"blue.500"} borderRadius={"xl"} />
+          <Box mr={2} width={"5px"} borderRadius={"xl"} />
 
           <Flex direction={"column"}>
             <Text

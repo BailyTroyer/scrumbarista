@@ -1,6 +1,7 @@
 import { PlainTextOption, View } from "@slack/types";
 
 import { Standup } from "../models";
+import { timezones } from "../utils/time";
 
 const capitalize = (s) => {
   if (typeof s !== "string") return "";
@@ -51,7 +52,7 @@ export const standupBlocks = (
         block_id: "time",
         element: {
           type: "timepicker",
-          initial_time: "16:20",
+          initial_time: "09:00",
           placeholder: {
             type: "plain_text",
             text: "Select time",
@@ -63,6 +64,40 @@ export const standupBlocks = (
           type: "plain_text",
           text: "Time",
           emoji: true,
+        },
+      },
+      {
+        type: "section",
+        block_id: "tz",
+        text: {
+          type: "mrkdwn",
+          text: "Pick a Timezone",
+        },
+        accessory: {
+          action_id: "tz",
+          type: "static_select",
+          placeholder: {
+            type: "plain_text",
+            text: "Select tz",
+          },
+          ...(standup?.timezone
+            ? {
+                initial_option: {
+                  text: {
+                    type: "plain_text",
+                    text: standup?.timezone,
+                  },
+                  value: standup.timezone,
+                },
+              }
+            : null),
+          options: timezones.map(({ name }) => ({
+            text: {
+              type: "plain_text",
+              text: name,
+            },
+            value: name,
+          })),
         },
       },
       {
@@ -153,9 +188,66 @@ export const standupBlocks = (
         elements: [
           {
             type: "plain_text",
-            text: "Enter the stand-up questions, separated by linebreak",
+            text: "Enter questions separated by linebreak; You can use {last_checkin} for the last checkin date.",
           },
         ],
+      },
+    ],
+    submit: {
+      type: "plain_text",
+      text: "Submit",
+    },
+    private_metadata: JSON.stringify({ channelId }),
+  };
+};
+
+export const userConfigBlocks = (
+  standup: Standup | null,
+  channelId: string,
+  userId: string
+): View => {
+  const defaultTimezone = standup.timezone;
+  const userTimezone = standup.timezoneOverrides.find(
+    (override) => override.userId === userId
+  )?.timezone;
+
+  return {
+    type: "modal",
+    callback_id: "standupUserConfig",
+    title: {
+      type: "plain_text",
+      text: "Personal Standup",
+    },
+    blocks: [
+      {
+        type: "section",
+        block_id: "tz",
+        text: {
+          type: "mrkdwn",
+          text: "Pick your timezone",
+        },
+        accessory: {
+          action_id: "tz",
+          type: "static_select",
+          placeholder: {
+            type: "plain_text",
+            text: "Select timezone",
+          },
+          initial_option: {
+            text: {
+              type: "plain_text",
+              text: userTimezone || defaultTimezone,
+            },
+            value: userTimezone || defaultTimezone,
+          },
+          options: timezones.map(({ name }) => ({
+            text: {
+              type: "plain_text",
+              text: name,
+            },
+            value: name,
+          })),
+        },
       },
     ],
     submit: {

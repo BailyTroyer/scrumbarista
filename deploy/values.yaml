@@ -1,7 +1,4 @@
 meta:
-  provider: aws
-  region: us-east-1
-  clusterName: useast1.dev.baily.io
   name: api
   namespace: scrumbarista
   environment: development
@@ -10,7 +7,7 @@ containers:
     name: api
     image:
       repository: 418118555604.dkr.ecr.us-east-1.amazonaws.com/scrumbarista-api
-      tag: latest
+      tag: CHANGE_ME
     resources:
       limits:
         cpu: 250m
@@ -27,7 +24,7 @@ containers:
     name: bolt
     image:
       repository: 418118555604.dkr.ecr.us-east-1.amazonaws.com/scrumbarista-bolt
-      tag: latest
+      tag: CHANGE_ME
     resources:
       limits:
         cpu: 250m
@@ -44,3 +41,18 @@ containers:
       value: "8080"
     port: 8080
     replicas: 1
+  app:
+    name: app
+    image:
+      repository: 418118555604.dkr.ecr.us-east-1.amazonaws.com/scrumbarista-app
+      tag: CHANGE_ME
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    port: 3000
+    replicas: 1
+    host: scrumbarista-app.useast1.dev.baily.io
