@@ -39,11 +39,12 @@ export class StandupDto {
 
   @IsArray()
   @Expose()
-  @Transform(({ obj }: { obj: Standup }) =>
-    obj.timezoneOverrides.map((override) => ({
-      timezone: override.timezone,
-      userId: override.userId,
-    }))
+  @Transform(
+    ({ obj }: { obj: Standup }) =>
+      obj.timezoneOverrides?.map((override) => ({
+        timezone: override.timezone,
+        userId: override.userId,
+      })) || []
   )
   readonly timezoneOverrides: { userId: string; timezone: string }[];
 

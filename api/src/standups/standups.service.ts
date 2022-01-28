@@ -136,7 +136,7 @@ export class StandupsService {
     standup.days = await this.daysRepository.save(days.map((day) => ({ day })));
 
     // Create notification
-    this.createOrUpdateStandupNotificationInterval(standup.channelId);
+    // this.createOrUpdateStandupNotificationInterval(standup.channelId);
 
     return this.standupsRepository.save(standup);
   }
@@ -188,10 +188,12 @@ export class StandupsService {
         ).catch(() => []);
         const channelName =
           (
-            await this.bolt.conversations.info({
-              channel: standup.channelId,
-            })
-          ).channel.name || "";
+            await this.bolt.conversations
+              .info({
+                channel: standup.channelId,
+              })
+              .catch(() => null)
+          )?.channel.name || "";
 
         return { ...standup, users, channelName };
       })
@@ -216,8 +218,8 @@ export class StandupsService {
           .catch(() => null)
       )?.members.map(async (user: string) => {
         const profile = await (
-          await this.bolt.users.info({ user })
-        ).user.profile;
+          await this.bolt.users.info({ user }).catch(() => null)
+        )?.user.profile;
         return {
           name: profile.real_name || "",
           id: user,
@@ -228,10 +230,12 @@ export class StandupsService {
 
     const channelName =
       (
-        await this.bolt.conversations.info({
-          channel: standup.channelId,
-        })
-      ).channel.name || "";
+        await this.bolt.conversations
+          .info({
+            channel: standup.channelId,
+          })
+          .catch(() => null)
+      )?.channel.name || "";
 
     return { ...standup, users, channelName };
   }
@@ -255,12 +259,12 @@ export class StandupsService {
     standup.active = updateStandupDto.active;
     standup.timezone = updateStandupDto.timezone;
 
-    await this.standupsRepository.save(standup);
+    const updatedStandup = await this.standupsRepository.save(standup);
 
     // update notification schedule (if changed)
-    this.createOrUpdateStandupNotificationInterval(standup.channelId);
+    // this.createOrUpdateStandupNotificationInterval(standup.channelId);
 
-    return standup;
+    return updatedStandup;
   }
 
   async remove(channelId: string): Promise<void> {
@@ -281,10 +285,10 @@ export class StandupsService {
     });
 
     // Update notification interval
-    this.createOrUpdateUserStandupNotificationInterval(
-      standup.channelId,
-      userId
-    );
+    // this.createOrUpdateUserStandupNotificationInterval(
+    //   standup.channelId,
+    //   userId
+    // );
 
     return timezoneOverride;
   }

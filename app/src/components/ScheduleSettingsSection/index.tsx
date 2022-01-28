@@ -1,9 +1,45 @@
-import { Button, HStack, Select, Grid } from "@chakra-ui/react";
+import { Button, HStack, Select as ChakraSelect, Grid } from "@chakra-ui/react";
+import Select from "react-select/base";
 
 import SettingGroup from "src/components/SettingGroup";
 import { weekDays } from "src/utils/constants";
 
 const times = ["09:00", "09:30", "10:00"];
+
+const timezones = [
+  "GMT",
+  "UTC",
+  "ECT",
+  "EET",
+  "ART",
+  "EAT",
+  "MET",
+  "NET",
+  "PLT",
+  "IST",
+  "BST",
+  "VST",
+  "CTT",
+  "JST",
+  "ACT",
+  "AET",
+  "SST",
+  "NST",
+  "MIT",
+  "HST",
+  "AST",
+  "PST",
+  "PNT",
+  "MST",
+  "CST",
+  "EST",
+  "IET",
+  "PRT",
+  "CNT",
+  "AGT",
+  "BET",
+  "CAT",
+];
 
 const ScheduleSettingsSection = ({
   startTime,
@@ -23,7 +59,7 @@ const ScheduleSettingsSection = ({
       label="Time"
       tooltip="The daily time to ping members for the standup"
     >
-      <Select
+      <ChakraSelect
         size="md"
         value={startTime}
         onChange={(e) => {
@@ -34,7 +70,14 @@ const ScheduleSettingsSection = ({
         {times.map((t) => (
           <option value={t}>{t}</option>
         ))}
-      </Select>
+      </ChakraSelect>
+    </SettingGroup>
+
+    <SettingGroup
+      label="Timezone"
+      tooltip="Select the main timezone for your team"
+    >
+      <Select options={timezones.map((t) => ({ name: t, value: t }))} />
     </SettingGroup>
 
     <SettingGroup

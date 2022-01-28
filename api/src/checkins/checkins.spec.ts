@@ -3,9 +3,8 @@ import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
 import { Connection, getConnection, getRepository, Repository } from "typeorm";
 
-import { AppModule } from "src/app.module";
-import { Standup } from "src/standups/entities/standup.entity";
-
+import { AppModule } from "../app.module";
+import { Standup } from "../standups/entities/standup.entity";
 import { Checkin } from "./entities/checkin.entity";
 
 const uuid =
@@ -24,6 +23,7 @@ describe("CheckinController", () => {
       name: "test-standup",
       channelId: "channelId",
       questions: ["questions"],
+      startTime: "9:00",
       days: [],
     });
 
@@ -46,7 +46,6 @@ describe("CheckinController", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    await getConnection().synchronize(true);
 
     standupRepository = getRepository(Standup);
     checkinRepository = getRepository(Checkin);
@@ -67,6 +66,7 @@ describe("CheckinController", () => {
         name: "test-standup",
         channelId: "channelId",
         questions: ["questions"],
+        startTime: "9:00",
         days: [],
       });
 
@@ -81,10 +81,18 @@ describe("CheckinController", () => {
       return request(app.getHttpServer())
         .get("/standups/channelId/checkins")
         .expect(200)
-        .expect((res) => {
-          expect(res.body[0].answers).toBe("answers");
-          expect(res.body[0].postMessageTs).toBe("postMessageTs");
-        });
+        .expect(({ body }) =>
+          expect(body).toEqual([
+            {
+              id: expect.stringMatching(uuid),
+              createdDate: expect.stringMatching(date),
+              answers: ["answers"],
+              postMessageTs: "postMessageTs",
+              userId: "user",
+              channelId: "channelId",
+            },
+          ])
+        );
     });
     it("returns checkin by ID", async () => {
       const [checkin] = await createStandupWithCheckin();
@@ -92,10 +100,16 @@ describe("CheckinController", () => {
       return request(app.getHttpServer())
         .get(`/standups/channelId/checkins/${checkin.id}`)
         .expect(200)
-        .expect((res) => {
-          expect(res.body.answers).toBe("answers");
-          expect(res.body.postMessageTs).toBe("postMessageTs");
-        });
+        .expect(({ body }) =>
+          expect(body).toEqual({
+            id: expect.stringMatching(uuid),
+            createdDate: expect.stringMatching(date),
+            answers: ["answers"],
+            postMessageTs: "postMessageTs",
+            userId: "user",
+            channelId: "channelId",
+          })
+        );
     });
   });
 

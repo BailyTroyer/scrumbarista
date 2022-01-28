@@ -73,7 +73,8 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": "./",
+    "modulePaths": ["<rootDir>"],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -82,7 +83,9 @@
       "**/*.(t|j)s"
     ],
     "coveragePathIgnorePatterns": [
-      "<rootDir>/main.ts"
+      "<rootDir>/main.ts",
+      "<rootDir>/dist",
+      "<rootDir>/src/core/migrations"
     ],
     "coverageThreshold": {
       "global": {

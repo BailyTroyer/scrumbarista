@@ -5,7 +5,7 @@ import { ChannelDto } from "./dto/channel.dto";
 
 @Injectable()
 export class SlackService {
-  constructor(@Inject("BOLT") private bolt: WebClient) {}
+  constructor(@Inject("BOLT") private readonly bolt: WebClient) {}
 
   async listChannels(): Promise<ChannelDto[]> {
     const response = await this.bolt.conversations.list({

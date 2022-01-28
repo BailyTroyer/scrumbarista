@@ -72,34 +72,27 @@ export class NotificationsService implements OnApplicationBootstrap {
 
   // load the standup notifications + any user overrides
   async onApplicationBootstrap() {
-    const standupNotifications =
-      await this.standupNotificationsRepository.find();
-
-    for (const notification of standupNotifications) {
-      const { channelId, interval } = notification;
-
-      const standup = await this.getStandup(channelId);
-
-      const cron = new CronJob(interval, () =>
-        this.checkinNotifier.pingUsersForCheckin(standup)
-      );
-      this.schedulerRegistry.addCronJob(channelId, cron);
-      cron.start();
-    }
-
-    const userNotifications = await this.userNotificationsRepository.find();
-
-    for (const notification of userNotifications) {
-      const { channelId, interval, userId } = notification;
-
-      const standup = await this.getStandup(channelId);
-
-      const cron = new CronJob(interval, () =>
-        this.checkinNotifier.pingUsersForCheckin(standup)
-      );
-      this.schedulerRegistry.addCronJob(`${channelId}-${userId}`, cron);
-      cron.start();
-    }
+    // const standupNotifications =
+    //   await this.standupNotificationsRepository.find();
+    // for (const notification of standupNotifications) {
+    //   const { channelId, interval } = notification;
+    //   const standup = await this.getStandup(channelId);
+    //   const cron = new CronJob(interval, () =>
+    //     this.checkinNotifier.pingUsersForCheckin(standup)
+    //   );
+    //   this.schedulerRegistry.addCronJob(channelId, cron);
+    //   cron.start();
+    // }
+    // const userNotifications = await this.userNotificationsRepository.find();
+    // for (const notification of userNotifications) {
+    //   const { channelId, interval, userId } = notification;
+    //   const standup = await this.getStandup(channelId);
+    //   const cron = new CronJob(interval, () =>
+    //     this.checkinNotifier.pingUsersForCheckin(standup)
+    //   );
+    //   this.schedulerRegistry.addCronJob(`${channelId}-${userId}`, cron);
+    //   cron.start();
+    // }
   }
 
   async addCronJob(

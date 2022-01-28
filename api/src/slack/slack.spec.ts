@@ -5,13 +5,10 @@ import { Connection } from "typeorm";
 
 import { AppModule } from "../app.module";
 
-const date =
-  /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/;
-
-describe("HealthController", () => {
+describe("StandupController", () => {
   let app: INestApplication;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -25,17 +22,16 @@ describe("HealthController", () => {
     await app.close();
   });
 
-  describe("/health", () => {
-    it("(GET) returns 200 OK", () => {
+  describe("GET /channels", () => {
+    it("returns all channels", () => {
       return request(app.getHttpServer())
-        .get("/health")
+        .get("/slack/channels")
         .expect(200)
-        .expect(({ body }) =>
-          expect(body).toEqual({
-            status: "healthy",
-            time: expect.stringMatching(date),
-          })
-        );
+        .expect([
+          { name: "general", id: "C01LQPT2LMD" },
+          { name: "software", id: "C01LQPW3VRV" },
+          { name: "random", id: "C01M2ELANAH" },
+        ]);
     });
   });
 });
