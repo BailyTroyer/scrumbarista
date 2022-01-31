@@ -36,6 +36,8 @@ describe("StandupController", () => {
 
     standupRepository = getRepository(Standup);
     tzOverrideRepository = getRepository(TimezoneOverride);
+
+    await app.get(Connection).synchronize(true);
   });
 
   beforeEach(async () => {

@@ -26,9 +26,7 @@ export class StandupsService {
     private notificationsService: NotificationsService
   ) {}
 
-  private async createOrUpdateStandupNotificationInterval(channelId: string) {
-    const standup = await this.findOne(channelId);
-
+  private async createOrUpdateStandupNotificationInterval(standup: Standup) {
     const days = [
       "monday",
       "tuesday",
@@ -55,16 +53,18 @@ export class StandupsService {
       standupTime
     );
 
-    const standupCron = await this.notificationsService.getCron(channelId);
+    const standupCron = await this.notificationsService.getCron(
+      standup.channelId
+    );
 
     if (!standupCron) {
       this.notificationsService.addCronJob(
-        channelId,
+        standup.channelId,
         `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`
       );
     } else {
       this.notificationsService.updateCronJob(
-        channelId,
+        standup.channelId,
         `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`
       );
     }
@@ -109,8 +109,6 @@ export class StandupsService {
       userId
     );
 
-    console.log("USER STANDUP CRON: ", userStandupCron);
-
     if (!userStandupCron) {
       this.notificationsService.addUserCronJob(
         channelId,
@@ -135,10 +133,12 @@ export class StandupsService {
     const standup = await this.standupsRepository.save(createStandupDto);
     standup.days = await this.daysRepository.save(days.map((day) => ({ day })));
 
-    // Create notification
-    // this.createOrUpdateStandupNotificationInterval(standup.channelId);
+    const responseStandup = await this.standupsRepository.save(standup);
 
-    return this.standupsRepository.save(standup);
+    // Create notification
+    // this.createOrUpdateStandupNotificationInterval(responseStandup);
+
+    return responseStandup;
   }
 
   async findAll(params: {
@@ -262,7 +262,7 @@ export class StandupsService {
     const updatedStandup = await this.standupsRepository.save(standup);
 
     // update notification schedule (if changed)
-    // this.createOrUpdateStandupNotificationInterval(standup.channelId);
+    // this.createOrUpdateStandupNotificationInterval(standup);
 
     return updatedStandup;
   }

@@ -1,9 +1,14 @@
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
+import { WebClient } from "@slack/web-api";
 import * as request from "supertest";
 import { Connection } from "typeorm";
 
+import { SlackGuard } from "src/core/guards/slack.guard";
+
 import { AppModule } from "../app.module";
+import { HealthController } from "./health.controller";
+import { HealthService } from "./health.service";
 
 const date =
   /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/;
@@ -13,7 +18,18 @@ describe("HealthController", () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      controllers: [HealthController],
+      providers: [
+        HealthService,
+        {
+          provide: "BOLT",
+          useValue: {
+            auth: {
+              test: jest.fn().mockReturnValue({ ok: true }),
+            },
+          },
+        },
+      ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -21,12 +37,11 @@ describe("HealthController", () => {
   });
 
   afterAll(async () => {
-    await app.get(Connection).close();
     await app.close();
   });
 
-  describe("/health", () => {
-    it("(GET) returns 200 OK", () => {
+  describe("GET /health", () => {
+    it("returns health with time", () => {
       return request(app.getHttpServer())
         .get("/health")
         .expect(200)
@@ -36,6 +51,31 @@ describe("HealthController", () => {
             time: expect.stringMatching(date),
           })
         );
+    });
+  });
+
+  describe("GET /health/authenticated", () => {
+    it("returns healthy when authenticated", () => {
+      return request(app.getHttpServer())
+        .get("/health/authenticated")
+        .set("authorization", "bearer SOME_AUTH_TOKEN")
+        .expect(200)
+        .expect(({ body }) =>
+          expect(body).toEqual({
+            status: "healthy",
+            time: expect.stringMatching(date),
+          })
+        );
+    });
+    it("returns unauthenticated when missing token header", () => {
+      return request(app.getHttpServer())
+        .get("/health/authenticated")
+        .expect(403)
+        .expect({
+          statusCode: 403,
+          message: "Forbidden resource",
+          error: "Forbidden",
+        });
     });
   });
 });

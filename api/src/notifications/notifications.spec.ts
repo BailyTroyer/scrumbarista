@@ -5,6 +5,8 @@ import { CronJob } from "cron";
 import * as request from "supertest";
 import { Connection, getConnection, getRepository, Repository } from "typeorm";
 
+import { CheckinsModule } from "src/checkins/checkins.module";
+import { CheckinNotifierService } from "src/core/modules/checkin-notifier.module";
 import { Standup } from "src/standups/entities/standup.entity";
 
 import { AppModule } from "../app.module";
@@ -12,6 +14,8 @@ import {
   StandupNotification,
   UserStandupNotification,
 } from "./entities/notification.entity";
+import { NotificationsController } from "./notifications.controller";
+import { NotificationsService } from "./notifications.service";
 
 describe("StandupController", () => {
   let app: INestApplication;
@@ -19,6 +23,8 @@ describe("StandupController", () => {
   let standupRepository: Repository<Standup>;
   let standupNotificationsRepository: Repository<StandupNotification>;
   let schedulerRegistry: SchedulerRegistry;
+
+  let postMessage: jest.Mock;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -38,6 +44,8 @@ describe("StandupController", () => {
 
   beforeEach(async () => {
     await app.get(Connection).synchronize(true);
+
+    postMessage = jest.fn();
 
     schedulerRegistry.getCronJobs().forEach((_, name) => {
       schedulerRegistry.deleteCronJob(name);
@@ -154,6 +162,41 @@ describe("StandupController", () => {
       return request(app.getHttpServer())
         .delete("/notifications/crons/channel/user")
         .expect(200);
+    });
+  });
+
+  describe("POST standups/:channelId/checkins/trigger", () => {
+    it("pings all users in the checkin for the standup", async () => {
+      await standupRepository.save({
+        name: "standup",
+        startTime: "9:00",
+        channelId: "channel",
+        questions: ["questions"],
+        days: [],
+      });
+
+      await request(app.getHttpServer())
+        .post("/notifications/standups/channel/checkins/trigger")
+        .expect(201);
+
+      // @todo validate postMessage was called on trigger
+      // expect(postMessage).toHaveBeenCalledWith();
+    });
+  });
+
+  describe("POST standups/:channelId/checkins/:userId/trigger", () => {
+    it("pings all users in the checkin for the standup", async () => {
+      await standupRepository.save({
+        name: "standup",
+        startTime: "9:00",
+        channelId: "channel",
+        questions: ["questions"],
+        days: [],
+      });
+
+      return request(app.getHttpServer())
+        .post("/notifications/standups/channel/checkins/user/trigger")
+        .expect(201);
     });
   });
 });
