@@ -94,11 +94,110 @@ describe("CheckinController", () => {
           ])
         );
     });
+    it("returns checkins for the given users", async () => {
+      const standup = await standupRepository.save({
+        name: "test-standup",
+        channelId: "channelId",
+        questions: ["questions"],
+        startTime: "9:00",
+        days: [],
+      });
+
+      const checkin1 = await checkinRepository.save({
+        answers: ["fooanswer"],
+        postMessageTs: "postMessageTs",
+        userId: "foo",
+      });
+      const checkin2 = await checkinRepository.save({
+        answers: ["baranswer"],
+        postMessageTs: "postMessageTs",
+        userId: "bar",
+      });
+
+      standup.checkins = [checkin1, checkin2];
+      await standupRepository.save(standup);
+
+      return request(app.getHttpServer())
+        .get(
+          `/standups/channelId/checkins?users=foo,bar&createdDate=${checkin1.createdDate}`
+        )
+        .expect(200)
+        .expect(({ body }) =>
+          expect(body).toEqual(
+            expect.arrayContaining([
+              {
+                answers: ["fooanswer"],
+                channelId: "channelId",
+                id: expect.stringMatching(uuid),
+                createdDate: expect.stringMatching(date),
+                postMessageTs: "postMessageTs",
+                userId: "foo",
+              },
+              {
+                answers: ["baranswer"],
+                channelId: "channelId",
+                id: expect.stringMatching(uuid),
+                createdDate: expect.stringMatching(date),
+                postMessageTs: "postMessageTs",
+                userId: "bar",
+              },
+            ])
+          )
+        );
+    });
+  });
+
+  describe("GET /standups/:channelId/checkins/:checkinId", () => {
     it("returns checkin by ID", async () => {
       const [checkin] = await createStandupWithCheckin();
 
       return request(app.getHttpServer())
         .get(`/standups/channelId/checkins/${checkin.id}`)
+        .expect(200)
+        .expect(({ body }) =>
+          expect(body).toEqual({
+            id: expect.stringMatching(uuid),
+            createdDate: expect.stringMatching(date),
+            answers: ["answers"],
+            postMessageTs: "postMessageTs",
+            userId: "user",
+            channelId: "channelId",
+          })
+        );
+    });
+    it("returns 404 when no checkin exists by ID", async () => {
+      return request(app.getHttpServer())
+        .get(`/standups/channelId/checkins/doesntexist`)
+        .expect(404)
+        .expect({
+          message: {
+            statusCode: 404,
+            error: "Not Found",
+            message:
+              'Could not find any entity of type "Checkin" matching: {\n' +
+              '    "where": {\n' +
+              '        "id": "doesntexist",\n' +
+              '        "standup": {\n' +
+              '            "channelId": "channelId"\n' +
+              "        }\n" +
+              "    },\n" +
+              '    "relations": [\n' +
+              '        "standup"\n' +
+              "    ]\n" +
+              "}",
+          },
+        });
+    });
+  });
+
+  describe("GET /standups/checkins/search", () => {
+    it("returns a checkin with the given user at the specified date", async () => {
+      const [checkin] = await createStandupWithCheckin();
+
+      return request(app.getHttpServer())
+        .get(
+          `/standups/checkins/search?userId=${checkin.userId}&createdDate=${checkin.createdDate}`
+        )
         .expect(200)
         .expect(({ body }) =>
           expect(body).toEqual({

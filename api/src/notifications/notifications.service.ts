@@ -50,8 +50,8 @@ export class NotificationsService implements OnApplicationBootstrap {
           .catch(() => null)
       )?.members.map(async (user: string) => {
         const profile = await (
-          await this.bolt.users.info({ user })
-        ).user.profile;
+          await this.bolt.users.info({ user }).catch(() => null)
+        )?.user.profile;
         return {
           name: profile.real_name || "",
           id: user,
@@ -62,10 +62,12 @@ export class NotificationsService implements OnApplicationBootstrap {
 
     const channelName =
       (
-        await this.bolt.conversations.info({
-          channel: standup.channelId,
-        })
-      ).channel.name || "";
+        await this.bolt.conversations
+          .info({
+            channel: standup.channelId,
+          })
+          .catch(() => null)
+      )?.channel.name || "";
 
     return { ...standup, users, channelName };
   }

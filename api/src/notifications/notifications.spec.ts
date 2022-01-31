@@ -1,7 +1,11 @@
 import { INestApplication } from "@nestjs/common";
+import { SchedulerRegistry } from "@nestjs/schedule";
 import { Test, TestingModule } from "@nestjs/testing";
+import { CronJob } from "cron";
 import * as request from "supertest";
 import { Connection, getConnection, getRepository, Repository } from "typeorm";
+
+import { Standup } from "src/standups/entities/standup.entity";
 
 import { AppModule } from "../app.module";
 import {
@@ -11,8 +15,10 @@ import {
 
 describe("StandupController", () => {
   let app: INestApplication;
-  let userStandupRepository: Repository<UserStandupNotification>;
-  let standupRepository: Repository<StandupNotification>;
+  let userNotificationsRepository: Repository<UserStandupNotification>;
+  let standupRepository: Repository<Standup>;
+  let standupNotificationsRepository: Repository<StandupNotification>;
+  let schedulerRegistry: SchedulerRegistry;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -23,12 +29,19 @@ describe("StandupController", () => {
     await app.init();
     await getConnection().synchronize(true);
 
-    userStandupRepository = getRepository(UserStandupNotification);
-    standupRepository = getRepository(StandupNotification);
+    userNotificationsRepository = getRepository(UserStandupNotification);
+    standupRepository = getRepository(Standup);
+    standupNotificationsRepository = getRepository(StandupNotification);
+
+    schedulerRegistry = app.get<SchedulerRegistry>(SchedulerRegistry);
   });
 
   beforeEach(async () => {
     await app.get(Connection).synchronize(true);
+
+    schedulerRegistry.getCronJobs().forEach((_, name) => {
+      schedulerRegistry.deleteCronJob(name);
+    });
   });
 
   afterAll(async () => {
@@ -45,65 +58,102 @@ describe("StandupController", () => {
     });
 
     it("returns a standup list when previous notifications exist", async () => {
-      expect(true).toBeTruthy();
+      await standupNotificationsRepository.save({
+        interval: "* * * * *",
+        channelId: "channel",
+      });
+      schedulerRegistry.addCronJob(
+        "channel",
+        new CronJob("* * * * *", () => {
+          return;
+        })
+      );
+
+      return request(app.getHttpServer())
+        .get("/notifications")
+        .expect(200)
+        .expect([{ name: "channel", interval: "* * * * *" }]);
     });
   });
 
-  // describe("POST /notifications/:channelId", () => {
-  //   it("creates new standup object", () => {
-  //     return request(app.getHttpServer())
-  //       .post("/standups")
-  //       .set("Accept", "application/json")
-  //       .send({
-  //         name: "test-standup",
-  //         channelId: "channel",
-  //         questions: ["questions"],
-  //         days: ["monday"],
-  //       })
-  //       .expect(201)
-  //       .expect({
-  //         name: "test-standup",
-  //         channelId: "channel",
-  //         questions: ["questions"],
-  //         days: ["monday"],
-  //       });
-  //   });
-  // });
+  describe("POST /notifications/:channelId", () => {
+    it("creates new standup notification", async () => {
+      await standupRepository.save({
+        name: "standup",
+        startTime: "9:00",
+        channelId: "channel",
+        questions: ["questions"],
+        days: [],
+      });
 
-  // describe("POST /notifications/:channelId/:userId", () => {
-  //   it("updates a standup", async () => {
-  //     await standupRepository.save({
-  //       name: "unique-standup-by-channel",
-  //       channelId: "channelId",
-  //       questions: ["questions"],
-  //       days: [],
-  //     });
+      return request(app.getHttpServer())
+        .post("/notifications/channel")
+        .set("Accept", "application/json")
+        .send({ interval: "* * * * *" })
+        .expect(201)
+        .expect({ interval: "* * * * *", channelId: "channel" });
+    });
+  });
 
-  //     return request(app.getHttpServer())
-  //       .patch("/standups/channelId")
-  //       .send({ name: "new-name" })
-  //       .expect(200)
-  //       .expect({ name: "new-name", channelId: "channelId", days: [] });
-  //   });
-  // });
+  describe("DELETE /notifications/crons/:channelId", () => {
+    it("deletes a standup notification", async () => {
+      await standupNotificationsRepository.save({
+        interval: "* * * * *",
+        channelId: "channel",
+      });
+      schedulerRegistry.addCronJob(
+        "channel",
+        new CronJob("* * * * *", () => {
+          return;
+        })
+      );
 
-  // describe("DELETE /crons/:channelId", () => {
-  //   it("deletes a standup", async () => {
-  //     await standupRepository.save({
-  //       name: "to-be-deleted",
-  //       channelId: "channelId",
-  //       questions: ["questions"],
-  //       days: [],
-  //     });
+      return request(app.getHttpServer())
+        .delete("/notifications/crons/channel")
+        .expect(200);
+    });
+  });
 
-  //     return request(app.getHttpServer())
-  //       .delete("/standups/channelId")
-  //       .expect(200);
-  //   });
-  // });
+  describe("POST /notifications/:channelId/:userId", () => {
+    it("creates new standup notification for a given user", async () => {
+      await standupRepository.save({
+        name: "standup",
+        startTime: "9:00",
+        channelId: "channel",
+        questions: ["questions"],
+        days: [],
+      });
 
-  // describe("DELETE /crons/:channelId/:userId", () => {});
+      return request(app.getHttpServer())
+        .post("/notifications/channel/user")
+        .set("Accept", "application/json")
+        .send({ interval: "* * * * *" })
+        .expect(201)
+        .expect({
+          interval: "* * * * *",
+          channelId: "channel",
+          userId: "user",
+        });
+    });
+  });
 
-  // describe("POST /standups/:channelId/checkins/trigger", () => {});
-  // describe("POST /standups/:channelId/checkins/:userId/trigger", () => {});
+  describe("DELETE /notifications/crons/:channelId/:userId", () => {
+    it("deletes a standup notification for a given user", async () => {
+      await userNotificationsRepository.save({
+        interval: "* * * * *",
+        channelId: "channel",
+        userId: "user",
+      });
+      schedulerRegistry.addCronJob(
+        "channel-user",
+        new CronJob("* * * * *", () => {
+          return;
+        })
+      );
+
+      return request(app.getHttpServer())
+        .delete("/notifications/crons/channel/user")
+        .expect(200);
+    });
+  });
 });

@@ -309,10 +309,10 @@ export class StandupsService {
     await this.timezoneOverridesRepository.save(timezoneOverride);
 
     // Update notification interval
-    this.createOrUpdateUserStandupNotificationInterval(
-      standup.channelId,
-      userId
-    );
+    // this.createOrUpdateUserStandupNotificationInterval(
+    //   standup.channelId,
+    //   userId
+    // );
 
     return timezoneOverride;
   }

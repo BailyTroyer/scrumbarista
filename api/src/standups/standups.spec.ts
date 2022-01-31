@@ -5,10 +5,12 @@ import { Connection, getRepository, Repository } from "typeorm";
 
 import { AppModule } from "../app.module";
 import { Standup } from "./entities/standup.entity";
+import { TimezoneOverride } from "./entities/tzoverride.entity";
 
 describe("StandupController", () => {
   let app: INestApplication;
   let standupRepository: Repository<Standup>;
+  let tzOverrideRepository: Repository<TimezoneOverride>;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -33,6 +35,7 @@ describe("StandupController", () => {
     await app.init();
 
     standupRepository = getRepository(Standup);
+    tzOverrideRepository = getRepository(TimezoneOverride);
   });
 
   beforeEach(async () => {
@@ -216,6 +219,53 @@ describe("StandupController", () => {
     });
   });
 
-  // describe("PATCH /standups/:channelId/timezone-overrides/:userId", () => {})
-  // describe("DELETE /standups/:channelId/timezone-overrides/:userId", () => {})
+  describe("PATCH /standups/:channelId/timezone-overrides/:userId", () => {
+    it("updates a standup timezone override for a user", async () => {
+      const standup = await standupRepository.save({
+        name: "test-standup",
+        startTime: "9:00",
+        channelId: "channel",
+        questions: ["questions"],
+        days: [],
+      });
+
+      await tzOverrideRepository.save({
+        userId: "user",
+        standup,
+        timezone: "EST",
+      });
+
+      return request(app.getHttpServer())
+        .patch("/standups/channel/timezone-overrides/user")
+        .set("Accept", "application/json")
+        .send({
+          timezone: "GMT",
+        })
+        .expect(200)
+        .expect({ userId: "user", timezone: "GMT" });
+    });
+  });
+
+  describe("DELETE /standups/:channelId/timezone-overrides/:userId", () => {
+    it("deletes a standup timezone override for a user", async () => {
+      const standup = await standupRepository.save({
+        name: "test-standup",
+        startTime: "9:00",
+        channelId: "channel",
+        questions: ["questions"],
+        days: [],
+      });
+
+      await tzOverrideRepository.save({
+        userId: "user",
+        standup,
+        timezone: "EST",
+      });
+
+      return request(app.getHttpServer())
+        .delete("/standups/channel/timezone-overrides/user")
+        .set("Accept", "application/json")
+        .expect(200);
+    });
+  });
 });
