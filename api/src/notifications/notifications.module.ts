@@ -4,7 +4,6 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { SlackModule } from "src/slack/slack.module";
 import { Standup } from "src/standups/entities/standup.entity";
 
-import { BoltModule } from "../core/modules/bolt.module";
 import { CheckinNotifierModule } from "../core/modules/checkin-notifier.module";
 import {
   StandupNotification,

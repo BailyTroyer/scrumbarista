@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { WebClient } from "@slack/web-api";
+import { ChatPostMessageResponse, WebClient } from "@slack/web-api";
 
 import { ChannelDto } from "./dto/channel.dto";
 
@@ -50,5 +50,12 @@ export class SlackService {
         };
       })
     ).catch(() => []);
+  }
+
+  async postMessage(
+    channel: string,
+    text: string
+  ): Promise<ChatPostMessageResponse | null> {
+    return this.bolt.chat.postMessage({ channel, text }).catch(() => null);
   }
 }

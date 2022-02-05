@@ -42,6 +42,8 @@ export class TimeUtilsService {
    */
   dateTimezoneOffset = (offset: number): Date => {
     const date = new Date();
+    console.log("CURRENT DATE HERE: ", date);
+    console.log("OFFSET TO APPLY: ", offset);
     const utc = date.getTime() + date.getTimezoneOffset() * 60000;
     return new Date(utc + 3600000 * offset);
   };

@@ -44,7 +44,9 @@ export class TimezoneOverride {
   @Column({ primary: true })
   userId: string;
 
-  @ManyToOne(() => Standup, (standup) => standup.days, { onDelete: "CASCADE" })
+  @ManyToOne(() => Standup, (standup) => standup.timezoneOverrides, {
+    onDelete: "CASCADE",
+  })
   standup: Standup;
 
   @Column({

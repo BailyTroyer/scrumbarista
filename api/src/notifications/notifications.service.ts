@@ -39,11 +39,19 @@ export class NotificationsService implements OnApplicationBootstrap {
 
   // @todo Break this out into module between standups.service and this
   async getStandup(channelId: string): Promise<StandupAndUsers | null> {
-    const standup = await this.standupsRepository.findOneOrFail({ channelId });
+    const users = await this.slackService.listUsers(channelId);
+    const channelName = await this.slackService.channelName(channelId);
 
-    const users = await this.slackService.listUsers(standup.channelId);
-    const channelName = await this.slackService.channelName(standup.channelId);
+    console.log("USERS: ", users);
 
+    const standup =
+      (await this.standupsRepository.findOne({ channelId })) || null;
+
+    console.log("STANDUP: ", standup);
+
+    if (!standup) return null;
+
+    // return null;
     return { ...standup, users, channelName };
   }
 
@@ -211,6 +219,7 @@ export class NotificationsService implements OnApplicationBootstrap {
   }
 
   async pingUsersForCheckin(channelId: string) {
+    console.log("PING USERS FOR CHECKIN: ", channelId);
     const standup = await this.getStandup(channelId);
     return this.checkinNotifier.pingUsersForCheckin(standup);
   }
