@@ -1,11 +1,11 @@
-import { Inject, Injectable, OnApplicationBootstrap } from "@nestjs/common";
+import { Injectable, OnApplicationBootstrap } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import { WebClient } from "@slack/web-api";
 import { CronJob, CronTime } from "cron";
 import { Repository } from "typeorm";
 
 import { CheckinNotifierService } from "src/core/modules/checkin-notifier.module";
+import { SlackService } from "src/slack/slack.service";
 import { Standup } from "src/standups/entities/standup.entity";
 
 import { NotificationDto } from "./dto/notification.dto";
@@ -34,40 +34,15 @@ export class NotificationsService implements OnApplicationBootstrap {
     private checkinNotifier: CheckinNotifierService,
     @InjectRepository(Standup)
     private standupsRepository: Repository<Standup>,
-    @Inject("BOLT") private bolt: WebClient
+    private slackService: SlackService
   ) {}
 
-  // Break this out into module between standups.service and this
+  // @todo Break this out into module between standups.service and this
   async getStandup(channelId: string): Promise<StandupAndUsers | null> {
     const standup = await this.standupsRepository.findOneOrFail({ channelId });
 
-    const users = await Promise.all(
-      await (
-        await this.bolt.conversations
-          .members({
-            channel: standup.channelId,
-          })
-          .catch(() => null)
-      )?.members.map(async (user: string) => {
-        const profile = await (
-          await this.bolt.users.info({ user }).catch(() => null)
-        )?.user.profile;
-        return {
-          name: profile.real_name || "",
-          id: user,
-          image: profile.image_192 || "",
-        };
-      })
-    ).catch(() => []);
-
-    const channelName =
-      (
-        await this.bolt.conversations
-          .info({
-            channel: standup.channelId,
-          })
-          .catch(() => null)
-      )?.channel.name || "";
+    const users = await this.slackService.listUsers(standup.channelId);
+    const channelName = await this.slackService.channelName(standup.channelId);
 
     return { ...standup, users, channelName };
   }
@@ -106,33 +81,8 @@ export class NotificationsService implements OnApplicationBootstrap {
       channelId: standup.channelId,
     });
 
-    const users = await Promise.all(
-      await (
-        await this.bolt.conversations
-          .members({
-            channel: standup.channelId,
-          })
-          .catch(() => null)
-      )?.members.map(async (user: string) => {
-        const profile = await (
-          await this.bolt.users.info({ user }).catch(() => null)
-        )?.user.profile;
-        return {
-          name: profile.real_name || "",
-          id: user,
-          image: profile.image_192 || "",
-        };
-      })
-    ).catch(() => []);
-
-    const channelName =
-      (
-        await this.bolt.conversations
-          .info({
-            channel: standup.channelId,
-          })
-          .catch(() => null)
-      )?.channel.name || "";
+    const users = await this.slackService.listUsers(standup.channelId);
+    const channelName = await this.slackService.channelName(standup.channelId);
 
     const standupAndUsers = { ...standup, users, channelName };
 
@@ -158,33 +108,8 @@ export class NotificationsService implements OnApplicationBootstrap {
       userId,
     });
 
-    const users = await Promise.all(
-      await (
-        await this.bolt.conversations
-          .members({
-            channel: standup.channelId,
-          })
-          .catch(() => null)
-      )?.members.map(async (user: string) => {
-        const profile = await (
-          await this.bolt.users.info({ user }).catch(() => null)
-        )?.user.profile;
-        return {
-          name: profile.real_name || "",
-          id: user,
-          image: profile.image_192 || "",
-        };
-      })
-    ).catch(() => []);
-
-    const channelName =
-      (
-        await this.bolt.conversations
-          .info({
-            channel: standup.channelId,
-          })
-          .catch(() => null)
-      )?.channel.name || "";
+    const users = await this.slackService.listUsers(standup.channelId);
+    const channelName = await this.slackService.channelName(standup.channelId);
 
     const standupAndUsers = { ...standup, users, channelName };
 

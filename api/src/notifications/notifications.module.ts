@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+import { SlackModule } from "src/slack/slack.module";
 import { Standup } from "src/standups/entities/standup.entity";
 
 import { BoltModule } from "../core/modules/bolt.module";
@@ -14,7 +15,7 @@ import { NotificationsService } from "./notifications.service";
 
 @Module({
   imports: [
-    BoltModule,
+    SlackModule,
     TypeOrmModule.forFeature([
       StandupNotification,
       UserStandupNotification,

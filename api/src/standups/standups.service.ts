@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 
 import { TimeUtilsService } from "src/core/utils/time";
 import { NotificationsService } from "src/notifications/notifications.service";
+import { SlackService } from "src/slack/slack.service";
 
 import { CreateStandupDto } from "./dto/create-standup.dto";
 import { UpdateStandupDto } from "./dto/update-standup.dto";
@@ -21,7 +22,7 @@ export class StandupsService {
     private daysRepository: Repository<Day>,
     @InjectRepository(TimezoneOverride)
     private timezoneOverridesRepository: Repository<TimezoneOverride>,
-    @Inject("BOLT") private bolt: WebClient,
+    private slackService: SlackService,
     private readonly timeUtils: TimeUtilsService,
     private notificationsService: NotificationsService
   ) {}
@@ -168,32 +169,10 @@ export class StandupsService {
 
     return Promise.all(
       standups.map(async (standup) => {
-        const users = await Promise.all(
-          await (
-            await this.bolt.conversations
-              .members({
-                channel: standup.channelId,
-              })
-              .catch(() => null)
-          )?.members.map(async (user: string) => {
-            const profile = await (
-              await this.bolt.users.info({ user })
-            ).user.profile;
-            return {
-              name: profile.real_name || "",
-              id: user,
-              image: profile.image_192 || "",
-            };
-          })
-        ).catch(() => []);
-        const channelName =
-          (
-            await this.bolt.conversations
-              .info({
-                channel: standup.channelId,
-              })
-              .catch(() => null)
-          )?.channel.name || "";
+        const users = await this.slackService.listUsers(standup.channelId);
+        const channelName = await this.slackService.channelName(
+          standup.channelId
+        );
 
         return { ...standup, users, channelName };
       })
@@ -209,33 +188,8 @@ export class StandupsService {
   > {
     const standup = await this.standupsRepository.findOneOrFail({ channelId });
 
-    const users = await Promise.all(
-      await (
-        await this.bolt.conversations
-          .members({
-            channel: standup.channelId,
-          })
-          .catch(() => null)
-      )?.members.map(async (user: string) => {
-        const profile = await (
-          await this.bolt.users.info({ user }).catch(() => null)
-        )?.user.profile;
-        return {
-          name: profile.real_name || "",
-          id: user,
-          image: profile.image_192 || "",
-        };
-      })
-    ).catch(() => []);
-
-    const channelName =
-      (
-        await this.bolt.conversations
-          .info({
-            channel: standup.channelId,
-          })
-          .catch(() => null)
-      )?.channel.name || "";
+    const users = await this.slackService.listUsers(standup.channelId);
+    const channelName = await this.slackService.channelName(standup.channelId);
 
     return { ...standup, users, channelName };
   }
