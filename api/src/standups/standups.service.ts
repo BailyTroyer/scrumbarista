@@ -59,7 +59,7 @@ export class StandupsService {
 
     if (!standupCron) {
       this.notificationsService.addCronJob(
-        standup.channelId,
+        standup,
         `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`
       );
     } else {
@@ -74,7 +74,7 @@ export class StandupsService {
     channelId: string,
     userId: string
   ) {
-    const standup = await this.findOne(channelId);
+    const standup = await this.standupsRepository.findOneOrFail({ channelId });
 
     const override = standup.timezoneOverrides.find((o) => o.userId === userId);
 
@@ -111,13 +111,13 @@ export class StandupsService {
 
     if (!userStandupCron) {
       this.notificationsService.addUserCronJob(
-        channelId,
+        standup,
         `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`,
         userId
       );
     } else {
       this.notificationsService.updateUserCron(
-        channelId,
+        standup,
         `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`,
         userId
       );
@@ -136,7 +136,7 @@ export class StandupsService {
     const responseStandup = await this.standupsRepository.save(standup);
 
     // Create notification
-    // this.createOrUpdateStandupNotificationInterval(responseStandup);
+    this.createOrUpdateStandupNotificationInterval(responseStandup);
 
     return responseStandup;
   }
@@ -262,7 +262,7 @@ export class StandupsService {
     const updatedStandup = await this.standupsRepository.save(standup);
 
     // update notification schedule (if changed)
-    // this.createOrUpdateStandupNotificationInterval(standup);
+    this.createOrUpdateStandupNotificationInterval(standup);
 
     return updatedStandup;
   }
@@ -276,7 +276,7 @@ export class StandupsService {
     userId: string,
     timezone: timezone
   ) {
-    const standup = await this.findOne(channelId);
+    const standup = await this.standupsRepository.findOneOrFail({ channelId });
 
     const timezoneOverride = await this.timezoneOverridesRepository.save({
       timezone,
@@ -285,10 +285,10 @@ export class StandupsService {
     });
 
     // Update notification interval
-    // this.createOrUpdateUserStandupNotificationInterval(
-    //   standup.channelId,
-    //   userId
-    // );
+    this.createOrUpdateUserStandupNotificationInterval(
+      standup.channelId,
+      userId
+    );
 
     return timezoneOverride;
   }
@@ -298,7 +298,7 @@ export class StandupsService {
     userId: string,
     timezone: timezone
   ) {
-    const standup = await this.findOne(channelId);
+    const standup = await this.standupsRepository.findOneOrFail({ channelId });
     const timezoneOverride = await this.timezoneOverridesRepository.findOne({
       standup,
       userId,
@@ -309,16 +309,16 @@ export class StandupsService {
     await this.timezoneOverridesRepository.save(timezoneOverride);
 
     // Update notification interval
-    // this.createOrUpdateUserStandupNotificationInterval(
-    //   standup.channelId,
-    //   userId
-    // );
+    this.createOrUpdateUserStandupNotificationInterval(
+      standup.channelId,
+      userId
+    );
 
     return timezoneOverride;
   }
 
   async deleteTimezoneOverride(channelId: string, userId: string) {
-    const standup = await this.findOne(channelId);
+    const standup = await this.standupsRepository.findOneOrFail({ channelId });
     await this.timezoneOverridesRepository.delete({ standup, userId });
   }
 }

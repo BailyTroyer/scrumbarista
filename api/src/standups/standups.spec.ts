@@ -57,13 +57,19 @@ describe("StandupController", () => {
         .expect([]);
     });
 
-    it("returns a standup list when previous standups exist", async () => {
-      await standupRepository.save({
+    it("returns a standup list when previous standups exist with tz override", async () => {
+      const standup = await standupRepository.save({
         name: "test-standup",
         startTime: "9:00",
         channelId: "channel",
         questions: ["questions"],
         days: [],
+      });
+
+      await tzOverrideRepository.save({
+        userId: "user",
+        standup,
+        timezone: "EST",
       });
 
       return request(app.getHttpServer())
@@ -75,7 +81,7 @@ describe("StandupController", () => {
             channelId: "channel",
             questions: ["questions"],
             days: [],
-            timezoneOverrides: [],
+            timezoneOverrides: [{ timezone: "EST", userId: "user" }],
             timezone: "CST",
             startTime: "09:00:00",
             users: [],

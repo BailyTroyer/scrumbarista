@@ -74,70 +74,127 @@ export class NotificationsService implements OnApplicationBootstrap {
 
   // load the standup notifications + any user overrides
   async onApplicationBootstrap() {
-    // const standupNotifications =
-    //   await this.standupNotificationsRepository.find();
-    // for (const notification of standupNotifications) {
-    //   const { channelId, interval } = notification;
-    //   const standup = await this.getStandup(channelId);
-    //   const cron = new CronJob(interval, () =>
-    //     this.checkinNotifier.pingUsersForCheckin(standup)
-    //   );
-    //   this.schedulerRegistry.addCronJob(channelId, cron);
-    //   cron.start();
-    // }
-    // const userNotifications = await this.userNotificationsRepository.find();
-    // for (const notification of userNotifications) {
-    //   const { channelId, interval, userId } = notification;
-    //   const standup = await this.getStandup(channelId);
-    //   const cron = new CronJob(interval, () =>
-    //     this.checkinNotifier.pingUsersForCheckin(standup)
-    //   );
-    //   this.schedulerRegistry.addCronJob(`${channelId}-${userId}`, cron);
-    //   cron.start();
-    // }
+    const standupNotifications =
+      await this.standupNotificationsRepository.find();
+    for (const notification of standupNotifications) {
+      const { channelId, interval } = notification;
+      const standup = await this.getStandup(channelId);
+      const cron = new CronJob(interval, () =>
+        this.checkinNotifier.pingUsersForCheckin(standup)
+      );
+      this.schedulerRegistry.addCronJob(channelId, cron);
+      cron.start();
+    }
+    const userNotifications = await this.userNotificationsRepository.find();
+    for (const notification of userNotifications) {
+      const { channelId, interval, userId } = notification;
+      const standup = await this.getStandup(channelId);
+      const cron = new CronJob(interval, () =>
+        this.checkinNotifier.pingUsersForCheckin(standup)
+      );
+      this.schedulerRegistry.addCronJob(`${channelId}-${userId}`, cron);
+      cron.start();
+    }
   }
 
   async addCronJob(
-    channelId: string,
+    standup: Standup,
     interval: string
   ): Promise<StandupNotification> {
     const notification = await this.standupNotificationsRepository.save({
       interval,
-      channelId,
+      channelId: standup.channelId,
     });
 
-    const standup = await this.getStandup(channelId);
+    const users = await Promise.all(
+      await (
+        await this.bolt.conversations
+          .members({
+            channel: standup.channelId,
+          })
+          .catch(() => null)
+      )?.members.map(async (user: string) => {
+        const profile = await (
+          await this.bolt.users.info({ user }).catch(() => null)
+        )?.user.profile;
+        return {
+          name: profile.real_name || "",
+          id: user,
+          image: profile.image_192 || "",
+        };
+      })
+    ).catch(() => []);
+
+    const channelName =
+      (
+        await this.bolt.conversations
+          .info({
+            channel: standup.channelId,
+          })
+          .catch(() => null)
+      )?.channel.name || "";
+
+    const standupAndUsers = { ...standup, users, channelName };
 
     const job = new CronJob(notification.interval, () =>
-      this.checkinNotifier.pingUsersForCheckin(standup)
+      this.checkinNotifier.pingUsersForCheckin(standupAndUsers)
     );
 
     // if userId exists append to cronjob name
-    this.schedulerRegistry.addCronJob(channelId, job);
+    this.schedulerRegistry.addCronJob(standupAndUsers.channelId, job);
     job.start();
 
     return notification;
   }
 
   async addUserCronJob(
-    channelId: string,
+    standup: Standup,
     interval: string,
     userId: string
   ): Promise<UserStandupNotification> {
     const notification = await this.userNotificationsRepository.save({
       interval,
-      channelId,
+      channelId: standup.channelId,
       userId,
     });
 
-    const standup = await this.getStandup(channelId);
+    const users = await Promise.all(
+      await (
+        await this.bolt.conversations
+          .members({
+            channel: standup.channelId,
+          })
+          .catch(() => null)
+      )?.members.map(async (user: string) => {
+        const profile = await (
+          await this.bolt.users.info({ user }).catch(() => null)
+        )?.user.profile;
+        return {
+          name: profile.real_name || "",
+          id: user,
+          image: profile.image_192 || "",
+        };
+      })
+    ).catch(() => []);
+
+    const channelName =
+      (
+        await this.bolt.conversations
+          .info({
+            channel: standup.channelId,
+          })
+          .catch(() => null)
+      )?.channel.name || "";
+
+    const standupAndUsers = { ...standup, users, channelName };
 
     const job = new CronJob(notification.interval, () =>
-      this.checkinNotifier.pingUserForCheckin(standup, userId)
+      this.checkinNotifier.pingUserForCheckin(standupAndUsers, userId)
     );
 
     // if userId exists append to cronjob name
-    this.schedulerRegistry.addCronJob(`${channelId}-${userId}`, job);
+    // BAILY FIGURE THIS OUT
+    // this.schedulerRegistry.addCronJob(`${standup.channelId}-${userId}`, job);
     job.start();
 
     return notification;
@@ -164,13 +221,13 @@ export class NotificationsService implements OnApplicationBootstrap {
   }
 
   async updateUserCron(
-    channelId: string,
+    standup: Standup,
     interval: string,
     userId: string
   ): Promise<UserStandupNotification> {
     // Find & Update interval resource
     const notification = await this.userNotificationsRepository.findOne({
-      channelId,
+      channelId: standup.channelId,
       userId,
     });
 
@@ -179,7 +236,7 @@ export class NotificationsService implements OnApplicationBootstrap {
 
     // Update cronjob interval
     const jobs = this.schedulerRegistry.getCronJobs();
-    const job = jobs.get(`${channelId}-${userId}`);
+    const job = jobs.get(`${standup.channelId}-${userId}`);
     job.setTime(new CronTime(interval));
 
     return notification;

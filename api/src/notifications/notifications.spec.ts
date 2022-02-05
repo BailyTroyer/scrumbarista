@@ -17,7 +17,7 @@ import {
 import { NotificationsController } from "./notifications.controller";
 import { NotificationsService } from "./notifications.service";
 
-describe("StandupController", () => {
+describe("NotificationsController", () => {
   let app: INestApplication;
   let userNotificationsRepository: Repository<UserStandupNotification>;
   let standupRepository: Repository<Standup>;
@@ -81,87 +81,6 @@ describe("StandupController", () => {
         .get("/notifications")
         .expect(200)
         .expect([{ name: "channel", interval: "* * * * *" }]);
-    });
-  });
-
-  describe("POST /notifications/:channelId", () => {
-    it("creates new standup notification", async () => {
-      await standupRepository.save({
-        name: "standup",
-        startTime: "9:00",
-        channelId: "channel",
-        questions: ["questions"],
-        days: [],
-      });
-
-      return request(app.getHttpServer())
-        .post("/notifications/channel")
-        .set("Accept", "application/json")
-        .send({ interval: "* * * * *" })
-        .expect(201)
-        .expect({ interval: "* * * * *", channelId: "channel" });
-    });
-  });
-
-  describe("DELETE /notifications/crons/:channelId", () => {
-    it("deletes a standup notification", async () => {
-      await standupNotificationsRepository.save({
-        interval: "* * * * *",
-        channelId: "channel",
-      });
-      schedulerRegistry.addCronJob(
-        "channel",
-        new CronJob("* * * * *", () => {
-          return;
-        })
-      );
-
-      return request(app.getHttpServer())
-        .delete("/notifications/crons/channel")
-        .expect(200);
-    });
-  });
-
-  describe("POST /notifications/:channelId/:userId", () => {
-    it("creates new standup notification for a given user", async () => {
-      await standupRepository.save({
-        name: "standup",
-        startTime: "9:00",
-        channelId: "channel",
-        questions: ["questions"],
-        days: [],
-      });
-
-      return request(app.getHttpServer())
-        .post("/notifications/channel/user")
-        .set("Accept", "application/json")
-        .send({ interval: "* * * * *" })
-        .expect(201)
-        .expect({
-          interval: "* * * * *",
-          channelId: "channel",
-          userId: "user",
-        });
-    });
-  });
-
-  describe("DELETE /notifications/crons/:channelId/:userId", () => {
-    it("deletes a standup notification for a given user", async () => {
-      await userNotificationsRepository.save({
-        interval: "* * * * *",
-        channelId: "channel",
-        userId: "user",
-      });
-      schedulerRegistry.addCronJob(
-        "channel-user",
-        new CronJob("* * * * *", () => {
-          return;
-        })
-      );
-
-      return request(app.getHttpServer())
-        .delete("/notifications/crons/channel/user")
-        .expect(200);
     });
   });
 

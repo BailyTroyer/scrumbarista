@@ -99,7 +99,7 @@ export class StandupsController {
     @Param("channelId") channelId: string,
     @Param("userId") userId: string,
     @Body() { timezone }: CreateTimezoneOverrideDto
-  ) {
+  ): Promise<TimezoneOverrideDto> {
     return plainToClass(
       TimezoneOverrideDto,
       this.standupsService.updateTimezoneOverride(channelId, userId, timezone)
