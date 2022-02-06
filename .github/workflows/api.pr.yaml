@@ -6,7 +6,7 @@ on:
     #   - "api/**"
 
 jobs:
-  build:
+  api_lint_and_test:
     runs-on: ubuntu-latest
     defaults:
       run:

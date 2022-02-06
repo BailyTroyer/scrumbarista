@@ -56,6 +56,20 @@ Array [
         "blocks": Array [
           Object {
             "text": Object {
+              "text": "*Scrumbarista*
+invoked with \\"/scrumbarista\\"
+\\"randomPerson\\" and \\"randomOrder\\" arguments for picking random groups",
+              "type": "mrkdwn",
+            },
+            "type": "section",
+          },
+        ],
+        "color": "#2E68EC",
+      },
+      Object {
+        "blocks": Array [
+          Object {
+            "text": Object {
               "text": "*Manage*
 invoked with \\"/standup\\"
 Opens a dialog to manage a stand up",
@@ -115,7 +129,7 @@ Array [
           "block_id": "time",
           "element": Object {
             "action_id": "time",
-            "initial_time": "16:20",
+            "initial_time": "09:00",
             "placeholder": Object {
               "emoji": true,
               "text": "Select time",
@@ -129,6 +143,248 @@ Array [
             "type": "plain_text",
           },
           "type": "input",
+        },
+        Object {
+          "accessory": Object {
+            "action_id": "tz",
+            "options": Array [
+              Object {
+                "text": Object {
+                  "text": "GMT",
+                  "type": "plain_text",
+                },
+                "value": "GMT",
+              },
+              Object {
+                "text": Object {
+                  "text": "UTC",
+                  "type": "plain_text",
+                },
+                "value": "UTC",
+              },
+              Object {
+                "text": Object {
+                  "text": "ECT",
+                  "type": "plain_text",
+                },
+                "value": "ECT",
+              },
+              Object {
+                "text": Object {
+                  "text": "EET",
+                  "type": "plain_text",
+                },
+                "value": "EET",
+              },
+              Object {
+                "text": Object {
+                  "text": "ART",
+                  "type": "plain_text",
+                },
+                "value": "ART",
+              },
+              Object {
+                "text": Object {
+                  "text": "EAT",
+                  "type": "plain_text",
+                },
+                "value": "EAT",
+              },
+              Object {
+                "text": Object {
+                  "text": "MET",
+                  "type": "plain_text",
+                },
+                "value": "MET",
+              },
+              Object {
+                "text": Object {
+                  "text": "NET",
+                  "type": "plain_text",
+                },
+                "value": "NET",
+              },
+              Object {
+                "text": Object {
+                  "text": "PLT",
+                  "type": "plain_text",
+                },
+                "value": "PLT",
+              },
+              Object {
+                "text": Object {
+                  "text": "IST",
+                  "type": "plain_text",
+                },
+                "value": "IST",
+              },
+              Object {
+                "text": Object {
+                  "text": "BST",
+                  "type": "plain_text",
+                },
+                "value": "BST",
+              },
+              Object {
+                "text": Object {
+                  "text": "VST",
+                  "type": "plain_text",
+                },
+                "value": "VST",
+              },
+              Object {
+                "text": Object {
+                  "text": "CTT",
+                  "type": "plain_text",
+                },
+                "value": "CTT",
+              },
+              Object {
+                "text": Object {
+                  "text": "JST",
+                  "type": "plain_text",
+                },
+                "value": "JST",
+              },
+              Object {
+                "text": Object {
+                  "text": "ACT",
+                  "type": "plain_text",
+                },
+                "value": "ACT",
+              },
+              Object {
+                "text": Object {
+                  "text": "AET",
+                  "type": "plain_text",
+                },
+                "value": "AET",
+              },
+              Object {
+                "text": Object {
+                  "text": "SST",
+                  "type": "plain_text",
+                },
+                "value": "SST",
+              },
+              Object {
+                "text": Object {
+                  "text": "NST",
+                  "type": "plain_text",
+                },
+                "value": "NST",
+              },
+              Object {
+                "text": Object {
+                  "text": "MIT",
+                  "type": "plain_text",
+                },
+                "value": "MIT",
+              },
+              Object {
+                "text": Object {
+                  "text": "HST",
+                  "type": "plain_text",
+                },
+                "value": "HST",
+              },
+              Object {
+                "text": Object {
+                  "text": "AST",
+                  "type": "plain_text",
+                },
+                "value": "AST",
+              },
+              Object {
+                "text": Object {
+                  "text": "PST",
+                  "type": "plain_text",
+                },
+                "value": "PST",
+              },
+              Object {
+                "text": Object {
+                  "text": "PNT",
+                  "type": "plain_text",
+                },
+                "value": "PNT",
+              },
+              Object {
+                "text": Object {
+                  "text": "MST",
+                  "type": "plain_text",
+                },
+                "value": "MST",
+              },
+              Object {
+                "text": Object {
+                  "text": "CST",
+                  "type": "plain_text",
+                },
+                "value": "CST",
+              },
+              Object {
+                "text": Object {
+                  "text": "EST",
+                  "type": "plain_text",
+                },
+                "value": "EST",
+              },
+              Object {
+                "text": Object {
+                  "text": "IET",
+                  "type": "plain_text",
+                },
+                "value": "IET",
+              },
+              Object {
+                "text": Object {
+                  "text": "PRT",
+                  "type": "plain_text",
+                },
+                "value": "PRT",
+              },
+              Object {
+                "text": Object {
+                  "text": "CNT",
+                  "type": "plain_text",
+                },
+                "value": "CNT",
+              },
+              Object {
+                "text": Object {
+                  "text": "AGT",
+                  "type": "plain_text",
+                },
+                "value": "AGT",
+              },
+              Object {
+                "text": Object {
+                  "text": "BET",
+                  "type": "plain_text",
+                },
+                "value": "BET",
+              },
+              Object {
+                "text": Object {
+                  "text": "CAT",
+                  "type": "plain_text",
+                },
+                "value": "CAT",
+              },
+            ],
+            "placeholder": Object {
+              "text": "Select tz",
+              "type": "plain_text",
+            },
+            "type": "static_select",
+          },
+          "block_id": "tz",
+          "text": Object {
+            "text": "Pick a Timezone",
+            "type": "mrkdwn",
+          },
+          "type": "section",
         },
         Object {
           "accessory": Object {
@@ -224,7 +480,7 @@ Array [
         Object {
           "elements": Array [
             Object {
-              "text": "Enter the stand-up questions, separated by linebreak",
+              "text": "Enter questions separated by linebreak; You can use {last_checkin} for the last checkin date.",
               "type": "plain_text",
             },
           ],
@@ -275,7 +531,7 @@ Array [
           "block_id": "time",
           "element": Object {
             "action_id": "time",
-            "initial_time": "16:20",
+            "initial_time": "09:00",
             "placeholder": Object {
               "emoji": true,
               "text": "Select time",
@@ -289,6 +545,248 @@ Array [
             "type": "plain_text",
           },
           "type": "input",
+        },
+        Object {
+          "accessory": Object {
+            "action_id": "tz",
+            "options": Array [
+              Object {
+                "text": Object {
+                  "text": "GMT",
+                  "type": "plain_text",
+                },
+                "value": "GMT",
+              },
+              Object {
+                "text": Object {
+                  "text": "UTC",
+                  "type": "plain_text",
+                },
+                "value": "UTC",
+              },
+              Object {
+                "text": Object {
+                  "text": "ECT",
+                  "type": "plain_text",
+                },
+                "value": "ECT",
+              },
+              Object {
+                "text": Object {
+                  "text": "EET",
+                  "type": "plain_text",
+                },
+                "value": "EET",
+              },
+              Object {
+                "text": Object {
+                  "text": "ART",
+                  "type": "plain_text",
+                },
+                "value": "ART",
+              },
+              Object {
+                "text": Object {
+                  "text": "EAT",
+                  "type": "plain_text",
+                },
+                "value": "EAT",
+              },
+              Object {
+                "text": Object {
+                  "text": "MET",
+                  "type": "plain_text",
+                },
+                "value": "MET",
+              },
+              Object {
+                "text": Object {
+                  "text": "NET",
+                  "type": "plain_text",
+                },
+                "value": "NET",
+              },
+              Object {
+                "text": Object {
+                  "text": "PLT",
+                  "type": "plain_text",
+                },
+                "value": "PLT",
+              },
+              Object {
+                "text": Object {
+                  "text": "IST",
+                  "type": "plain_text",
+                },
+                "value": "IST",
+              },
+              Object {
+                "text": Object {
+                  "text": "BST",
+                  "type": "plain_text",
+                },
+                "value": "BST",
+              },
+              Object {
+                "text": Object {
+                  "text": "VST",
+                  "type": "plain_text",
+                },
+                "value": "VST",
+              },
+              Object {
+                "text": Object {
+                  "text": "CTT",
+                  "type": "plain_text",
+                },
+                "value": "CTT",
+              },
+              Object {
+                "text": Object {
+                  "text": "JST",
+                  "type": "plain_text",
+                },
+                "value": "JST",
+              },
+              Object {
+                "text": Object {
+                  "text": "ACT",
+                  "type": "plain_text",
+                },
+                "value": "ACT",
+              },
+              Object {
+                "text": Object {
+                  "text": "AET",
+                  "type": "plain_text",
+                },
+                "value": "AET",
+              },
+              Object {
+                "text": Object {
+                  "text": "SST",
+                  "type": "plain_text",
+                },
+                "value": "SST",
+              },
+              Object {
+                "text": Object {
+                  "text": "NST",
+                  "type": "plain_text",
+                },
+                "value": "NST",
+              },
+              Object {
+                "text": Object {
+                  "text": "MIT",
+                  "type": "plain_text",
+                },
+                "value": "MIT",
+              },
+              Object {
+                "text": Object {
+                  "text": "HST",
+                  "type": "plain_text",
+                },
+                "value": "HST",
+              },
+              Object {
+                "text": Object {
+                  "text": "AST",
+                  "type": "plain_text",
+                },
+                "value": "AST",
+              },
+              Object {
+                "text": Object {
+                  "text": "PST",
+                  "type": "plain_text",
+                },
+                "value": "PST",
+              },
+              Object {
+                "text": Object {
+                  "text": "PNT",
+                  "type": "plain_text",
+                },
+                "value": "PNT",
+              },
+              Object {
+                "text": Object {
+                  "text": "MST",
+                  "type": "plain_text",
+                },
+                "value": "MST",
+              },
+              Object {
+                "text": Object {
+                  "text": "CST",
+                  "type": "plain_text",
+                },
+                "value": "CST",
+              },
+              Object {
+                "text": Object {
+                  "text": "EST",
+                  "type": "plain_text",
+                },
+                "value": "EST",
+              },
+              Object {
+                "text": Object {
+                  "text": "IET",
+                  "type": "plain_text",
+                },
+                "value": "IET",
+              },
+              Object {
+                "text": Object {
+                  "text": "PRT",
+                  "type": "plain_text",
+                },
+                "value": "PRT",
+              },
+              Object {
+                "text": Object {
+                  "text": "CNT",
+                  "type": "plain_text",
+                },
+                "value": "CNT",
+              },
+              Object {
+                "text": Object {
+                  "text": "AGT",
+                  "type": "plain_text",
+                },
+                "value": "AGT",
+              },
+              Object {
+                "text": Object {
+                  "text": "BET",
+                  "type": "plain_text",
+                },
+                "value": "BET",
+              },
+              Object {
+                "text": Object {
+                  "text": "CAT",
+                  "type": "plain_text",
+                },
+                "value": "CAT",
+              },
+            ],
+            "placeholder": Object {
+              "text": "Select tz",
+              "type": "plain_text",
+            },
+            "type": "static_select",
+          },
+          "block_id": "tz",
+          "text": Object {
+            "text": "Pick a Timezone",
+            "type": "mrkdwn",
+          },
+          "type": "section",
         },
         Object {
           "accessory": Object {
@@ -375,7 +873,7 @@ Array [
         Object {
           "elements": Array [
             Object {
-              "text": "Enter the stand-up questions, separated by linebreak",
+              "text": "Enter questions separated by linebreak; You can use {last_checkin} for the last checkin date.",
               "type": "plain_text",
             },
           ],

@@ -84,6 +84,6 @@
     "coveragePathIgnorePatterns": [
       "src/mocks"
     ],
-    "coverageDirectory": "../coverage"
+    "coverageDirectory": "./coverage"
   }
 }
