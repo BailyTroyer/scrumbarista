@@ -213,6 +213,7 @@ export class StandupsService {
     }
 
     standup.questions = updateStandupDto.questions;
+    standup.startTime = updateStandupDto.startTime;
     standup.name = updateStandupDto.name;
     standup.introMessage = updateStandupDto.introMessage;
     standup.active = updateStandupDto.active;

@@ -50,6 +50,7 @@ services:
     volumes:
       - ./bolt/src:/bolt/src
     environment:
+      - API_URL=http://api:8000
       - SLACK_SIGNING_SECRET=REPLACE_ME
       - SLACK_BOT_TOKEN=REPLACE_ME
       - PORT=8080

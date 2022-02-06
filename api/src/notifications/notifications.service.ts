@@ -58,9 +58,11 @@ export class NotificationsService implements OnApplicationBootstrap {
     for (const notification of standupNotifications) {
       const { channelId, interval } = notification;
       const standup = await this.getStandup(channelId);
-      const cron = new CronJob(interval, () =>
-        this.checkinNotifier.pingUsersForCheckin(standup)
-      );
+      console.log(`restoring cronjob: ${standup.channelId} ${interval}`);
+      const cron = new CronJob(interval, () => {
+        console.log("CRONJOB: ", interval);
+        this.checkinNotifier.pingUsersForCheckin(standup);
+      });
       this.schedulerRegistry.addCronJob(channelId, cron);
       cron.start();
     }
@@ -68,9 +70,13 @@ export class NotificationsService implements OnApplicationBootstrap {
     for (const notification of userNotifications) {
       const { channelId, interval, userId } = notification;
       const standup = await this.getStandup(channelId);
-      const cron = new CronJob(interval, () =>
-        this.checkinNotifier.pingUsersForCheckin(standup)
+      console.log(
+        `restoring cronjob: ${standup.channelId}-${userId} ${interval}`
       );
+      const cron = new CronJob(interval, () => {
+        console.log("CRONJOB: ", interval);
+        this.checkinNotifier.pingUserForCheckin(standup, userId);
+      });
       this.schedulerRegistry.addCronJob(`${channelId}-${userId}`, cron);
       cron.start();
     }
@@ -132,6 +138,7 @@ export class NotificationsService implements OnApplicationBootstrap {
     channelId: string,
     interval: string
   ): Promise<StandupNotification> {
+    console.log("UPDATE CHANNEL CRONJOB: ", channelId);
     // Find & Update interval resource
     const notification = await this.standupNotificationsRepository.findOne({
       channelId,
@@ -147,6 +154,9 @@ export class NotificationsService implements OnApplicationBootstrap {
 
     // @todo what if the user patches a non-existent job? we should handle if job is null and setTime is undefined
     job.setTime(new CronTime(interval));
+    job.start();
+
+    console.log("JOB RUNNING: ", job.running);
 
     return notification;
   }
@@ -156,6 +166,7 @@ export class NotificationsService implements OnApplicationBootstrap {
     interval: string,
     userId: string
   ): Promise<UserStandupNotification> {
+    console.log("UPDATE USER CRONJOB: ", standup.channelId, userId);
     // Find & Update interval resource
     const notification = await this.userNotificationsRepository.findOne({
       channelId: standup.channelId,
@@ -173,6 +184,9 @@ export class NotificationsService implements OnApplicationBootstrap {
     // @todo what if the user patches a non-existent job? we should handle if job is null and setTime is undefined
 
     job.setTime(new CronTime(interval));
+    job.start();
+
+    console.log("JOB RUNNING: ", job.running);
 
     return notification;
   }
