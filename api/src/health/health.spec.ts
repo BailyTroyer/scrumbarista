@@ -1,12 +1,7 @@
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { WebClient } from "@slack/web-api";
 import * as request from "supertest";
-import { Connection } from "typeorm";
 
-import { SlackGuard } from "src/core/guards/slack.guard";
-
-import { AppModule } from "../app.module";
 import { HealthController } from "./health.controller";
 import { HealthService } from "./health.service";
 

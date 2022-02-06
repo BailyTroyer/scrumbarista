@@ -1,9 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { WebClient } from "@slack/web-api";
-import { Repository } from "typeorm";
+import { getConnection, Repository } from "typeorm";
 
 import { TimeUtilsService } from "src/core/utils/time";
+import { UserStandupNotification } from "src/notifications/entities/notification.entity";
 import { NotificationsService } from "src/notifications/notifications.service";
 import { SlackService } from "src/slack/slack.service";
 
@@ -72,12 +73,12 @@ export class StandupsService {
   }
 
   private async createOrUpdateUserStandupNotificationInterval(
-    channelId: string,
+    standup: Standup,
     userId: string
-  ) {
-    const standup = await this.standupsRepository.findOneOrFail({ channelId });
-
+  ): Promise<UserStandupNotification> {
     const override = standup.timezoneOverrides.find((o) => o.userId === userId);
+
+    if (!override) return;
 
     const days = [
       "monday",
@@ -106,18 +107,18 @@ export class StandupsService {
     );
 
     const userStandupCron = await this.notificationsService.getCronForUser(
-      channelId,
+      standup.channelId,
       userId
     );
 
     if (!userStandupCron) {
-      this.notificationsService.addUserCronJob(
+      return this.notificationsService.addUserCronJob(
         standup,
         `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`,
         userId
       );
     } else {
-      this.notificationsService.updateUserCron(
+      return this.notificationsService.updateUserCron(
         standup,
         `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`,
         userId
@@ -239,10 +240,7 @@ export class StandupsService {
     });
 
     // Update notification interval
-    this.createOrUpdateUserStandupNotificationInterval(
-      standup.channelId,
-      userId
-    );
+    await this.createOrUpdateUserStandupNotificationInterval(standup, userId);
 
     return timezoneOverride;
   }
@@ -263,11 +261,10 @@ export class StandupsService {
     await this.timezoneOverridesRepository.save(timezoneOverride);
 
     // Update notification interval
-    this.createOrUpdateUserStandupNotificationInterval(
-      standup.channelId,
-      userId
-    );
+    const notificationInterval =
+      await this.createOrUpdateUserStandupNotificationInterval(standup, userId);
 
+    console.log("RETURNING TZ OVERRIDE: ", notificationInterval);
     return timezoneOverride;
   }
 

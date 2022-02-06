@@ -31,14 +31,6 @@ export class CheckinNotifierService {
   ): Promise<void> {
     const questions = standup.questions.filter((q) => q !== "");
 
-    console.log("UID: ", userId);
-    console.log("TZ STAND: ", standup.timezoneOverrides);
-
-    console.log(
-      "TZ HERE: ",
-      standup.timezoneOverrides.find((override) => override.userId === userId)
-    );
-
     // Get user's timezone
     const timezone = standup.timezoneOverrides.find(
       (override) => override.userId === userId
@@ -54,12 +46,6 @@ export class CheckinNotifierService {
     const standupTimeIsNow =
       this.timeUtils.totalSeconds(standup.startTime) <=
       this.timeUtils.totalSeconds(this.timeUtils.toMilitaryTime(offsetDate));
-
-    console.log(
-      `startTime=${standup.startTime};time=${this.timeUtils.toMilitaryTime(
-        offsetDate
-      )}`
-    );
 
     if (!(standupTimeIsNow && standupIsToday)) return;
 
@@ -87,14 +73,9 @@ export class CheckinNotifierService {
   public async pingUsersForCheckin(standup: StandupAndUsers): Promise<void> {
     // Ping all users that don't have overrides
 
-    console.log("PING USERS FOR CHECKIN: ", standup);
-
     const overrides = standup.timezoneOverrides.map((o) => o.userId);
 
-    console.log("OVERRIDES: ", overrides);
-
     for (const user of standup.users.filter((u) => !overrides.includes(u.id))) {
-      console.log("PING USERL: ", user.id);
       await this.pingUserStandup(standup, user.id);
     }
   }

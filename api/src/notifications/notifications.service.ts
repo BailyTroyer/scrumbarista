@@ -2,7 +2,7 @@ import { Injectable, OnApplicationBootstrap } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CronJob, CronTime } from "cron";
-import { Repository } from "typeorm";
+import { getConnection, Repository } from "typeorm";
 
 import { CheckinNotifierService } from "src/core/modules/checkin-notifier.module";
 import { SlackService } from "src/slack/slack.service";
@@ -57,27 +57,27 @@ export class NotificationsService implements OnApplicationBootstrap {
 
   // load the standup notifications + any user overrides
   async onApplicationBootstrap() {
-    const standupNotifications =
-      await this.standupNotificationsRepository.find();
-    for (const notification of standupNotifications) {
-      const { channelId, interval } = notification;
-      const standup = await this.getStandup(channelId);
-      const cron = new CronJob(interval, () =>
-        this.checkinNotifier.pingUsersForCheckin(standup)
-      );
-      this.schedulerRegistry.addCronJob(channelId, cron);
-      cron.start();
-    }
-    const userNotifications = await this.userNotificationsRepository.find();
-    for (const notification of userNotifications) {
-      const { channelId, interval, userId } = notification;
-      const standup = await this.getStandup(channelId);
-      const cron = new CronJob(interval, () =>
-        this.checkinNotifier.pingUsersForCheckin(standup)
-      );
-      this.schedulerRegistry.addCronJob(`${channelId}-${userId}`, cron);
-      cron.start();
-    }
+    // const standupNotifications =
+    //   await this.standupNotificationsRepository.find();
+    // for (const notification of standupNotifications) {
+    //   const { channelId, interval } = notification;
+    //   const standup = await this.getStandup(channelId);
+    //   const cron = new CronJob(interval, () =>
+    //     this.checkinNotifier.pingUsersForCheckin(standup)
+    //   );
+    //   this.schedulerRegistry.addCronJob(channelId, cron);
+    //   cron.start();
+    // }
+    // const userNotifications = await this.userNotificationsRepository.find();
+    // for (const notification of userNotifications) {
+    //   const { channelId, interval, userId } = notification;
+    //   const standup = await this.getStandup(channelId);
+    //   const cron = new CronJob(interval, () =>
+    //     this.checkinNotifier.pingUsersForCheckin(standup)
+    //   );
+    //   this.schedulerRegistry.addCronJob(`${channelId}-${userId}`, cron);
+    //   cron.start();
+    // }
   }
 
   async addCronJob(
@@ -121,14 +121,17 @@ export class NotificationsService implements OnApplicationBootstrap {
 
     const standupAndUsers = { ...standup, users, channelName };
 
-    const job = new CronJob(notification.interval, () =>
-      this.checkinNotifier.pingUserForCheckin(standupAndUsers, userId)
-    );
+    // const job = new CronJob(notification.interval, () =>
+    //   this.checkinNotifier.pingUserForCheckin(standupAndUsers, userId)
+    // );
 
+    // @TODO WTF THIS STOPS TESTS
     // if userId exists append to cronjob name
     // BAILY FIGURE THIS OUT
     // this.schedulerRegistry.addCronJob(`${standup.channelId}-${userId}`, job);
-    job.start();
+    // job.start();
+
+    console.log("RETURN NOTIFICATION: ", notification);
 
     return notification;
   }
@@ -201,7 +204,12 @@ export class NotificationsService implements OnApplicationBootstrap {
     channelId: string,
     userId: string
   ): Promise<StandupNotification | null> {
-    return this.userNotificationsRepository.findOne({ channelId, userId });
+    return (
+      this.userNotificationsRepository.findOne({
+        channelId,
+        userId,
+      }) || null
+    );
   }
 
   async deleteCronForUser(channelId: string, userId: string): Promise<string> {

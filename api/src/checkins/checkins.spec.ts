@@ -1,7 +1,7 @@
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
-import { Connection, getConnection, getRepository, Repository } from "typeorm";
+import { Connection, getRepository, Repository } from "typeorm";
 
 import { AppModule } from "../app.module";
 import { Standup } from "../standups/entities/standup.entity";
