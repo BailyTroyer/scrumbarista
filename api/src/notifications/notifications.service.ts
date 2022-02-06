@@ -53,27 +53,27 @@ export class NotificationsService implements OnApplicationBootstrap {
 
   // load the standup notifications + any user overrides
   async onApplicationBootstrap() {
-    // const standupNotifications =
-    //   await this.standupNotificationsRepository.find();
-    // for (const notification of standupNotifications) {
-    //   const { channelId, interval } = notification;
-    //   const standup = await this.getStandup(channelId);
-    //   const cron = new CronJob(interval, () =>
-    //     this.checkinNotifier.pingUsersForCheckin(standup)
-    //   );
-    //   this.schedulerRegistry.addCronJob(channelId, cron);
-    //   cron.start();
-    // }
-    // const userNotifications = await this.userNotificationsRepository.find();
-    // for (const notification of userNotifications) {
-    //   const { channelId, interval, userId } = notification;
-    //   const standup = await this.getStandup(channelId);
-    //   const cron = new CronJob(interval, () =>
-    //     this.checkinNotifier.pingUsersForCheckin(standup)
-    //   );
-    //   this.schedulerRegistry.addCronJob(`${channelId}-${userId}`, cron);
-    //   cron.start();
-    // }
+    const standupNotifications =
+      await this.standupNotificationsRepository.find();
+    for (const notification of standupNotifications) {
+      const { channelId, interval } = notification;
+      const standup = await this.getStandup(channelId);
+      const cron = new CronJob(interval, () =>
+        this.checkinNotifier.pingUsersForCheckin(standup)
+      );
+      this.schedulerRegistry.addCronJob(channelId, cron);
+      cron.start();
+    }
+    const userNotifications = await this.userNotificationsRepository.find();
+    for (const notification of userNotifications) {
+      const { channelId, interval, userId } = notification;
+      const standup = await this.getStandup(channelId);
+      const cron = new CronJob(interval, () =>
+        this.checkinNotifier.pingUsersForCheckin(standup)
+      );
+      this.schedulerRegistry.addCronJob(`${channelId}-${userId}`, cron);
+      cron.start();
+    }
   }
 
   async addCronJob(
@@ -117,15 +117,13 @@ export class NotificationsService implements OnApplicationBootstrap {
 
     const standupAndUsers = { ...standup, users, channelName };
 
-    // const job = new CronJob(notification.interval, () =>
-    //   this.checkinNotifier.pingUserForCheckin(standupAndUsers, userId)
-    // );
+    const job = new CronJob(notification.interval, () =>
+      this.checkinNotifier.pingUserForCheckin(standupAndUsers, userId)
+    );
 
-    // @TODO WTF THIS STOPS TESTS
     // if userId exists append to cronjob name
-    // BAILY FIGURE THIS OUT
-    // this.schedulerRegistry.addCronJob(`${standup.channelId}-${userId}`, job);
-    // job.start();
+    this.schedulerRegistry.addCronJob(`${standup.channelId}-${userId}`, job);
+    job.start();
 
     return notification;
   }
@@ -228,7 +226,6 @@ export class NotificationsService implements OnApplicationBootstrap {
   }
 
   async pingUsersForCheckin(channelId: string) {
-    console.log("PING USERS FOR CHECKIN: ", channelId);
     const standup = await this.getStandup(channelId);
     return this.checkinNotifier.pingUsersForCheckin(standup);
   }
