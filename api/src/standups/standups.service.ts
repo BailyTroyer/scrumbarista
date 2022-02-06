@@ -1,10 +1,14 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { WebClient } from "@slack/web-api";
 import { Repository } from "typeorm";
 
 import { TimeUtilsService } from "src/core/utils/time";
+import {
+  StandupNotification,
+  UserStandupNotification,
+} from "src/notifications/entities/notification.entity";
 import { NotificationsService } from "src/notifications/notifications.service";
+import { SlackService } from "src/slack/slack.service";
 
 import { CreateStandupDto } from "./dto/create-standup.dto";
 import { UpdateStandupDto } from "./dto/update-standup.dto";
@@ -21,14 +25,14 @@ export class StandupsService {
     private daysRepository: Repository<Day>,
     @InjectRepository(TimezoneOverride)
     private timezoneOverridesRepository: Repository<TimezoneOverride>,
-    @Inject("BOLT") private bolt: WebClient,
+    private slackService: SlackService,
     private readonly timeUtils: TimeUtilsService,
     private notificationsService: NotificationsService
   ) {}
 
-  private async createOrUpdateStandupNotificationInterval(channelId: string) {
-    const standup = await this.findOne(channelId);
-
+  private async createOrUpdateStandupNotificationInterval(
+    standup: Standup
+  ): Promise<StandupNotification> {
     const days = [
       "monday",
       "tuesday",
@@ -55,30 +59,75 @@ export class StandupsService {
       standupTime
     );
 
-    const standupCron = this.notificationsService.getCron(channelId);
+    const standupCron = await this.notificationsService.getCron(
+      standup.channelId
+    );
 
     if (!standupCron) {
-      this.notificationsService.addCronJob(
-        channelId,
+      return this.notificationsService.addCronJob(
+        standup,
         `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`
       );
     } else {
-      this.notificationsService.updateCronJob(
-        channelId,
+      return this.notificationsService.updateCronJob(
+        standup.channelId,
         `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`
       );
     }
   }
 
   private async createOrUpdateUserStandupNotificationInterval(
-    channelId: string,
+    standup: Standup,
     userId: string
-  ) {
-    const standup = await this.findOne(channelId);
-
+  ): Promise<UserStandupNotification> {
     const override = standup.timezoneOverrides.find((o) => o.userId === userId);
 
-    return;
+    if (!override) return;
+
+    const days = [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday",
+    ];
+
+    // Create base notification
+    const dayInterval = standup.days
+      .map((d) => days.indexOf(d.day.toString()))
+      .join(",");
+
+    const splitTime = standup.startTime.split(":") as any[];
+
+    const standupTime = new Date();
+    standupTime.setHours(splitTime[0]);
+    standupTime.setMinutes(splitTime[1]);
+
+    const tzOffsetDate = this.timeUtils.tzOffset(
+      this.timeUtils.getTimezoneOffset(override.timezone) * -1,
+      standupTime
+    );
+
+    const userStandupCron = await this.notificationsService.getCronForUser(
+      standup.channelId,
+      userId
+    );
+
+    if (!userStandupCron) {
+      return this.notificationsService.addUserCronJob(
+        standup,
+        `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`,
+        userId
+      );
+    } else {
+      return this.notificationsService.updateUserCron(
+        standup,
+        `${tzOffsetDate.getMinutes()} ${tzOffsetDate.getHours()} * * ${dayInterval}`,
+        userId
+      );
+    }
   }
 
   async create({
@@ -90,10 +139,12 @@ export class StandupsService {
     const standup = await this.standupsRepository.save(createStandupDto);
     standup.days = await this.daysRepository.save(days.map((day) => ({ day })));
 
-    // Create notification
-    this.createOrUpdateStandupNotificationInterval(standup.channelId);
+    const responseStandup = await this.standupsRepository.save(standup);
 
-    return this.standupsRepository.save(standup);
+    // Create notification
+    this.createOrUpdateStandupNotificationInterval(responseStandup);
+
+    return responseStandup;
   }
 
   async findAll(params: {
@@ -123,30 +174,10 @@ export class StandupsService {
 
     return Promise.all(
       standups.map(async (standup) => {
-        const users = await Promise.all(
-          await (
-            await this.bolt.conversations
-              .members({
-                channel: standup.channelId,
-              })
-              .catch(() => null)
-          )?.members.map(async (user: string) => {
-            const profile = await (
-              await this.bolt.users.info({ user })
-            ).user.profile;
-            return {
-              name: profile.real_name || "",
-              id: user,
-              image: profile.image_192 || "",
-            };
-          })
-        ).catch(() => []);
-        const channelName =
-          (
-            await this.bolt.conversations.info({
-              channel: standup.channelId,
-            })
-          ).channel.name || "";
+        const users = await this.slackService.listUsers(standup.channelId);
+        const channelName = await this.slackService.channelName(
+          standup.channelId
+        );
 
         return { ...standup, users, channelName };
       })
@@ -162,31 +193,8 @@ export class StandupsService {
   > {
     const standup = await this.standupsRepository.findOneOrFail({ channelId });
 
-    const users = await Promise.all(
-      await (
-        await this.bolt.conversations
-          .members({
-            channel: standup.channelId,
-          })
-          .catch(() => null)
-      )?.members.map(async (user: string) => {
-        const profile = await (
-          await this.bolt.users.info({ user })
-        ).user.profile;
-        return {
-          name: profile.real_name || "",
-          id: user,
-          image: profile.image_192 || "",
-        };
-      })
-    ).catch(() => []);
-
-    const channelName =
-      (
-        await this.bolt.conversations.info({
-          channel: standup.channelId,
-        })
-      ).channel.name || "";
+    const users = await this.slackService.listUsers(standup.channelId);
+    const channelName = await this.slackService.channelName(standup.channelId);
 
     return { ...standup, users, channelName };
   }
@@ -205,17 +213,18 @@ export class StandupsService {
     }
 
     standup.questions = updateStandupDto.questions;
+    standup.startTime = updateStandupDto.startTime;
     standup.name = updateStandupDto.name;
     standup.introMessage = updateStandupDto.introMessage;
     standup.active = updateStandupDto.active;
     standup.timezone = updateStandupDto.timezone;
 
-    await this.standupsRepository.save(standup);
+    const updatedStandup = await this.standupsRepository.save(standup);
 
     // update notification schedule (if changed)
-    this.createOrUpdateStandupNotificationInterval(standup.channelId);
+    await this.createOrUpdateStandupNotificationInterval(standup);
 
-    return standup;
+    return updatedStandup;
   }
 
   async remove(channelId: string): Promise<void> {
@@ -227,15 +236,18 @@ export class StandupsService {
     userId: string,
     timezone: timezone
   ) {
-    const standup = await this.findOne(channelId);
+    const standup = await this.standupsRepository.findOneOrFail({ channelId });
 
-    await this.timezoneOverridesRepository.save({ timezone, standup, userId });
+    const timezoneOverride = await this.timezoneOverridesRepository.save({
+      timezone,
+      standup,
+      userId,
+    });
 
     // Update notification interval
-    this.createOrUpdateUserStandupNotificationInterval(
-      standup.channelId,
-      userId
-    );
+    await this.createOrUpdateUserStandupNotificationInterval(standup, userId);
+
+    return timezoneOverride;
   }
 
   async updateTimezoneOverride(
@@ -243,25 +255,27 @@ export class StandupsService {
     userId: string,
     timezone: timezone
   ) {
-    const standup = await this.findOne(channelId);
-    const timezoneOverride = await this.timezoneOverridesRepository.findOne({
-      standup,
-      userId,
-    });
+    const standup = await this.standupsRepository.findOneOrFail({ channelId });
+    const timezoneOverride =
+      await this.timezoneOverridesRepository.findOneOrFail({
+        where: {
+          standup,
+          userId,
+        },
+      });
 
     timezoneOverride.timezone = timezone;
 
     await this.timezoneOverridesRepository.save(timezoneOverride);
 
     // Update notification interval
-    this.createOrUpdateUserStandupNotificationInterval(
-      standup.channelId,
-      userId
-    );
+    await this.createOrUpdateUserStandupNotificationInterval(standup, userId);
+
+    return { ...timezoneOverride, channelId };
   }
 
   async deleteTimezoneOverride(channelId: string, userId: string) {
-    const standup = await this.findOne(channelId);
+    const standup = await this.standupsRepository.findOneOrFail({ channelId });
     await this.timezoneOverridesRepository.delete({ standup, userId });
   }
 }

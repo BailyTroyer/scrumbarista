@@ -86,7 +86,6 @@ export const standupUserConfigView: Middleware<
 
   const tz = selectedValues.tz.tz.selected_option.value;
 
-  console.log("TZ: ", `${userId} set TZ ${tz} for ${channelId}`);
   const response = await setUserTimezone(channelId, userId, tz);
 
   if (response?.timezone !== tz) {

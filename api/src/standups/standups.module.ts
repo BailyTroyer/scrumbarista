@@ -1,9 +1,10 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { BoltModule } from "src/core/modules/bolt.module";
 import { TimeUtilsModule } from "src/core/utils/time";
+import { UserStandupNotification } from "src/notifications/entities/notification.entity";
 import { NotificationsModule } from "src/notifications/notifications.module";
+import { SlackModule } from "src/slack/slack.module";
 
 import { Day } from "./entities/day.entity";
 import { Standup } from "./entities/standup.entity";
@@ -13,10 +14,15 @@ import { StandupsService } from "./standups.service";
 
 @Module({
   imports: [
-    BoltModule,
-    TypeOrmModule.forFeature([Standup, Day, TimezoneOverride]),
-    TimeUtilsModule,
+    SlackModule,
     NotificationsModule,
+    TypeOrmModule.forFeature([
+      Standup,
+      Day,
+      TimezoneOverride,
+      UserStandupNotification,
+    ]),
+    TimeUtilsModule,
   ],
   controllers: [StandupsController],
   providers: [StandupsService],

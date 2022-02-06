@@ -1,12 +1,12 @@
-import { Inject, Injectable, Module } from "@nestjs/common";
-import { WebClient } from "@slack/web-api";
+import { Injectable, Module } from "@nestjs/common";
 
+import { SlackModule } from "src/slack/slack.module";
+import { SlackService } from "src/slack/slack.service";
 import { Standup } from "src/standups/entities/standup.entity";
 
 import { CheckinsModule } from "../../checkins/checkins.module";
 import { CheckinsService } from "../../checkins/checkins.service";
 import { TimeUtilsModule, TimeUtilsService } from "./../utils/time";
-import { BoltModule } from "./bolt.module";
 
 type StandupAndUsers = Standup & {
   users: {
@@ -20,9 +20,9 @@ type StandupAndUsers = Standup & {
 @Injectable()
 export class CheckinNotifierService {
   constructor(
-    @Inject("BOLT") private bolt: WebClient,
     private readonly checkinsService: CheckinsService,
-    private readonly timeUtils: TimeUtilsService
+    private readonly timeUtils: TimeUtilsService,
+    private readonly slackService: SlackService
   ) {}
 
   private async pingUserStandup(
@@ -32,9 +32,9 @@ export class CheckinNotifierService {
     const questions = standup.questions.filter((q) => q !== "");
 
     // Get user's timezone
-    const timezone =
-      standup.timezoneOverrides.find((override) => override.userId === userId)
-        ?.timezone || standup.timezone;
+    const timezone = standup.timezoneOverrides.find(
+      (override) => override.userId === userId
+    )?.timezone;
     const offsetDate = this.timeUtils.dateTimezoneOffset(
       this.timeUtils.getTimezoneOffset(timezone)
     );
@@ -47,15 +47,6 @@ export class CheckinNotifierService {
       this.timeUtils.totalSeconds(standup.startTime) <=
       this.timeUtils.totalSeconds(this.timeUtils.toMilitaryTime(offsetDate));
 
-    console.log(
-      `startTime=${standup.startTime};time=${this.timeUtils.toMilitaryTime(
-        offsetDate
-      )}`
-    );
-
-    console.log(
-      `standupTimeIsNow=${standupTimeIsNow};standupIsToday=${standupIsToday}`
-    );
     if (!(standupTimeIsNow && standupIsToday)) return;
 
     // Check if this is the standup day, and it has been past the standup time for their timezone
@@ -71,20 +62,20 @@ export class CheckinNotifierService {
       // send reminder message & create empty checkin for later completion
       const checkin = { answers: [], postMessageTs: "", userId: userId };
       await this.checkinsService.create(standup.channelId, checkin);
-
-      await this.bolt.chat.postMessage({
-        channel: userId,
-        text: `The *${standup.name}* is about to start.`,
-      });
-      await this.bolt.chat.postMessage({
-        channel: userId,
-        text: questions[0],
-      });
+      await this.slackService.postMessage(
+        userId,
+        `The *${standup.name}* is about to start.`
+      );
+      await this.slackService.postMessage(userId, questions[0]);
     }
   }
 
   public async pingUsersForCheckin(standup: StandupAndUsers): Promise<void> {
-    for (const user of standup.users) {
+    // Ping all users that don't have overrides
+
+    const overrides = standup.timezoneOverrides.map((o) => o.userId);
+
+    for (const user of standup.users.filter((u) => !overrides.includes(u.id))) {
       await this.pingUserStandup(standup, user.id);
     }
   }
@@ -98,7 +89,7 @@ export class CheckinNotifierService {
 }
 
 @Module({
-  imports: [BoltModule, CheckinsModule, TimeUtilsModule],
+  imports: [SlackModule, CheckinsModule, TimeUtilsModule],
   providers: [CheckinNotifierService],
   exports: [CheckinNotifierService],
 })

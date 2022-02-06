@@ -42,6 +42,7 @@ export class StandupsController {
   }
 
   @Post(":channelId/timezone-overrides/:userId")
+  @UseFilters(EntityNotFoundExceptionFilter)
   @ApiOperation({ summary: "create user timezone override" })
   @ApiResponse({ status: 200 })
   async createTimeZoneOverride(
@@ -93,13 +94,14 @@ export class StandupsController {
   }
 
   @Patch(":channelId/timezone-overrides/:userId")
+  @UseFilters(EntityNotFoundExceptionFilter)
   @ApiOperation({ summary: "update user timezone override" })
   @ApiResponse({ status: 200 })
   async updateTimeZoneOverride(
     @Param("channelId") channelId: string,
     @Param("userId") userId: string,
     @Body() { timezone }: CreateTimezoneOverrideDto
-  ) {
+  ): Promise<TimezoneOverrideDto> {
     return plainToClass(
       TimezoneOverrideDto,
       this.standupsService.updateTimezoneOverride(channelId, userId, timezone)
@@ -113,6 +115,7 @@ export class StandupsController {
   }
 
   @Delete(":channelId/timezone-overrides/:userId")
+  @UseFilters(EntityNotFoundExceptionFilter)
   @ApiOperation({ summary: "delete user timezone override" })
   @ApiResponse({ status: 200 })
   async deleteTimeZoneOverride(
