@@ -1,31 +1,23 @@
 import { INestApplication } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { Test, TestingModule } from "@nestjs/testing";
-import { WebClient } from "@slack/web-api";
 import { CronJob } from "cron";
 import MockDate from "mockdate";
 import * as request from "supertest";
 import { Connection, getConnection, getRepository, Repository } from "typeorm";
 
-import { BoltModule } from "src/core/modules/bolt.module";
-import { SlackModule } from "src/slack/slack.module";
 import { SlackService } from "src/slack/slack.service";
 import { Day, DayOfWeek } from "src/standups/entities/day.entity";
 import { Standup } from "src/standups/entities/standup.entity";
 import { TimezoneOverride } from "src/standups/entities/tzoverride.entity";
 
 import { AppModule } from "../app.module";
-import {
-  StandupNotification,
-  UserStandupNotification,
-} from "./entities/notification.entity";
-import { NotificationsModule } from "./notifications.module";
-import { NotificationsService } from "./notifications.service";
+import { StandupNotification } from "./entities/notification.entity";
 
 describe("NotificationsController", () => {
   let moduleFixture: TestingModule;
   let app: INestApplication;
-  let userNotificationsRepository: Repository<UserStandupNotification>;
+  // let userNotificationsRepository: Repository<UserStandupNotification>;
   let standupRepository: Repository<Standup>;
   let dayRepository: Repository<Day>;
   let standupNotificationsRepository: Repository<StandupNotification>;
@@ -47,7 +39,7 @@ describe("NotificationsController", () => {
     standupRepository = getRepository(Standup);
     dayRepository = getRepository(Day);
     standupNotificationsRepository = getRepository(StandupNotification);
-    userNotificationsRepository = getRepository(UserStandupNotification);
+    // userNotificationsRepository = getRepository(UserStandupNotification);
     tzOverrideRepository = getRepository(TimezoneOverride);
 
     schedulerRegistry = app.get<SchedulerRegistry>(SchedulerRegistry);
@@ -70,18 +62,6 @@ describe("NotificationsController", () => {
       schedulerRegistry.deleteCronJob(name);
     });
   });
-
-  // beforeEach(() => {
-  //   jest.useFakeTimers();
-  //   jest.setSystemTime(new Date("2022-02-05T09:00:00.000Z"));
-  //   jest.advanceTimersByTime(1);
-  // });
-
-  const flushPromises = () => new Promise((res) => process.nextTick(res));
-
-  // afterEach(() => {
-  //   jest.useRealTimers();
-  // });
 
   afterAll(async () => {
     await app.get(Connection).close();

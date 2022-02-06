@@ -2,7 +2,7 @@ import { Injectable, OnApplicationBootstrap } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CronJob, CronTime } from "cron";
-import { getConnection, Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 import { CheckinNotifierService } from "src/core/modules/checkin-notifier.module";
 import { SlackService } from "src/slack/slack.service";

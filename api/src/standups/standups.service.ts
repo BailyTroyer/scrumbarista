@@ -1,7 +1,6 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { WebClient } from "@slack/web-api";
-import { getConnection, Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 import { TimeUtilsService } from "src/core/utils/time";
 import {
