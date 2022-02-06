@@ -15,12 +15,13 @@ services:
   api:
     platform: linux/amd64
     build: ./api
-    command: npm run start:dev
+    command: npm run start
     volumes:
       - ./api/src:/app/src
-      - ./api/test:/app/test
       - ./api/nest-cli.json:/app/nest-cli.json
     environment:
+      - SLACK_SIGNING_SECRET=CHANGE_ME
+      - SLACK_BOT_TOKEN=CHANGE_ME
       - DB_URL=mysql://username:password@db:3306/scrumbarista
     ports:
       - 8000:8000
@@ -31,8 +32,8 @@ services:
     build: ./app
     command: npm run dev
     volumes:
-      - ./app/pages:/app/pages
-      - ./app/components:/app/components
+      - ./app/public:/app/public
+      - ./app/src:/app/src
       - ./app/.env.local:/app/.env.local
     environment:
       - SLACK_CLIENT_ID=CHANGE_ME
@@ -45,7 +46,7 @@ services:
   bolt:
     platform: linux/amd64
     build: ./bolt
-    command: npm run start:dev
+    command: npm run start
     volumes:
       - ./bolt/src:/bolt/src
     environment:

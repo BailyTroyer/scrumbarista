@@ -73,12 +73,18 @@ const ScheduleSettingsSection = ({
       </ChakraSelect>
     </SettingGroup>
 
-    <SettingGroup
+    {/* <SettingGroup
       label="Timezone"
       tooltip="Select the main timezone for your team"
     >
-      <Select options={timezones.map((t) => ({ name: t, value: t }))} />
-    </SettingGroup>
+      <Select
+        options={timezones.map((t) => ({ name: t, value: t }))}
+        onChange={() => {
+          return;
+        }}
+        value={{ name: "", value: "" }}
+      />
+    </SettingGroup> */}
 
     <SettingGroup
       label="Days"
