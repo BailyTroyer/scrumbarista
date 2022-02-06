@@ -30,10 +30,6 @@ const useSlack = () => {
       body: JSON.stringify({ token }),
     });
 
-    console.log("RESPONSE");
-
-    console.log("RSPO: ", await response.json());
-
     const responseJson: ChannelListResponse = await response.json();
 
     setChannels(responseJson.channels || []);

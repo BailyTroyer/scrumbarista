@@ -69,8 +69,6 @@ const New: NextPage = () => {
             questions: values.questions,
           };
 
-          console.log("POSTOING: ", values);
-
           const response = await fetch(`${API_URL}/standups`, {
             headers: {
               "Content-Type": "application/json",
@@ -80,7 +78,6 @@ const New: NextPage = () => {
           });
 
           const responseJson = await response.json();
-          console.log(responseJson);
 
           setSubmitting(false);
 

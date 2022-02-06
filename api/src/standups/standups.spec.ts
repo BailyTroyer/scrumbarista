@@ -1,6 +1,7 @@
 import { INestApplication } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { Test, TestingModule } from "@nestjs/testing";
+import { CronJob } from "cron";
 import * as request from "supertest";
 import { Connection, getConnection, getRepository, Repository } from "typeorm";
 
@@ -232,6 +233,18 @@ describe("StandupController", () => {
         days: [],
       });
 
+      schedulerRegistry.addCronJob(
+        "channelId",
+        new CronJob("* * * * *", () => {
+          return;
+        })
+      );
+
+      await standupNotificationsRepository.save({
+        interval: "* * * * *",
+        channelId: "channelId",
+      });
+
       return request(app.getHttpServer())
         .patch("/standups/channelId")
         .send({ name: "new-name", days: ["monday", "tuesday"] })
@@ -307,7 +320,7 @@ describe("StandupController", () => {
           timezone: "GMT",
         })
         .expect(200)
-        .expect({ userId: "user", timezone: "GMT" });
+        .expect({ userId: "user", channelId: "channel", timezone: "GMT" });
     });
     it("updates a timezone override for a given user", async () => {
       await standupRepository.save({
@@ -315,8 +328,21 @@ describe("StandupController", () => {
         startTime: "9:00",
         channelId: "channel",
         questions: ["questions"],
-        days: [],
+        days: [await dayRepository.save({ day: DayOfWeek.MONDAY })],
+        timezoneOverrides: [
+          await tzOverrideRepository.save({
+            userId: "user",
+            timezone: "EST",
+          }),
+        ],
       });
+
+      schedulerRegistry.addCronJob(
+        "channel-user",
+        new CronJob("* * * * *", () => {
+          return;
+        })
+      );
 
       await userNotificationsRepository.save({
         interval: "* * * * *",
@@ -325,13 +351,13 @@ describe("StandupController", () => {
       });
 
       return request(app.getHttpServer())
-        .post("/standups/channel/timezone-overrides/user")
+        .patch("/standups/channel/timezone-overrides/user")
         .set("Accept", "application/json")
         .send({
           timezone: "EST",
         })
-        .expect(201)
-        .expect({ userId: "user", timezone: "EST" });
+        .expect(200)
+        .expect({ userId: "user", channelId: "channel", timezone: "EST" });
     });
   });
 

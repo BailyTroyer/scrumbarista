@@ -42,12 +42,8 @@ export class NotificationsService implements OnApplicationBootstrap {
     const users = await this.slackService.listUsers(channelId);
     const channelName = await this.slackService.channelName(channelId);
 
-    console.log("USERS: ", users);
-
     const standup =
       (await this.standupsRepository.findOne({ channelId })) || null;
-
-    console.log("STANDUP: ", standup);
 
     if (!standup) return null;
 
@@ -131,8 +127,6 @@ export class NotificationsService implements OnApplicationBootstrap {
     // this.schedulerRegistry.addCronJob(`${standup.channelId}-${userId}`, job);
     // job.start();
 
-    console.log("RETURN NOTIFICATION: ", notification);
-
     return notification;
   }
 
@@ -146,11 +140,14 @@ export class NotificationsService implements OnApplicationBootstrap {
     });
 
     notification.interval = interval;
-    this.standupNotificationsRepository.save(notification);
+    await this.standupNotificationsRepository.save(notification);
 
     // Update cronjob interval
     const jobs = this.schedulerRegistry.getCronJobs();
+
     const job = jobs.get(notification.channelId);
+
+    // @todo what if the user patches a non-existent job? we should handle if job is null and setTime is undefined
     job.setTime(new CronTime(interval));
 
     return notification;
@@ -168,11 +165,15 @@ export class NotificationsService implements OnApplicationBootstrap {
     });
 
     notification.interval = interval;
-    this.userNotificationsRepository.save(notification);
+    await this.userNotificationsRepository.save(notification);
 
     // Update cronjob interval
     const jobs = this.schedulerRegistry.getCronJobs();
+
     const job = jobs.get(`${standup.channelId}-${userId}`);
+
+    // @todo what if the user patches a non-existent job? we should handle if job is null and setTime is undefined
+
     job.setTime(new CronTime(interval));
 
     return notification;
