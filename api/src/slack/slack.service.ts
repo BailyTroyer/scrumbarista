@@ -14,7 +14,7 @@ export class SlackService {
 
     return (
       response.channels
-        .filter((c) => c.is_channel)
+        .filter((c) => c?.is_channel || false)
         .map((c) => ({ name: c.name, id: c.id })) || []
     );
   }
