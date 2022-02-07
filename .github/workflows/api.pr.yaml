@@ -37,5 +37,6 @@ jobs:
         DB_URL: mysql://username:password@localhost:3306/scrumbarista
       run: |
         docker-compose up -d db
+        npm run typeorm:run 
         npm run test
         docker-compose down db
