@@ -14,6 +14,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Start DB
+      run: docker-compose up -d db
+
     - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
@@ -36,7 +39,6 @@ jobs:
       env:
         DB_URL: mysql://username:password@localhost:3306/scrumbarista
       run: |
-        docker-compose up -d db
         npm run typeorm:run 
         npm run test
         docker-compose down db
