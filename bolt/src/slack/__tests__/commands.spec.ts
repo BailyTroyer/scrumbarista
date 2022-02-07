@@ -23,6 +23,9 @@ describe("The commands handlers", () => {
             postEphemeral,
           },
         },
+        body: {
+          text: "",
+        },
       } as any);
 
       expect(postEphemeral.mock.calls[0]).toMatchSnapshot();
@@ -58,6 +61,9 @@ describe("The commands handlers", () => {
             open,
           },
         },
+        body: {
+          text: "",
+        },
       } as any);
 
       expect(open.mock.calls[0]).toMatchSnapshot();
@@ -89,6 +95,9 @@ describe("The commands handlers", () => {
           views: {
             open,
           },
+        },
+        body: {
+          text: "",
         },
       } as any);
 

@@ -72,6 +72,8 @@ $ docker-compose run bolt npm run test:cov
 
 ## Architecture
 
+This codebase follows a "mono-repo" structure but is designed for the API/Bolt/App services to run separately when deployed. They are part of the same `scrumbarista` helm chart, but given a large enough scale could act as completely separate services/repos/teams given the need. That opinion may change over time, but keeping everything in the same repo makes it much easier to maintain in the projects infancy 👶
+
 ![architecture diagram](./docs/assets/architecture.png)
 
 ## Contributing

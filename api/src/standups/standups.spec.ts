@@ -217,10 +217,14 @@ describe("StandupController", () => {
         .expect({
           name: "new-name",
           channelId: "channelId",
+          questions: ["questions"],
           days: [],
           timezoneOverrides: [],
+          timezone: "CST",
           startTime: "09:00:00",
           users: [],
+          active: true,
+          introMessage: "",
           channelName: "",
         });
     });
@@ -252,10 +256,14 @@ describe("StandupController", () => {
         .expect({
           name: "new-name",
           channelId: "channelId",
+          questions: ["questions"],
           days: ["monday", "tuesday"],
           timezoneOverrides: [],
+          timezone: "CST",
           startTime: "09:00:00",
           users: [],
+          active: true,
+          introMessage: "",
           channelName: "",
         });
     });

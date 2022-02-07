@@ -175,7 +175,7 @@ describe("The messages handlers", () => {
           },
         },
       });
-      const postMessage = jest.fn();
+      const postMessage = jest.fn().mockReturnValue({ ts: "ts" });
 
       server.use(
         rest.get("http://localhost:8000/standups/channelId", (req, res, ctx) =>

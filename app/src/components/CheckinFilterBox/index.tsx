@@ -40,10 +40,12 @@ const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
 
   return (
     <Formik
-      initialValues={{
-        participants: users || [],
-        questions: standup?.questions || [],
-      }}
+      initialValues={
+        {
+          participants: users || [],
+          questions: standup?.questions || [],
+        } as FormValues
+      }
       enableReinitialize
       onSubmit={async (values) => {
         // await sleep(500);

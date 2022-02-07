@@ -212,17 +212,13 @@ export class StandupsService {
       );
     }
 
-    standup.questions = updateStandupDto.questions;
-    standup.startTime = updateStandupDto.startTime;
-    standup.name = updateStandupDto.name;
-    standup.introMessage = updateStandupDto.introMessage;
-    standup.active = updateStandupDto.active;
-    standup.timezone = updateStandupDto.timezone;
-
-    const updatedStandup = await this.standupsRepository.save(standup);
+    const updatedStandup = await this.standupsRepository.save({
+      ...standup,
+      ...updateStandupDto,
+    });
 
     // update notification schedule (if changed)
-    await this.createOrUpdateStandupNotificationInterval(standup);
+    await this.createOrUpdateStandupNotificationInterval(updatedStandup);
 
     return updatedStandup;
   }
