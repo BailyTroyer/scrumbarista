@@ -2,8 +2,8 @@ name: Bolt PR CI
 
 on:
   pull_request:
-    # paths:
-    #   - "bolt/**"
+    paths:
+      - "bolt/**"
 
 jobs:
   build:

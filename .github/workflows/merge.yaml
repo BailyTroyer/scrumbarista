@@ -22,9 +22,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       
-      - name: Helm Install
-        uses: ./.github/actions/helm
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
-        with:
-          args: upgrade --install scrumbarista ./deploy --namespace scrumbarista --set containers.bolt.image.tag=${{ github.sha }} --atomic --wait
+      # - name: Helm Install
+      #   uses: ./.github/actions/helm
+      #   env:
+      #     KUBECONFIG: ${{ secrets.KUBECONFIG }}
+      #   with:
+      #     args: upgrade --install scrumbarista ./deploy --namespace scrumbarista --set containers.bolt.image.tag=${{ github.sha }} --atomic --wait

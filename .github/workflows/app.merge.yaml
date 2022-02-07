@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - "master"
-    # paths:
-    #   - "app/**"
+    paths:
+      - "app/**"
 
 jobs:
   build:
@@ -22,5 +22,5 @@ jobs:
       - name: Build
         run: docker build -t ${{REGISTRY}}:${{ github.sha }} bolt . 
       
-      - name: Push
-        run: docker push ${{REGISTRY}}:${{ github.sha }}
+      # - name: Push
+      #   run: docker push ${{REGISTRY}}:${{ github.sha }}

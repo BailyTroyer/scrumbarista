@@ -2,8 +2,8 @@ name: APP PR CI
 
 on:
   pull_request:
-    # paths:
-    #   - "app/**"
+    paths:
+      - "app/**"
 
 jobs:
   build:
