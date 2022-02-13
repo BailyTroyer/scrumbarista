@@ -107,7 +107,7 @@ describe("The messages handlers", () => {
       expect(say.mock.calls[0]).toBeUndefined();
     });
     it("asks next question in current day's standup", async () => {
-      const say = jest.fn();
+      const postMessage = jest.fn();
 
       server.use(
         rest.get("http://localhost:8000/standups/channelId", (req, res, ctx) =>
@@ -118,6 +118,7 @@ describe("The messages handlers", () => {
               channelId: "channelId",
               questions: ["question1", "question2", "question3"],
               days: ["monday"],
+              startTime: "09:00:00",
             })
           )
         ),
@@ -148,7 +149,11 @@ describe("The messages handlers", () => {
       );
 
       await dmMessage({
-        say,
+        client: {
+          chat: {
+            postMessage,
+          },
+        },
         message: {
           channel_type: "im",
           channel: "channel",
@@ -158,9 +163,45 @@ describe("The messages handlers", () => {
         },
       } as any);
 
-      expect(say.mock.calls[0]).toMatchInlineSnapshot(`
+      expect(postMessage.mock.calls[0]).toMatchInlineSnapshot(`
         Array [
-          "question2",
+          Object {
+            "blocks": Array [
+              Object {
+                "accessory": Object {
+                  "action_id": "checkinMessageDmQuickResponse",
+                  "options": Array [
+                    Object {
+                      "text": Object {
+                        "text": "I'm OOO today",
+                        "type": "plain_text",
+                      },
+                      "value": "ooo",
+                    },
+                    Object {
+                      "text": Object {
+                        "text": "Skip",
+                        "type": "plain_text",
+                      },
+                      "value": "skip",
+                    },
+                  ],
+                  "placeholder": Object {
+                    "emoji": true,
+                    "text": "Quick Action",
+                    "type": "plain_text",
+                  },
+                  "type": "static_select",
+                },
+                "text": Object {
+                  "text": "question2",
+                  "type": "mrkdwn",
+                },
+                "type": "section",
+              },
+            ],
+            "channel": "channel",
+          },
         ]
       `);
     });

@@ -26,6 +26,7 @@ export type Standup = NewStandup & {
 };
 
 export type Checkin = {
+  outOfOffice: boolean;
   createdDate: Date;
   answers: string[];
   postMessageTs: string;
@@ -35,4 +36,5 @@ export type Checkin = {
 export type CreateCheckinDTO = {
   answers: string[];
   postMessageTs: string;
+  outOfOffice?: boolean;
 };

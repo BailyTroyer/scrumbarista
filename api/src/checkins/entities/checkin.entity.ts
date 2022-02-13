@@ -27,6 +27,9 @@ export class Checkin {
   })
   standup: Standup;
 
+  @Column({ default: false })
+  outOfOffice: boolean;
+
   @Column()
   userId: string;
 }

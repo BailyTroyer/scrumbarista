@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsBoolean, IsOptional, IsNotEmpty, IsString } from "class-validator";
 
 export class UpdateCheckinDto {
   @IsString({ each: true })
@@ -8,4 +8,8 @@ export class UpdateCheckinDto {
   @IsString()
   @IsNotEmpty()
   postMessageTs: string;
+
+  @IsBoolean()
+  @IsOptional()
+  outOfOffice?: boolean;
 }

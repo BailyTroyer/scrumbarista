@@ -171,12 +171,43 @@ describe("NotificationsController", () => {
       expect(postMessage.mock.calls).toMatchInlineSnapshot(`
         Array [
           Array [
-            "id",
-            "The *standup* is about to start.",
+            Object {
+              "channel": "id",
+              "text": "The *standup* is about to start.",
+            },
           ],
           Array [
-            "id",
-            "questions",
+            Object {
+              "blocks": Array [
+                Object {
+                  "accessory": Object {
+                    "action_id": "checkinMessageDmQuickResponse",
+                    "options": Array [
+                      Object {
+                        "text": Object {
+                          "text": "I'm OOO today",
+                          "type": "plain_text",
+                        },
+                        "value": "ooo",
+                      },
+                    ],
+                    "placeholder": Object {
+                      "emoji": true,
+                      "text": "Quick Action",
+                      "type": "plain_text",
+                    },
+                    "type": "static_select",
+                  },
+                  "text": Object {
+                    "text": "questions",
+                    "type": "mrkdwn",
+                  },
+                  "type": "section",
+                },
+              ],
+              "channel": "id",
+              "text": "questions",
+            },
           ],
         ]
       `);
@@ -217,12 +248,43 @@ describe("NotificationsController", () => {
       expect(postMessage.mock.calls).toMatchInlineSnapshot(`
         Array [
           Array [
-            "userId",
-            "The *standup* is about to start.",
+            Object {
+              "channel": "userId",
+              "text": "The *standup* is about to start.",
+            },
           ],
           Array [
-            "userId",
-            "questions",
+            Object {
+              "blocks": Array [
+                Object {
+                  "accessory": Object {
+                    "action_id": "checkinMessageDmQuickResponse",
+                    "options": Array [
+                      Object {
+                        "text": Object {
+                          "text": "I'm OOO today",
+                          "type": "plain_text",
+                        },
+                        "value": "ooo",
+                      },
+                    ],
+                    "placeholder": Object {
+                      "emoji": true,
+                      "text": "Quick Action",
+                      "type": "plain_text",
+                    },
+                    "type": "static_select",
+                  },
+                  "text": Object {
+                    "text": "questions",
+                    "type": "mrkdwn",
+                  },
+                  "type": "section",
+                },
+              ],
+              "channel": "userId",
+              "text": "questions",
+            },
           ],
         ]
       `);
@@ -255,12 +317,43 @@ describe("NotificationsController", () => {
       expect(postMessage.mock.calls).toMatchInlineSnapshot(`
         Array [
           Array [
-            "userId",
-            "The *standup* is about to start.",
+            Object {
+              "channel": "userId",
+              "text": "The *standup* is about to start.",
+            },
           ],
           Array [
-            "userId",
-            "questions",
+            Object {
+              "blocks": Array [
+                Object {
+                  "accessory": Object {
+                    "action_id": "checkinMessageDmQuickResponse",
+                    "options": Array [
+                      Object {
+                        "text": Object {
+                          "text": "I'm OOO today",
+                          "type": "plain_text",
+                        },
+                        "value": "ooo",
+                      },
+                    ],
+                    "placeholder": Object {
+                      "emoji": true,
+                      "text": "Quick Action",
+                      "type": "plain_text",
+                    },
+                    "type": "static_select",
+                  },
+                  "text": Object {
+                    "text": "questions",
+                    "type": "mrkdwn",
+                  },
+                  "type": "section",
+                },
+              ],
+              "channel": "userId",
+              "text": "questions",
+            },
           ],
         ]
       `);

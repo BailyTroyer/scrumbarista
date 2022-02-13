@@ -1,5 +1,5 @@
 import { Exclude, Expose, Transform } from "class-transformer";
-import { IsString, IsDate, IsOptional } from "class-validator";
+import { IsString, IsDate, IsOptional, IsBoolean } from "class-validator";
 
 import { Checkin } from "../entities/checkin.entity";
 
@@ -30,4 +30,8 @@ export class CheckinDto {
   @Expose()
   @Transform(({ obj }: { obj: Checkin }) => obj.standup?.channelId)
   readonly channelId: string;
+
+  @Expose()
+  @IsBoolean()
+  outOfOffice: boolean;
 }

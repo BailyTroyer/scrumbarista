@@ -85,6 +85,7 @@ describe("CheckinController", () => {
           expect(body).toEqual([
             {
               id: expect.stringMatching(uuid),
+              outOfOffice: false,
               createdDate: expect.stringMatching(date),
               answers: ["answers"],
               postMessageTs: "postMessageTs",
@@ -128,6 +129,7 @@ describe("CheckinController", () => {
               {
                 answers: ["fooanswer"],
                 channelId: "channelId",
+                outOfOffice: false,
                 id: expect.stringMatching(uuid),
                 createdDate: expect.stringMatching(date),
                 postMessageTs: "postMessageTs",
@@ -136,6 +138,7 @@ describe("CheckinController", () => {
               {
                 answers: ["baranswer"],
                 channelId: "channelId",
+                outOfOffice: false,
                 id: expect.stringMatching(uuid),
                 createdDate: expect.stringMatching(date),
                 postMessageTs: "postMessageTs",
@@ -157,6 +160,7 @@ describe("CheckinController", () => {
         .expect(({ body }) =>
           expect(body).toEqual({
             id: expect.stringMatching(uuid),
+            outOfOffice: false,
             createdDate: expect.stringMatching(date),
             answers: ["answers"],
             postMessageTs: "postMessageTs",
@@ -202,6 +206,7 @@ describe("CheckinController", () => {
         .expect(({ body }) =>
           expect(body).toEqual({
             id: expect.stringMatching(uuid),
+            outOfOffice: false,
             createdDate: expect.stringMatching(date),
             answers: ["answers"],
             postMessageTs: "postMessageTs",
@@ -229,6 +234,7 @@ describe("CheckinController", () => {
           expect(body).toEqual({
             id: expect.stringMatching(uuid),
             createdDate: expect.stringMatching(date),
+            outOfOffice: false,
             answers: ["new-answers"],
             postMessageTs: "post-message-ts",
             userId: "user",

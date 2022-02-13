@@ -1,6 +1,6 @@
 import { Middleware, SlackEventMiddlewareArgs } from "@slack/bolt";
 
-import { sectionBlock } from "../blocks";
+import { sectionBlock, sectionWithSelect } from "../blocks";
 import { getStandup, searchForCheckin, updateCheckin } from "../services/api";
 
 interface SlackMessage {
@@ -19,6 +19,8 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
     // check for checkin with user ID
     const date = new Date().toLocaleDateString();
 
+    // @todo if the user is in n+ checkins on same date/time we conflict.
+    // We should realistically send a channelId in each message metadata
     const preExistingCheckin = await searchForCheckin(user, date);
     const standup = await getStandup(preExistingCheckin?.channelId);
 
@@ -29,7 +31,7 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
     }
 
     const questions = standup.questions;
-    const answers = preExistingCheckin.answers.filter((x) => x !== "");
+    const answers = preExistingCheckin.answers;
 
     // @todo if the answers have newlines (i.e. slack bullets)
     // then we exit too early since it counts as another answer
@@ -49,8 +51,21 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
       );
 
       if (answers.length !== questions.length) {
-        // return with questions[preExistingAnswers.length]
-        say(questions[answers.length]);
+        // Post message with block to (skip, use last answer, if 1st question I'm OOO today)
+        await client.chat.postMessage({
+          channel: message.channel,
+          blocks: [
+            sectionWithSelect(
+              "Quick Action",
+              questions[answers.length],
+              [
+                { text: "I'm OOO today", value: "ooo" },
+                { text: "Skip", value: "skip" },
+              ],
+              "checkinMessageDmQuickResponse"
+            ),
+          ],
+        });
       } else {
         // if answers length == questions length then say standup is done
         const userInfo = await client.users.info({
@@ -65,10 +80,15 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
               color: "#41BC88",
               blocks: [sectionBlock(`*${standup.name}*\n${date}`)],
             },
-            ...questions.map((question: string, index: number) => ({
-              color: "E4E4E4",
-              blocks: [sectionBlock(`*${question}*\n${answers[index]}`)],
-            })),
+            ...questions.map((question: string, index: number) => {
+              // if user skipped don't post in channel
+              if (question.length === 0) return;
+
+              return {
+                color: "E4E4E4",
+                blocks: [sectionBlock(`*${question}*\n${answers[index]}`)],
+              };
+            }),
           ],
           username: userInfo.user.profile.real_name,
           icon_url: userInfo.user.profile.image_192,
