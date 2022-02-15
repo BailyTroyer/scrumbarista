@@ -23,6 +23,7 @@ This chart bootstraps a Scrumbarista API,WebUI and Bolt service on a [Kubernetes
 To install the chart with the release name `my-release`:
 
 ```console
+kubectl create secret generic app.config -n {namespace} --from-env-file=.env
 helm install --name my-release ./path/to/chart
 ```
 

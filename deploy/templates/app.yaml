@@ -1,17 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{.Values.meta.name}}
+  name: {{.Values.containers.app.name}}
   namespace: {{.Values.meta.namespace}}
   labels: {{include "labels" . | nindent 4 }}
+    app: {{.Values.containers.app.name}}
 spec:
   selector:
     matchLabels:
-      app: {{.Values.meta.name}}
+      app: {{.Values.containers.app.name}}
   replicas: {{.Values.containers.app.replicas}}
   template:
     metadata:
       labels: {{include "labels" . | nindent 8 }}
+        app: {{.Values.containers.app.name}}
     spec:
       containers:
       - name: {{.Values.containers.app.name}}
@@ -30,13 +32,18 @@ spec:
           httpGet:
             port: {{.Values.containers.app.port}}
             path: /api/health
+        env:
+        {{- with .Values.containers.app.env }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.meta.name }}
+  name: {{.Values.containers.app.name}}
   namespace: {{.Values.meta.namespace}}
   labels: {{include "labels" . | nindent 4}}
+    app: {{.Values.containers.app.name}}
 spec:
   type: ClusterIP
   ports:
@@ -45,14 +52,15 @@ spec:
       port: {{.Values.containers.app.port}}
       targetPort: {{.Values.containers.app.port}}
   selector:
-    app: {{.Values.meta.name}}
+    app: {{.Values.containers.app.name}}
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
-  name: {{ .Values.meta.name }}
+  name: {{.Values.containers.app.name}}
   namespace: {{.Values.meta.namespace}}
   labels: {{include "labels" . | nindent 4}}
+    app: {{.Values.containers.app.name}}
 spec:
   selector:
     istio: ingressgateway
@@ -67,17 +75,18 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: {{.Values.meta.name}}
+  name: {{.Values.containers.app.name}}
   namespace: {{.Values.meta.namespace}}
   labels: {{include "labels" . | nindent 4}}
+    app: {{.Values.containers.app.name}}
 spec:
   hosts:
   - {{.Values.containers.app.host}}
   gateways:
-  - {{.Values.meta.name}}
+  - {{.Values.containers.app.name}}
   http:
   - route:
     - destination:
-        host: {{.Values.meta.name}}
+        host: {{.Values.containers.app.name}}
         port:
           number: {{.Values.containers.app.port}}

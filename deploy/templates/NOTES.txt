@@ -1,11 +1,15 @@
-Thank you for installing {{ .Chart.Name }}.
+Thank you for installing {{ .Chart.Name }} :)
 
-If you haven't already make sure to follow the instructions in SLACK.md for
-creating and properly configuring a slack Bot in your workspace.
+If you haven't already, make sure to follow the instructions in SLACK.md
+forcreating and properly configuring a slack Bot in your workspace.
 
-Your release is named {{ .Release.Name }}.
+Your release is named: {{ .Release.Name }}.
 
 To learn more about the release, try:
 
   $ helm status {{ .Release.Name }}
   $ helm get all {{ .Release.Name }}
+
+You can access the swagger docs at:
+
+  $ curl https://{{ .Values.containers.api.host }}/health

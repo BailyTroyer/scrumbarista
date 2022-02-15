@@ -1,17 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{.Values.meta.name}}
+  name: {{.Values.containers.bolt.name}}
   namespace: {{.Values.meta.namespace}}
   labels: {{include "labels" . | nindent 4 }}
+    app: {{.Values.containers.bolt.name}}
 spec:
   selector:
     matchLabels:
-      app: {{.Values.meta.name}}
+      app: {{.Values.containers.bolt.name}}
   replicas: {{.Values.containers.bolt.replicas}}
   template:
     metadata:
       labels: {{include "labels" . | nindent 8 }}
+        app: {{.Values.containers.bolt.name}}
     spec:
       containers:
       - name: {{.Values.containers.bolt.name}}
@@ -38,9 +40,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.meta.name }}
+  name: {{.Values.containers.bolt.name}}
   namespace: {{.Values.meta.namespace}}
   labels: {{include "labels" . | nindent 4}}
+    app: {{.Values.containers.bolt.name}}
 spec:
   type: ClusterIP
   ports:
@@ -49,14 +52,15 @@ spec:
       port: {{.Values.containers.bolt.port}}
       targetPort: {{.Values.containers.bolt.port}}
   selector:
-    app: {{.Values.meta.name}}
+    app: {{.Values.containers.bolt.name}}
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
-  name: {{ .Values.meta.name }}
+  name: {{.Values.containers.bolt.name}}
   namespace: {{.Values.meta.namespace}}
   labels: {{include "labels" . | nindent 4}}
+    app: {{.Values.containers.bolt.name}}
 spec:
   selector:
     istio: ingressgateway
@@ -71,17 +75,18 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: {{.Values.meta.name}}
+  name: {{.Values.containers.bolt.name}}
   namespace: {{.Values.meta.namespace}}
   labels: {{include "labels" . | nindent 4}}
+    app: {{.Values.containers.bolt.name}}
 spec:
   hosts:
   - {{.Values.containers.bolt.host}}
   gateways:
-  - {{.Values.meta.name}}
+  - {{.Values.containers.bolt.name}}
   http:
   - route:
     - destination:
-        host: {{.Values.meta.name}}
+        host: {{.Values.containers.bolt.name}}
         port:
           number: {{.Values.containers.bolt.port}}

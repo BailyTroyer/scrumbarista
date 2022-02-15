@@ -3,24 +3,46 @@ name: API Merge CI
 on:
   push:
     branches:
-      - "master"
-    # paths:
-    #   - "api/**"
+      - "main"
+    paths:
+      - "api/**"
 
 jobs:
   build:
-    env:
-      REGISTRY: 418118555604.dkr.ecr.us-east-1.amazonaws.com/scrumbarista-api
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./api
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: Build
-        run: docker build -t ${{REGISTRY}}:${{ github.sha }} bolt . 
-      
-      # - name: Push
-      #   run: docker push ${{REGISTRY}}:${{ github.sha }}
+      - name: Start DB
+        run: docker-compose up -d db
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Install
+        run: npm ci --ignore-scripts
+
+      - name: Test
+        env:
+          DB_URL: mysql://username:password@localhost:3306/scrumbarista
+        run: |
+          npm run typeorm:run 
+          npm run test
+          docker-compose down db
+
+      # - name: Update codecov
+      #   env:
+      #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      #   run: ./node_modules/.bin/codecov --token $CODECOV_TOKEN -F api
