@@ -5,11 +5,11 @@ import { Box } from "@chakra-ui/layout";
 import {
   Grid,
   GridItem,
+  Center,
   HStack,
   VStack,
   Heading,
   Text,
-  WrapItem,
   Tooltip,
   Image,
   Circle,
@@ -21,6 +21,7 @@ import {
   Skeleton,
   Button,
   Divider,
+  Tabs,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import NextImage from "next/image";
@@ -28,10 +29,19 @@ import { useRouter } from "next/router";
 
 import authenticatedRoute from "src/components/AuthenticatedRoute";
 import CheckinCard from "src/components/CheckinCard";
-import CheckinFilterBox from "src/components/CheckinFilterBox";
+import CheckinFilterBox, {
+  CheckinsFilterFormValues,
+} from "src/components/CheckinFilterBox";
 import Link from "src/components/Link";
 import StandupDetailCard from "src/components/StandupDetailCard";
-import { useCheckins, useStandup } from "src/hooks/swr";
+import StandupMetrics from "src/components/StandupMetrics";
+import StandupSettingsTab from "src/components/StandupSettingsTab";
+import {
+  CheckinResponse,
+  StandupResponse,
+  useCheckins,
+  useStandup,
+} from "src/hooks/swr";
 import useDaysToString, { toRegularTime } from "src/hooks/useDaysString";
 import { colors } from "src/utils/constants";
 
@@ -57,6 +67,98 @@ const EmptyCheckinsDisplay = () => (
   </Flex>
 );
 
+const CheckinsList = ({
+  checkins,
+  standup,
+}: {
+  checkins: CheckinResponse[];
+  standup: StandupResponse | null;
+}) => {
+  if (checkins.length === 0) return <EmptyCheckinsDisplay />;
+
+  const days = useMemo(() => {
+    return checkins
+      .map((s) => new Date(s.createdDate).toDateString())
+      .filter((value, index, self) => self.indexOf(value) === index);
+  }, [checkins]);
+
+  const [filter, setFilter] = useState<CheckinsFilterFormValues | null>(null);
+
+  return (
+    <Grid w="full" templateColumns="repeat(3, 1fr)" gap={4} minH="60vh">
+      <GridItem w="full" colSpan={2}>
+        {filter?.questions.length === 0 || filter?.participants.length === 0 ? (
+          <Box>
+            <Text fontSize="18px" mt={3} mb={2}>
+              No matches found
+            </Text>
+            <Text color="gray.500" mb={6}>
+              There's no data to display for your selected filters. Please edit
+              your selection, and Srumbarista will look again.
+            </Text>
+          </Box>
+        ) : (
+          days.map((d) => (
+            <VStack spacing={5}>
+              <HStack width="100%">
+                <Divider />
+                <Flex w="full" justifyContent={"center"}>
+                  <Text
+                    textAlign={"center"}
+                    mx={4}
+                    fontSize="md"
+                    fontWeight={"semibold"}
+                    noOfLines={1}
+                  >
+                    {d}
+                  </Text>
+                </Flex>
+                <Divider />
+              </HStack>
+              {checkins
+                .filter((c) => new Date(c.createdDate).toDateString() === d)
+                .filter((c) => {
+                  if (!filter) return true;
+
+                  return (
+                    (filter?.participants || [])
+                      .map((p) => p.id)
+                      .indexOf(c.userId || "") >= 0
+                  );
+                })
+                .map((c) => (
+                  <CheckinCard
+                    standup={standup}
+                    userInfo={standup?.users.find((u) => u.id === c.userId)}
+                    checkin={c}
+                    key={c.id}
+                    filter={filter}
+                  />
+                ))}
+            </VStack>
+          ))
+        )}
+      </GridItem>
+      <GridItem w="full" colSpan={1}>
+        <Box
+          w="full"
+          sx={{
+            position: "sticky",
+            top: "13em",
+          }}
+          zIndex={10}
+        >
+          <CheckinFilterBox
+            standup={standup}
+            checkins={checkins}
+            onFilterChange={setFilter}
+          />
+        </Box>
+      </GridItem>
+    </Grid>
+  );
+};
+
 const Standup: NextPage = () => {
   const router = useRouter();
   const { channelId } = router.query;
@@ -66,11 +168,7 @@ const Standup: NextPage = () => {
 
   const daysString = useDaysToString(standup?.days || []);
 
-  const days = useMemo(() => {
-    return checkins
-      .map((s) => new Date(s.createdDate).toDateString())
-      .filter((value, index, self) => self.indexOf(value) === index);
-  }, [checkins]);
+  const [tab, setTab] = useState(0);
 
   const MetaGrid = () => (
     <Grid
@@ -118,16 +216,14 @@ const Standup: NextPage = () => {
               ))}
 
             {standup?.users?.map((user) => (
-              <WrapItem>
-                <Tooltip label={user.name} openDelay={500}>
-                  <Image
-                    boxSize={"75"}
-                    objectFit="cover"
-                    src={user.image}
-                    borderRadius="full"
-                  />
-                </Tooltip>
-              </WrapItem>
+              <Tooltip label={user.name}>
+                <Image
+                  boxSize="60px"
+                  objectFit="cover"
+                  src={user.image}
+                  borderRadius="full"
+                />
+              </Tooltip>
             ))}
           </HStack>
         </StandupDetailCard>
@@ -173,7 +269,8 @@ const Standup: NextPage = () => {
           direction={"row"}
           justifyContent={"space-between"}
           alignItems={"center"}
-          padding={6}
+          px={6}
+          py={4}
           maxW="5xl"
           mx="auto"
         >
@@ -209,73 +306,35 @@ const Standup: NextPage = () => {
         <VStack w="full" spacing={10}>
           <MetaGrid />
           <Flex flexDir={"column"} alignItems={"center"} w="full">
-            <HStack w="full">
-              <Heading as="h4" size="md">
-                Timeline
-              </Heading>
-            </HStack>
+            <Tabs
+              w="full"
+              defaultIndex={0}
+              onChange={setTab}
+              mb={8}
+              // index={Object.keys(router.query).includes("timeline") ? 0 : 1}
+            >
+              <HStack w="full">
+                <StandupSettingsTab
+                  isSelected={Object.keys(router.query).includes("timeline")}
+                >
+                  <Heading as="h4" size="md">
+                    Timeline
+                  </Heading>
+                </StandupSettingsTab>
+                <StandupSettingsTab
+                  isSelected={Object.keys(router.query).includes("insights")}
+                >
+                  <Heading as="h4" size="md">
+                    Insights
+                  </Heading>
+                </StandupSettingsTab>
+              </HStack>
+            </Tabs>
 
-            {checkins.length === 0 ? (
-              <EmptyCheckinsDisplay />
+            {tab === 0 ? (
+              <CheckinsList standup={standup} checkins={checkins} />
             ) : (
-              <Grid w="full" templateColumns="repeat(3, 1fr)" gap={4}>
-                <GridItem w="full" colSpan={2}>
-                  {days.map((d) => (
-                    <VStack spacing={5}>
-                      <HStack width="100%">
-                        <Divider />
-                        <Flex w="full" justifyContent={"center"}>
-                          <Text
-                            textAlign={"center"}
-                            mx={4}
-                            fontSize="md"
-                            fontWeight={"semibold"}
-                            noOfLines={1}
-                          >
-                            {d}
-                          </Text>
-                        </Flex>
-                        <Divider />
-                      </HStack>
-                      {checkins
-                        .filter(
-                          (c) => new Date(c.createdDate).toDateString() === d
-                        )
-                        .map((c) => (
-                          <CheckinCard
-                            standup={standup}
-                            userInfo={standup?.users.find(
-                              (u) => u.id === c.userId
-                            )}
-                            checkin={c}
-                            key={c.id}
-                          />
-                        ))}
-                    </VStack>
-                  ))}
-
-                  {checkins.map((c) => (
-                    <CheckinCard
-                      standup={standup}
-                      userInfo={standup?.users.find((u) => u.id === c.userId)}
-                      checkin={c}
-                      key={c.id}
-                    />
-                  ))}
-                </GridItem>
-                <GridItem w="full" colSpan={1}>
-                  <Box
-                    w="full"
-                    sx={{
-                      position: "sticky",
-                      top: "13em",
-                    }}
-                    zIndex={10}
-                  >
-                    <CheckinFilterBox standup={standup} checkins={checkins} />
-                  </Box>
-                </GridItem>
-              </Grid>
+              <StandupMetrics />
             )}
           </Flex>
         </VStack>

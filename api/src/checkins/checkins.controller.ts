@@ -35,8 +35,8 @@ export class CheckinsController {
   @ApiResponse({ status: 201, description: "checkin created" })
   async search(
     @Query("userId") userId: string,
-    @Query("createdDate") createdDate: string
-  ): Promise<CheckinDto> {
+    @Query("createdDate") createdDate?: string
+  ): Promise<CheckinDto[]> {
     return plainToClass(
       CheckinDto,
       await this.checkinsService.search(userId, createdDate)

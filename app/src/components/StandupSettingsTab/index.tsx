@@ -20,7 +20,7 @@ export default function StandupSettingsTab(props: TabProps) {
         fontWeight: 700,
       }}
       {...tabProps}
-      _focus={{ boxShadow: "none" }}
+      _focus={{ boxShadow: "none", outline: "none" }}
       _active={{ color: "none" }}
       _selected={{ color: "purple.500" }}
     >

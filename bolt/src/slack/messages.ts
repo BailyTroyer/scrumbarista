@@ -19,7 +19,7 @@ export const dmMessage: Middleware<SlackEventMiddlewareArgs<"message">> =
     // check for checkin with user ID
     const date = new Date().toLocaleDateString();
 
-    const preExistingCheckin = await searchForCheckin(user, date);
+    const preExistingCheckin = await searchForCheckin(user, date)[0];
     const standup = await getStandup(preExistingCheckin?.channelId);
 
     // cronjob creates partial checkin which we complete here

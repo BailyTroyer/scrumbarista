@@ -19,14 +19,22 @@ export class CheckinsService {
     private standupsRepository: Repository<Standup>
   ) {}
 
-  search(userId: string, createdDate: string): Promise<Checkin> {
-    return this.checkinsRepository.findOneOrFail({
-      where: {
-        userId,
+  search(userId: string, createdDate?: string): Promise<Checkin[]> {
+    let filters = {};
+
+    if (createdDate) {
+      filters = {
         createdDate: Between(
           startOfDay(new Date(createdDate)),
           endOfDay(new Date(createdDate))
         ),
+      };
+    }
+
+    return this.checkinsRepository.find({
+      where: {
+        userId,
+        ...filters,
       },
       relations: ["standup"],
     });

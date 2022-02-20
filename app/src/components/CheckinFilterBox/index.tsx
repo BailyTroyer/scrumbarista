@@ -17,7 +17,7 @@ import { Form, Formik } from "formik";
 import { CheckinResponse, StandupResponse } from "src/hooks/swr";
 import { stringToColour } from "src/utils";
 
-interface FormValues {
+export interface CheckinsFilterFormValues {
   participants: { name: string; id: string; image: string }[];
   questions: string[];
 }
@@ -25,9 +25,14 @@ interface FormValues {
 interface Props {
   standup: StandupResponse | null;
   checkins: CheckinResponse[];
+  onFilterChange: (form: CheckinsFilterFormValues) => void;
 }
 
-const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
+const CheckinFilterBox: FC<Props> = ({
+  standup,
+  checkins,
+  onFilterChange,
+}: Props) => {
   const checkinUsers = useMemo(() => {
     return checkins
       .map((s) => s.userId)
@@ -44,15 +49,12 @@ const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
         {
           participants: users || [],
           questions: standup?.questions || [],
-        } as FormValues
+        } as CheckinsFilterFormValues
       }
       enableReinitialize
-      onSubmit={async (values) => {
-        // await sleep(500);
-        alert(JSON.stringify(values, null, 2));
-      }}
+      onSubmit={onFilterChange}
     >
-      {({ setFieldValue, values }) => (
+      {({ setFieldValue, values, submitForm }) => (
         <Form>
           <Box
             w="full"
@@ -84,25 +86,19 @@ const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
                   justifyContent={"space-between"}
                   mb={5}
                 >
-                  <Heading fontSize="lg">
-                    Participants {values.participants.length} - {users?.length}{" "}
-                    ={" "}
-                    {JSON.stringify(
-                      values.participants.length === users?.length
-                    )}
-                  </Heading>
+                  <Heading fontSize="lg">Participants</Heading>
                   <HStack>
                     <Text fontSize="xs">All</Text>
                     <Checkbox
                       isChecked={values.participants.length === users?.length}
                       onChange={() => {
-                        console.log(JSON.stringify(values.participants));
                         setFieldValue(
                           "participants",
                           values.participants.length === users?.length
                             ? []
                             : users
                         );
+                        submitForm();
                       }}
                     />
                   </HStack>
@@ -136,19 +132,6 @@ const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
                               (p) => p.name === user.name
                             ).length === 1;
 
-                          console.log("PAT: ", values.participants);
-
-                          console.log("EXISTS: ", exists);
-
-                          console.log(
-                            "SETTING TO",
-                            exists
-                              ? values.participants.filter(
-                                  (p) => p.name !== user.name
-                                )
-                              : [...values.participants, user]
-                          );
-
                           setFieldValue(
                             "participants",
                             exists
@@ -157,6 +140,8 @@ const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
                                 )
                               : [...values.participants, user]
                           );
+
+                          submitForm();
                         }}
                       />
                     </Flex>
@@ -185,13 +170,19 @@ const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
                         values.questions.length === standup?.questions.length
                       }
                       onChange={() => {
-                        console.log(JSON.stringify(values.questions));
+                        const alreadySelected =
+                          values.questions.length ===
+                            standup?.questions.length &&
+                          standup?.questions.every(
+                            (value, index) => value === values.questions[index]
+                          );
+
                         setFieldValue(
                           "questions",
-                          values.questions === standup?.questions
-                            ? []
-                            : standup?.questions
+                          alreadySelected ? [] : standup?.questions
                         );
+
+                        submitForm();
                       }}
                     />
                   </HStack>
@@ -224,6 +215,8 @@ const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
                               ? values.questions.filter((q) => q !== question)
                               : [...values.questions, question]
                           );
+
+                          submitForm();
                         }}
                       />
                     </Flex>
@@ -231,8 +224,6 @@ const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
                 </VStack>
               </Flex>
             </VStack>
-
-            <button type="submit">Submit</button>
           </Box>
         </Form>
       )}
