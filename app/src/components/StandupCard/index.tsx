@@ -54,12 +54,12 @@ const StandupCard: FC<Props> = ({ standup }: Props) => {
           </Text>
 
           <HStack>
-            {standup.users.map((user) => (
+            {standup.users.slice(0, 5).map((user) => (
               <WrapItem>
                 <Tooltip label={user.name} openDelay={500}>
                   <Image
                     mr={2}
-                    boxSize="75"
+                    boxSize="60px"
                     objectFit="cover"
                     src={user.image}
                     borderRadius="full"
@@ -67,6 +67,14 @@ const StandupCard: FC<Props> = ({ standup }: Props) => {
                 </Tooltip>
               </WrapItem>
             ))}
+
+            {standup.users.length > 5 && (
+              <Circle bg="gray.100" size="60px">
+                <Text fontSize="md" color="gray.800">
+                  +{standup.users.length - 5}
+                </Text>
+              </Circle>
+            )}
           </HStack>
 
           <Box

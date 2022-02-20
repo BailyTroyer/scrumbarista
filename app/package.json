@@ -26,6 +26,7 @@
     "react-hotkeys-hook": "^3.4.4",
     "react-icons": "^4.3.1",
     "react-select": "^5.2.1",
+    "recharts": "^2.1.9",
     "swr": "^1.0.1",
     "typed.js": "^2.0.12"
   },

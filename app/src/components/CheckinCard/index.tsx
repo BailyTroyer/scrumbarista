@@ -11,6 +11,8 @@ import {
 
 import { CheckinResponse, StandupResponse } from "src/hooks/swr";
 
+import { CheckinsFilterFormValues } from "../CheckinFilterBox";
+
 interface Props {
   checkin: CheckinResponse;
   standup: StandupResponse | null;
@@ -19,9 +21,15 @@ interface Props {
     id: string;
     image: string;
   };
+  filter: CheckinsFilterFormValues | null;
 }
 
-const CheckinCard: FC<Props> = ({ standup, checkin, userInfo }: Props) => (
+const CheckinCard: FC<Props> = ({
+  standup,
+  checkin,
+  userInfo,
+  filter,
+}: Props) => (
   <VStack width={"100%"}>
     <Flex direction={"column"} w="100%">
       <Flex direction={"row"} alignItems={"center"} mb={2}>
@@ -43,21 +51,28 @@ const CheckinCard: FC<Props> = ({ standup, checkin, userInfo }: Props) => (
         </Text>
       </Flex>
 
-      {checkin.answers.map((a, i) => (
-        <Flex direction={"row"} w="100%" h="100%" my={2}>
-          <Box mr={2} width={"5px"} borderRadius={"xl"} />
+      {checkin.answers
+        .filter((a, i) => {
+          // if filter isn't defined return all
+          if (!filter) return true;
 
-          <Flex direction={"column"}>
-            <Text
-              fontWeight={"bold"}
-              color={useColorModeValue("gray.700", "gray.400")}
-            >
-              {standup?.questions[i]}
-            </Text>
-            <Text>{a}</Text>
+          return filter?.questions.includes(standup?.questions[i] || "");
+        })
+        .map((a, i) => (
+          <Flex direction={"row"} w="100%" h="100%" my={2}>
+            <Box mr={2} width={"5px"} borderRadius={"xl"} bg="red" />
+
+            <Flex direction={"column"}>
+              <Text
+                fontWeight={"bold"}
+                color={useColorModeValue("gray.700", "gray.400")}
+              >
+                {standup?.questions[i]}
+              </Text>
+              <Text>{a}</Text>
+            </Flex>
           </Flex>
-        </Flex>
-      ))}
+        ))}
     </Flex>
   </VStack>
 );
