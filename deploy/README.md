@@ -3,7 +3,7 @@
 ## TL;DR;
 
 ```console
-$ helm upgrade --install scrumbarista ./ --namespace scrumbarista --atomic --wait
+$ helm upgrade --install scrumbarista ./ --namespace scrumbarista --atomic
 ```
 
 ## Introduction

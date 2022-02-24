@@ -69,8 +69,7 @@ spec:
       number: 80
       name: http
       protocol: HTTP
-    hosts:
-    - {{.Values.containers.app.host}}
+    hosts: {{toYaml .Values.containers.app.hosts | nindent 6}}
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -80,8 +79,7 @@ metadata:
   labels: {{include "labels" . | nindent 4}}
     app: {{.Values.containers.app.name}}
 spec:
-  hosts:
-  - {{.Values.containers.app.host}}
+  hosts: {{toYaml .Values.containers.app.hosts | nindent 4}}
   gateways:
   - {{.Values.containers.app.name}}
   http:
