@@ -4,6 +4,7 @@ import cors from "cors";
 import { Request } from "express";
 import _ from "lodash";
 
+import { checkinMessageQuickResponseAction } from "./slack/actions";
 import {
   checkinCommand,
   itotwCommand,
@@ -113,6 +114,7 @@ app.view("checkin", checkinView);
 app.view("standup", standupView);
 app.view("standupUserConfig", standupUserConfigView);
 app.message(/^.*/, dmMessage);
+app.action("checkinMessageDmQuickResponse", checkinMessageQuickResponseAction);
 
 // easter-eggs
 app.command("/random-order", randomOrderCommand);

@@ -45,6 +45,7 @@ describe("The commands handlers", () => {
               channelId: "C01LQPT2LMD",
               questions: ["questions"],
               days: ["monday"],
+              startTime: "09:00:00",
             })
           )
         )

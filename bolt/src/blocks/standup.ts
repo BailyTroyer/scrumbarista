@@ -21,6 +21,9 @@ export const standupBlocks = (
       value: d.toString(),
     })) || [];
 
+  // API stores seconds (we only need HH:MM)
+  const standupTime = standup?.startTime.slice(0, -3) || "09:00";
+
   return {
     type: "modal",
     callback_id: "standup",
@@ -52,7 +55,7 @@ export const standupBlocks = (
         block_id: "time",
         element: {
           type: "timepicker",
-          initial_time: "09:00",
+          initial_time: standupTime,
           placeholder: {
             type: "plain_text",
             text: "Select time",
