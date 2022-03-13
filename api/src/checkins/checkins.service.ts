@@ -58,7 +58,7 @@ export class CheckinsService {
 
     // Conditionally add date/userId if passed
     let filters = {};
-    if (users.users) filters = { ...filters, userId: In(users.users) };
+    if (users?.users) filters = { ...filters, userId: In(users.users) };
     if (createdDate)
       filters = {
         ...filters,

@@ -1,14 +1,7 @@
 import { Global, Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { App } from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
-
-declare let process: {
-  env: {
-    SLACK_BOT_TOKEN: string;
-    SLACK_SIGNING_SECRET: string;
-    NODE_ENV: string;
-  };
-};
 
 /**
  * ONLY initialized when NODE_ENV == "test"
@@ -19,23 +12,25 @@ declare let process: {
  */
 class MockWebClient extends WebClient {}
 
-const token = process.env.SLACK_BOT_TOKEN;
-const signingSecret = process.env.SLACK_SIGNING_SECRET;
-
 const boltFactory = {
   provide: "BOLT",
-  useFactory: (): WebClient | null => {
-    if (process.env.NODE_ENV === "test") {
+  useFactory: (configService: ConfigService): WebClient | null => {
+    const nodeEnv = configService.get<string>("nodeEnv");
+    if (nodeEnv === "test") {
       return new MockWebClient();
     }
+
+    const signingSecret = configService.get<string>("slack.signingSecret");
+    const token = configService.get<string>("slack.botToken");
+
     return new App({ token, signingSecret }).client;
   },
-  inject: [],
+  inject: [ConfigService],
 };
 
 @Global()
 @Module({
-  imports: [],
+  imports: [ConfigModule],
   providers: [boltFactory],
   exports: ["BOLT"],
 })
