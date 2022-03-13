@@ -22,7 +22,7 @@ import StandupCard from "src/components/StandupCard";
 import { useStandups } from "src/hooks/swr";
 
 const EmptyStandup = () => (
-  <Center flex={1} h="100%" flexDir={"column"}>
+  <Center flex={1} h="100%" flexDir="column">
     <VStack spacing={5}>
       <Anim name="space" />
       <Heading as="h4" size="lg" color={useColorModeValue("gray.500", "white")}>
@@ -43,53 +43,49 @@ const EmptyStandup = () => (
   </Center>
 );
 
+const FullPageLoader = ({ message }: { message: string }) => (
+  <Center
+    height="100vh"
+    w="100%"
+    bg={useColorModeValue("white", "gray.700")}
+    flexDir="column"
+  >
+    <Spinner
+      thickness="4px"
+      speed="0.65s"
+      emptyColor="gray.200"
+      color="blue.500"
+      size="xl"
+    />
+    <Text mt={4}>{message}</Text>
+  </Center>
+);
+
 const Home: NextPage = () => {
   const { standups, isLoading, error } = useStandups();
   const router = useRouter();
 
   if (isLoading) {
-    return (
-      <Center
-        height="100vh"
-        w="100%"
-        bg={useColorModeValue("white", "gray.700")}
-        flexDir={"column"}
-      >
-        <Spinner
-          thickness="4px"
-          speed="0.65s"
-          emptyColor="gray.200"
-          color="blue.500"
-          size="xl"
-        />
-        <Text mt={4}>Looking for nearby standups 🕵️</Text>
-      </Center>
-    );
+    return <FullPageLoader message="Looking for nearby standups 🕵️" />;
   }
 
   if (error) {
     return (
       <Alert status="error">
         <AlertIcon />
-        {JSON.stringify(error)}
       </Alert>
     );
   }
 
   return (
     <Flex flex={1} bg={useColorModeValue("white", "gray.700")}>
-      <VStack w="full" h="full" padding={10} maxW="5xl" mx="auto">
+      <VStack w="full" h="full" padding={6} maxW="5xl" mx="auto">
         {standups.length === 0 ? (
           <EmptyStandup />
         ) : (
-          <VStack gap={6}>
-            <HStack
-              justifyContent={"space-between"}
-              alignItems={"center"}
-              w="full"
-              mb={10}
-            >
-              <Heading textAlign="center">Standups</Heading>
+          <VStack w="full">
+            <HStack w="full" mb={5} justifyContent="space-between">
+              <Heading>Standups</Heading>
               <Button
                 leftIcon={<AddIcon />}
                 colorScheme="pink"

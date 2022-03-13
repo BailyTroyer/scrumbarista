@@ -42,12 +42,12 @@ const Question = (props: any) => {
 
   return (
     <HStack
-      borderRadius={"lg"}
+      borderRadius="lg"
       borderWidth={1}
       style={style}
       my={2}
       p={3}
-      alignItems={"center"}
+      alignItems="center"
       bg={useColorModeValue("white", "gray.600")}
     >
       <Center ref={setNodeRef} {...attributes} {...listeners}>

@@ -12,8 +12,8 @@ const StandupDetailCard: FC<Props> = ({ children, title }: Props) => {
 
   return (
     <VStack
-      align={"flex-start"}
-      shadow={"base"}
+      align="flex-start"
+      shadow="base"
       borderRadius="2xl"
       padding={4}
       height="100%"
@@ -28,7 +28,7 @@ const StandupDetailCard: FC<Props> = ({ children, title }: Props) => {
         alignItems="center"
         justifyContent="space-between"
       >
-        <Heading as="h4" size="md">
+        <Heading as="h4" fontSize={{ sm: "sm", md: "lg" }}>
           {title}
         </Heading>
       </Flex>

@@ -29,7 +29,7 @@ export default function StandupSettingsTab(props: TabProps) {
         mt={1}
         height={1}
         bgColor={isSelected ? "purple.500" : ""}
-        borderRadius={"lg"}
+        borderRadius="lg"
       />
     </Flex>
   );

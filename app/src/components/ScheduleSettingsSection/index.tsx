@@ -1,4 +1,10 @@
-import { Button, HStack, Select as ChakraSelect, Grid } from "@chakra-ui/react";
+import {
+  Button,
+  HStack,
+  Select as ChakraSelect,
+  Grid,
+  Tooltip,
+} from "@chakra-ui/react";
 // import Select from "react-select/base";
 
 import SettingGroup from "src/components/SettingGroup";
@@ -92,27 +98,29 @@ const ScheduleSettingsSection = ({
     >
       <Grid templateColumns="repeat(7, 1fr)" gap={2}>
         {weekDays.map((d) => (
-          <Button
-            borderRadius={"2xl"}
-            w={28}
-            h={10}
-            borderColor={"blue.500"}
-            borderWidth={days.includes(d) ? 0 : 2}
-            colorScheme="blue"
-            variant={days.includes(d) ? "solid" : "ghost"}
-            onClick={() => {
-              if (days.includes(d)) {
-                setFieldValue(
-                  "days",
-                  days.filter((day) => day !== d)
-                );
-              } else {
-                setFieldValue("days", [...days, d]);
-              }
-            }}
-          >
-            {d.substring(0, 1).toUpperCase()}
-          </Button>
+          <Tooltip label={d} openDelay={400}>
+            <Button
+              borderRadius="2xl"
+              w={28}
+              h={10}
+              borderColor="blue.500"
+              borderWidth={days.includes(d) ? 0 : 2}
+              colorScheme="blue"
+              variant={days.includes(d) ? "solid" : "ghost"}
+              onClick={() => {
+                if (days.includes(d)) {
+                  setFieldValue(
+                    "days",
+                    days.filter((day) => day !== d)
+                  );
+                } else {
+                  setFieldValue("days", [...days, d]);
+                }
+              }}
+            >
+              {d.substring(0, 1).toUpperCase()}
+            </Button>
+          </Tooltip>
         ))}
       </Grid>
     </SettingGroup>

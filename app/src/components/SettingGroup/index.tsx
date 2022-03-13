@@ -31,7 +31,7 @@ const SettingGroup: FC<Props> = ({ label, tooltip, children }: Props) => {
           bg="white"
           color="black"
           placement="right-end"
-          borderRadius={"md"}
+          borderRadius="md"
           p={3}
         >
           <QuestionIcon color="gray.400" />

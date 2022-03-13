@@ -11,6 +11,7 @@ module.exports = {
     'plugin:import/recommended',
     'plugin:import/typescript',
     'plugin:@next/next/recommended',
+    'plugin:react/jsx-runtime',
   ],
   root: true,
   env: {
@@ -40,6 +41,12 @@ module.exports = {
           'order': 'asc',
           'caseInsensitive': true
         }
+      }
+    ],
+    'react/jsx-curly-brace-presence': [
+      'error',
+      {
+        props: "never", children: "never"
       }
     ],
   },

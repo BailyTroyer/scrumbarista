@@ -37,9 +37,9 @@ import { colors } from "src/utils/constants";
 
 const EmptyCheckinsDisplay = () => (
   <Flex
-    flexDir={"column"}
-    alignItems={"center"}
-    justifyContent={"center"}
+    flexDir="column"
+    alignItems="center"
+    justifyContent="center"
     mt={20}
     mb={10}
   >
@@ -50,7 +50,7 @@ const EmptyCheckinsDisplay = () => (
     <Heading size="md" color="gray.700" mt={8}>
       Let's Make Some Data
     </Heading>
-    <Text fontSize="md" color="gray.900" textAlign={"center"} mt={2} w="60%">
+    <Text fontSize="md" color="gray.900" textAlign="center" mt={2} w="60%">
       There's no data to display yet — but your Timeline board will light up as
       soon as one of the participants reports!
     </Text>
@@ -82,8 +82,8 @@ const Standup: NextPage = () => {
     >
       <GridItem rowSpan={1} colSpan={4}>
         <StandupDetailCard title="Schedule">
-          <Skeleton width={"xl"} isLoaded={!standupLoading}>
-            <Text fontSize="md" color="gray.500">
+          <Skeleton isLoaded={!standupLoading}>
+            <Text fontSize="md" color="gray.500" whiteSpace="pre-wrap">
               Weekly {daysString} at {toRegularTime(standup?.startTime || "")},
               in user's local timezone
             </Text>
@@ -114,14 +114,14 @@ const Standup: NextPage = () => {
           <HStack>
             {standupLoading &&
               [0, 1].map((index) => (
-                <Skeleton key={index} boxSize={"75"} borderRadius={"full"} />
+                <Skeleton key={index} boxSize="75" borderRadius="full" />
               ))}
 
             {standup?.users?.map((user) => (
               <WrapItem>
                 <Tooltip label={user.name} openDelay={500}>
                   <Image
-                    boxSize={"75"}
+                    boxSize={{ sm: "60px", md: "75px" }}
                     objectFit="cover"
                     src={user.image}
                     borderRadius="full"
@@ -170,9 +170,9 @@ const Standup: NextPage = () => {
         zIndex={2}
       >
         <Flex
-          direction={"row"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
           padding={6}
           maxW="5xl"
           mx="auto"
@@ -189,7 +189,7 @@ const Standup: NextPage = () => {
                 <Text>{standup?.name} Standup</Text>
               </BreadcrumbItem>
             </Breadcrumb>
-            <Skeleton width={"xs"} isLoaded={!standupLoading}>
+            <Skeleton width="xs" isLoaded={!standupLoading}>
               <Heading>{standup?.name} Standup</Heading>
             </Skeleton>
           </VStack>
@@ -208,7 +208,7 @@ const Standup: NextPage = () => {
       <VStack w="full" h="full" px={8} spacing={4} maxW="5xl" mx="auto">
         <VStack w="full" spacing={10}>
           <MetaGrid />
-          <Flex flexDir={"column"} alignItems={"center"} w="full">
+          <Flex flexDir="column" alignItems="center" w="full">
             <HStack w="full">
               <Heading as="h4" size="md">
                 Timeline
@@ -224,12 +224,12 @@ const Standup: NextPage = () => {
                     <VStack spacing={5}>
                       <HStack width="100%">
                         <Divider />
-                        <Flex w="full" justifyContent={"center"}>
+                        <Flex w="full" justifyContent="center">
                           <Text
-                            textAlign={"center"}
+                            textAlign="center"
                             mx={4}
                             fontSize="md"
-                            fontWeight={"semibold"}
+                            fontWeight="semibold"
                             noOfLines={1}
                           >
                             {d}

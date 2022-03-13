@@ -22,18 +22,18 @@ interface Props {
 }
 
 const CheckinCard: FC<Props> = ({ standup, checkin, userInfo }: Props) => (
-  <VStack width={"100%"}>
-    <Flex direction={"column"} w="100%">
-      <Flex direction={"row"} alignItems={"center"} mb={2}>
+  <VStack width="100%">
+    <Flex direction="column" w="100%">
+      <Flex direction="row" alignItems="center" mb={2}>
         <Image
-          boxSize={"55"}
+          boxSize="55"
           objectFit="cover"
           src={userInfo?.image}
           borderRadius="full"
           mr={4}
         />
 
-        <Text fontWeight={"semibold"}>{userInfo?.name}</Text>
+        <Text fontWeight="semibold">{userInfo?.name}</Text>
         <Text mx={1}>-</Text>
         <Text>
           {new Date(checkin.createdDate).toLocaleTimeString([], {
@@ -44,12 +44,12 @@ const CheckinCard: FC<Props> = ({ standup, checkin, userInfo }: Props) => (
       </Flex>
 
       {checkin.answers.map((a, i) => (
-        <Flex direction={"row"} w="100%" h="100%" my={2}>
-          <Box mr={2} width={"5px"} borderRadius={"xl"} />
+        <Flex direction="row" w="100%" h="100%" my={2}>
+          <Box mr={2} width="5px" borderRadius="xl" />
 
-          <Flex direction={"column"}>
+          <Flex direction="column">
             <Text
-              fontWeight={"bold"}
+              fontWeight="bold"
               color={useColorModeValue("gray.700", "gray.400")}
             >
               {standup?.questions[i]}

@@ -66,22 +66,22 @@ const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
               w="full"
               bg={useColorModeValue("white", "gray.700")}
               borderRadius="2xl"
-              shadow={"base"}
+              shadow="base"
               p={5}
-              alignItems={"flex-start"}
+              alignItems="flex-start"
               spacing={8}
             >
               <Flex
-                direction={"column"}
-                alignItems={"center"}
-                justifyContent={"space-between"}
+                direction="column"
+                alignItems="center"
+                justifyContent="space-between"
                 w="full"
               >
                 <Flex
                   w="full"
-                  direction={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
                   mb={5}
                 >
                   <Heading fontSize="lg">
@@ -111,13 +111,13 @@ const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
                   {users?.map((user) => (
                     <Flex
                       w="full"
-                      direction={"row"}
-                      alignItems={"center"}
-                      justifyContent={"space-between"}
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
                     >
                       <HStack>
                         <Image
-                          boxSize={"25"}
+                          boxSize="25"
                           objectFit="cover"
                           src={user.image}
                           borderRadius="full"
@@ -165,16 +165,16 @@ const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
               </Flex>
 
               <Flex
-                direction={"column"}
-                alignItems={"center"}
-                justifyContent={"space-between"}
+                direction="column"
+                alignItems="center"
+                justifyContent="space-between"
                 w="full"
               >
                 <Flex
                   w="full"
-                  direction={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
                   mb={5}
                 >
                   <Heading fontSize="lg">Questions</Heading>
@@ -200,9 +200,9 @@ const CheckinFilterBox: FC<Props> = ({ standup, checkins }: Props) => {
                   {standup?.questions.map((question) => (
                     <Flex
                       w="full"
-                      direction={"row"}
-                      alignItems={"center"}
-                      justifyContent={"space-between"}
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
                     >
                       <HStack>
                         <Circle size={2} bg={stringToColour(question)} />

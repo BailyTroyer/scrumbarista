@@ -111,14 +111,14 @@ const New: NextPage = () => {
                 zIndex={2}
               >
                 <Flex
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
                   p={6}
                   maxW="5xl"
                   mx="auto"
                 >
-                  <VStack alignItems={"flex-start"} w="full">
+                  <VStack alignItems="flex-start" w="full">
                     <Breadcrumb
                       separator={<ChevronRightIcon color="gray.500" />}
                     >

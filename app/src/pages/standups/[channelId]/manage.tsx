@@ -59,7 +59,7 @@ const Manage: NextPage = () => {
         height="100vh"
         w="100%"
         bg={useColorModeValue("white", "gray.700")}
-        flexDir={"column"}
+        flexDir="column"
       >
         <Spinner
           thickness="4px"
@@ -134,14 +134,14 @@ const Manage: NextPage = () => {
               zIndex={2}
             >
               <Flex
-                direction={"row"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
                 padding={6}
                 maxW="5xl"
                 mx="auto"
               >
-                <VStack alignItems={"flex-start"} w="full">
+                <VStack alignItems="flex-start" w="full">
                   <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
                     <BreadcrumbItem>
                       <BreadcrumbLink as={Link} href="/home">
@@ -160,11 +160,6 @@ const Manage: NextPage = () => {
                     </BreadcrumbItem>
                   </Breadcrumb>
                   <Heading>{standup?.name} Standup</Heading>
-                  <Text fontSize="md" color="gray.500">
-                    Weekly {daysString} at{" "}
-                    {toRegularTime(standup?.startTime || "")}, in user's local
-                    timezone
-                  </Text>
                 </VStack>
 
                 <Button
@@ -181,6 +176,11 @@ const Manage: NextPage = () => {
             </Box>
 
             <VStack w="full" h="full" px={8} spacing={4} maxW="5xl" mx="auto">
+              <Text fontSize="md" color="gray.500">
+                Weekly {daysString} at {toRegularTime(standup?.startTime || "")}
+                , in user's local timezone
+              </Text>
+
               <SettingGroup
                 label="Standup Name"
                 tooltip="Enter a name that signifies the nature of the standup."
@@ -191,7 +191,7 @@ const Manage: NextPage = () => {
                   onChange={handleChange}
                   placeholder="Enter a name for the standup ..."
                   size="md"
-                  borderRadius={"md"}
+                  borderRadius="md"
                 />
               </SettingGroup>
 

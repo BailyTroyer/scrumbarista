@@ -34,7 +34,7 @@ const AdvancedSettingsSection = ({
   return (
     <VStack w="full" h="full" padding={10}>
       <Grid templateColumns="repeat(2, 1fr)" gap={10}>
-        <Flex alignItems={"flex-start"} flexDirection={"column"}>
+        <Flex alignItems="flex-start" flexDirection="column">
           <Heading as="h4" size="md">
             {active ? "Pause" : "Resume"} this Standup
           </Heading>
@@ -57,7 +57,7 @@ const AdvancedSettingsSection = ({
             {active ? "Pause" : "Resume"}
           </Button>
         </Flex>
-        <Flex alignItems={"flex-start"} flexDirection={"column"}>
+        <Flex alignItems="flex-start" flexDirection="column">
           <Heading as="h4" size="md">
             Delete this Standup
           </Heading>

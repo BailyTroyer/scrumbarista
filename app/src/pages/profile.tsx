@@ -20,6 +20,7 @@ import {
   Box,
   Divider,
   Center,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { NextPage } from "next";
 import Link from "next/link";
@@ -38,23 +39,23 @@ const Timeline = () => {
       <HStack width="100%">
         <Divider />
         <Flex>
-          <Text mx={4} fontSize="md" fontWeight={"semibold"} noOfLines={1}>
+          <Text mx={4} fontSize="md" fontWeight="semibold" noOfLines={1}>
             10/10/10
           </Text>
         </Flex>
         <Divider />
       </HStack>
-      <Flex direction={"column"} w="100%">
-        <Flex direction={"row"} alignItems={"center"} mb={2}>
+      <Flex direction="column" w="100%">
+        <Flex direction="row" alignItems="center" mb={2}>
           <Image
-            boxSize={"55"}
+            boxSize="55"
             objectFit="cover"
             src={image}
             borderRadius="full"
             mr={4}
           />
 
-          <Text fontWeight={"semibold"}>bailytroyer</Text>
+          <Text fontWeight="semibold">bailytroyer</Text>
           <Text mx={1}>-</Text>
           <Text>
             {new Date().toLocaleTimeString([], {
@@ -65,12 +66,12 @@ const Timeline = () => {
         </Flex>
 
         {["answer1", "answer2", "answer3"].map((a, i) => (
-          <Flex direction={"row"} w="100%" h="100%" my={2}>
-            <Box mr={2} width={"5px"} borderRadius={"xl"} />
+          <Flex direction="row" w="100%" h="100%" my={2}>
+            <Box mr={2} width="5px" borderRadius="xl" />
 
-            <Flex direction={"column"}>
+            <Flex direction="column">
               <Text
-                fontWeight={"bold"}
+                fontWeight="bold"
                 color={useColorModeValue("gray.700", "gray.400")}
               >
                 {["answer1", "answer2", "answer3"][i]}
@@ -83,6 +84,46 @@ const Timeline = () => {
     </VStack>
   );
 };
+
+const Engagement = () => (
+  <GridItem>
+    <Heading fontSize="lg">Engagement</Heading>
+
+    <Grid templateColumns="repeat(7, 1fr)">
+      {days.map((day) => (
+        <Text
+          textAlign="center"
+          key={day}
+          color="gray.600"
+          fontWeight="medium"
+          mb={3}
+        >
+          {day}
+        </Text>
+      ))}
+      {metrics.map(() => {
+        return (
+          <>
+            {[...Array.from(Array(7).keys())].map((_, index: number) => (
+              <Center boxSize="50px" w="full">
+                <WrapItem>
+                  <Tooltip label={`${index} participants`} openDelay={500}>
+                    <Circle
+                      // size={index <= 4 ? `${45 * Math.random()}px` : "20px"}
+                      size="20px"
+                      // bg={index <= 4 ? "blue.500" : "gray.200"}
+                      bg="gray.200"
+                    />
+                  </Tooltip>
+                </WrapItem>
+              </Center>
+            ))}
+          </>
+        );
+      })}
+    </Grid>
+  </GridItem>
+);
 
 const Profile: NextPage = () => {
   const [offset, setOffset] = useState(0);
@@ -105,9 +146,9 @@ const Profile: NextPage = () => {
         zIndex={2}
       >
         <Flex
-          direction={"row"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
           padding={6}
           maxW="5xl"
           mx="auto"
@@ -126,7 +167,7 @@ const Profile: NextPage = () => {
             </Breadcrumb>
             <HStack>
               <Image
-                boxSize={"58"}
+                boxSize="58"
                 objectFit="cover"
                 src={image}
                 borderRadius="full"
@@ -142,10 +183,10 @@ const Profile: NextPage = () => {
         </Flex>
       </Box>
 
-      <Grid
+      <SimpleGrid
         padding={6}
         w="full"
-        templateColumns="repeat(2, 1fr)"
+        columns={{ sm: 1, md: 2 }}
         gap={4}
         h="full"
         maxW="5xl"
@@ -161,46 +202,9 @@ const Profile: NextPage = () => {
           </VStack>
         </GridItem>
         <GridItem>
-          <Heading fontSize="lg">Engagement</Heading>
-
-          <Grid templateColumns="repeat(7, 1fr)">
-            {days.map((day) => (
-              <Text
-                textAlign="center"
-                key={day}
-                color="gray.600"
-                fontWeight="medium"
-                mb={3}
-              >
-                {day}
-              </Text>
-            ))}
-            {metrics.map(() => {
-              return (
-                <>
-                  {[...Array.from(Array(7).keys())].map((_, index: number) => (
-                    <Center boxSize={"50px"} w="full">
-                      <WrapItem>
-                        <Tooltip
-                          label={`${index} participants`}
-                          openDelay={500}
-                        >
-                          <Circle
-                            // size={index <= 4 ? `${45 * Math.random()}px` : "20px"}
-                            size="20px"
-                            // bg={index <= 4 ? "blue.500" : "gray.200"}
-                            bg="gray.200"
-                          />
-                        </Tooltip>
-                      </WrapItem>
-                    </Center>
-                  ))}
-                </>
-              );
-            })}
-          </Grid>
+          <Engagement />
         </GridItem>
-      </Grid>
+      </SimpleGrid>
     </Flex>
   );
 };

@@ -13,6 +13,7 @@ import {
   Box,
   Center,
   Circle,
+  SimpleGrid,
 } from "@chakra-ui/react";
 
 import Link from "src/components/Link";
@@ -43,7 +44,7 @@ const StandupCard: FC<Props> = ({ standup }: Props) => {
       }}
       w="full"
     >
-      <HStack spacing={14}>
+      <SimpleGrid gap={5} columns={{ sm: 1, md: 2 }}>
         <VStack spacing={4} align="flex-start">
           <Heading as="h4" size="md">
             {standup.name}
@@ -59,8 +60,7 @@ const StandupCard: FC<Props> = ({ standup }: Props) => {
                 <Tooltip label={user.name} openDelay={500}>
                   <Image
                     mr={2}
-                    boxSize="75"
-                    objectFit="cover"
+                    boxSize="75px"
                     src={user.image}
                     borderRadius="full"
                   />
@@ -79,23 +79,24 @@ const StandupCard: FC<Props> = ({ standup }: Props) => {
             #{standup?.channelName}
           </Box>
         </VStack>
-        <Grid templateColumns="repeat(7, 1fr)">
+        <Grid templateColumns="repeat(7, 1fr)" gap={2}>
           {days.map((day) => (
-            <Text
-              textAlign="center"
-              key={day}
-              color="gray.600"
-              fontWeight="medium"
-              mb={3}
-            >
-              {day}
-            </Text>
+            <Center>
+              <Text
+                textAlign="center"
+                key={day}
+                color="gray.600"
+                fontWeight="medium"
+              >
+                {day}
+              </Text>
+            </Center>
           ))}
           {metrics.map(() => {
             return (
               <>
                 {[...Array.from(Array(7).keys())].map((_, index: number) => (
-                  <Center boxSize={"50px"}>
+                  <Center>
                     <WrapItem>
                       <Tooltip label={`${index} participants`} openDelay={500}>
                         <Circle
@@ -112,7 +113,7 @@ const StandupCard: FC<Props> = ({ standup }: Props) => {
             );
           })}
         </Grid>
-      </HStack>
+      </SimpleGrid>
     </Link>
   );
 };
